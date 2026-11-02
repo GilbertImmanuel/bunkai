@@ -1,0 +1,10 @@
+/* Self-hosted Fontsource families. No Google Fonts requests. */
+@import '@fontsource/shippori-mincho/japanese-400.css';
+@import '@fontsource/shippori-mincho/japanese-600.css';
+@import '@fontsource/vollkorn/latin-400.css';
+@import '@fontsource/vollkorn/latin-400-italic.css';
+@import '@fontsource/vollkorn/latin-600.css';
+@import '@fontsource/vollkorn/latin-600-italic.css';
+@import '@fontsource/ia-writer-quattro/400.css';
+@import '@fontsource/ia-writer-quattro/700.css';
+@import '@fontsource/ia-writer-mono/400.css';

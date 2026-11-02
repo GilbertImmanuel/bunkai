@@ -1,0 +1,97 @@
+:root {
+  color-scheme: light;
+
+  /* Surfaces and ink */
+  --bg: #e7dcc9;
+  --surface: #fbf8f1;
+  --surface-2: #f3ebdd;
+  --ink: #1e1c17;
+  --muted: #756f63;
+  --line: #d2c6b2;
+  --line-strong: #c4b69f;
+  --accent: #2f5d8a;
+  --accent-fg: #faf7ef;
+  --accent-soft: #dce7f0;
+  --desk: #22302a;
+
+  /* Chunk hues */
+  --c1: #3e7cb1; /* blue */
+  --c2: #6e8b5e; /* sage */
+  --c3: #b8862e; /* amber */
+  --c4: #c15b4a; /* coral */
+  --c5: #8a6fae; /* mauve */
+  --c6: #3c8c84; /* teal */
+  --tint-pct: 20%;
+  --sel-pct: 34%;
+
+  /* Type families */
+  --font-jp:
+    'Shippori Mincho', 'Yu Mincho', 'Hiragino Mincho ProN', 'Noto Serif JP', 'MS Mincho', serif;
+  --font-reading: 'Vollkorn', 'Iowan Old Style', 'Charter', Georgia, serif;
+  --font-ui: 'iA Writer Quattro', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --font-data: 'iA Writer Mono', ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+
+  /* Type scale */
+  --fs-jp: 22px;
+  --lh-jp: 1.8;
+  --fs-kana: 14px;
+  --lh-kana: 1.6;
+  --fs-gloss: 16px;
+  --lh-gloss: 1.5;
+  --fs-note: 15px;
+  --lh-note: 1.65;
+  --fs-label: 12px;
+  --lh-label: 1.2;
+  --fs-data: 11px;
+  --lh-data: 1.2;
+
+  /* Radius */
+  --r-hl: 3px;
+  --r-btn: 8px;
+  --r-note: 12px;
+  --r-sheet: 16px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* App background and elevation */
+  --bg-gradient: linear-gradient(180deg, #f4ede0 0%, #e5d8c4 100%);
+  --kana-ink: var(--muted);
+  --shadow-sheet:
+    0 1px 2px rgba(60, 45, 25, 0.06), 0 12px 32px rgba(60, 45, 25, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  --shadow-panel: 0 1px 2px rgba(60, 45, 25, 0.05);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Surfaces and ink — warm charcoal, not olive */
+  --bg: #12100e;
+  --surface: #1d1a16;
+  --surface-2: #26221d;
+  --ink: #f4eee3;
+  --muted: #c8c0b2;
+  --line: #5c554b;
+  --line-strong: #7a7062;
+  --accent: #9cc5e8;
+  --accent-fg: #12100e;
+  --accent-soft: #26333d;
+  --desk: #2c2a24;
+
+  /* Chunk hues — lighter variants */
+  --c1: #8fb8e0; /* blue */
+  --c2: #b3c58f; /* sage */
+  --c3: #e3bc6e; /* amber */
+  --c4: #e58f7b; /* coral */
+  --c5: #c6a6de; /* mauve */
+  --c6: #86c9c0; /* teal */
+  --tint-pct: 18%;
+  --sel-pct: 26%;
+
+  --fs-kana: 15px;
+
+  --bg-gradient: linear-gradient(180deg, #171411 0%, #100e0c 100%);
+  --kana-ink: #d8d0c2;
+  --shadow-sheet: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-panel: none;
+}

@@ -1,0 +1,344 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  overflow: hidden;
+}
+
+body {
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  background-color: var(--bg);
+  background-image: var(--bg-gradient);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  height: 100dvh;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+dl,
+dd,
+dt,
+ul,
+ol,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input,
+textarea,
+select {
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+svg {
+  display: block;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+/* Chunk hue hooks: the same --cc drives every chunk-colored surface. */
+.c1 {
+  --cc: var(--c1);
+}
+.c2 {
+  --cc: var(--c2);
+}
+.c3 {
+  --cc: var(--c3);
+}
+.c4 {
+  --cc: var(--c4);
+}
+.c5 {
+  --cc: var(--c5);
+}
+.c6 {
+  --cc: var(--c6);
+}
+
+/* Inline sentence chunks: flat tinted pills, never underlines or brushstrokes. */
+.chunk {
+  display: inline;
+  margin: 0 0.02em;
+  padding: 0.05em 0.1em;
+  border: 1px solid transparent;
+  border-radius: var(--r-hl);
+  background: color-mix(in srgb, var(--cc) var(--tint-pct), transparent);
+  box-decoration-break: clone;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+  -webkit-box-decoration-break: clone;
+}
+
+.chunk:hover {
+  background: color-mix(in srgb, var(--cc) calc(var(--tint-pct) + 9%), transparent);
+}
+
+.chunk.is-selected {
+  border-color: var(--cc);
+  background: color-mix(in srgb, var(--cc) var(--sel-pct), transparent);
+}
+
+.chunk.is-static {
+  cursor: inherit;
+}
+
+.chunk.is-static:hover {
+  background: color-mix(in srgb, var(--cc) var(--tint-pct), transparent);
+}
+
+.chunk.is-gloss {
+  border-color: transparent;
+  cursor: default;
+}
+
+.chunk.is-gloss:hover {
+  background: color-mix(in srgb, var(--cc) var(--tint-pct), transparent);
+}
+
+:root[data-theme='dark'] .chunk {
+  border-color: color-mix(in srgb, var(--cc) 45%, transparent);
+  background: color-mix(in srgb, var(--cc) 18%, var(--surface));
+}
+
+:root[data-theme='dark'] .chunk:hover {
+  background: color-mix(in srgb, var(--cc) 24%, var(--surface));
+}
+
+:root[data-theme='dark'] .chunk.is-static:hover {
+  background: color-mix(in srgb, var(--cc) 18%, var(--surface));
+}
+
+:root[data-theme='dark'] .chunk.is-gloss {
+  border-color: transparent;
+}
+
+:root[data-theme='dark'] .chunk.is-gloss:hover {
+  background: color-mix(in srgb, var(--cc) 18%, var(--surface));
+}
+
+/* Stronger dark-mode boundaries where the light border token is too quiet. */
+:root[data-theme='dark'] .history,
+:root[data-theme='dark'] .sidebar-panel,
+:root[data-theme='dark'] .sidebar-rail,
+:root[data-theme='dark'] .search,
+:root[data-theme='dark'] .new-breakdown,
+:root[data-theme='dark'] .history-warning,
+:root[data-theme='dark'] .sample-card,
+:root[data-theme='dark'] .combo-input,
+:root[data-theme='dark'] .seg-toggle,
+:root[data-theme='dark'] .btn-secondary {
+  border-color: var(--line-strong);
+}
+
+:root[data-theme='dark'] .chunk.is-selected {
+  border-color: var(--cc);
+  background: color-mix(in srgb, var(--cc) 26%, var(--surface));
+}
+
+/* Shared controls */
+.icon-btn {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--muted);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+:root[data-theme='dark'] .icon-btn:hover {
+  background: color-mix(in srgb, var(--surface-2) 88%, var(--ink));
+}
+
+.icon-btn[aria-pressed='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.icon-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: var(--r-btn);
+  background: var(--desk);
+  color: #fbf8f1;
+  font-family: var(--font-jp);
+  font-size: 15px;
+  line-height: 1;
+}
+
+:root[data-theme='dark'] .brand-mark {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+.panel-label {
+  color: var(--muted);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: var(--lh-label);
+  text-transform: uppercase;
+}
+
+.placeholder-label {
+  color: var(--muted);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: var(--lh-label);
+  text-transform: uppercase;
+}
+
+.placeholder-text {
+  max-width: 44ch;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.sec-label {
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: var(--lh-label);
+  text-transform: uppercase;
+}
+
+.sheet-section {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+/* Scroll regions: only history, center, and sidebar scroll. */
+.scroll-region {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: transparent transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.scroll-region::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scroll-region::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-region::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: transparent;
+}
+
+.scroll-region:hover,
+.scroll-region.is-scrolling {
+  scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent;
+}
+
+.scroll-region:hover::-webkit-scrollbar-thumb,
+.scroll-region.is-scrolling::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
+}
+
+.theme-icon-moon {
+  display: none;
+}
+
+:root[data-theme='dark'] .theme-icon-sun {
+  display: none;
+}
+
+:root[data-theme='dark'] .theme-icon-moon {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
