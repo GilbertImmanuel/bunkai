@@ -52,6 +52,9 @@ It is a reading desk, not a dictionary, chatbot, flashcard app, or course.
 - **Installable and offline.** Install from desktop Chrome/Edge; the app shell and fonts
   load offline. Updates prompt instead of reloading silently. AI and Tatoeba API responses
   are never cached by the service worker.
+- **Backup and restore.** Export all sessions to a JSON file from Settings → Data, then
+  import on another machine or profile. Merge new sessions or replace the history. Backups
+  never include API keys, preferences, or the Tatoeba cache.
 
 ## Quick start
 
@@ -137,6 +140,8 @@ requests still need a network connection and degrade to their normal fallbacks.
   provider you choose. Browser storage is not a vault; use a scoped key.
 - Tatoeba examples are fetched directly from `api.tatoeba.org` and cached locally. Only
   the short lookup term is sent. No Bunkai server is involved.
+- Backups are local JSON files containing session text only. They exclude API keys,
+  preferences, and the Tatoeba cache.
 - The sample and manual modes work without any API key.
 
 ## Credits

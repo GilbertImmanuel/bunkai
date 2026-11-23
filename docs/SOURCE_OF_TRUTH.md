@@ -149,6 +149,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D022 | Tatoeba is an optional, read-only example layer. Direct browser fetches, no backend or key, 2–3 examples per selected chunk, local IndexedDB cache. Text attribution is CC BY 2.0 FR; audio is shown only when licensed and is attributed per recording. AI examples remain the fallback. | Accepted |
 | D023 | No colored left-border accents on notes, cards, active rows, or diagram boxes. Structure comes from tint, spacing, hairlines, dots, and type; panel edges and the neutral reading rule remain. | Accepted |
 | D024 | Phase 8A PWA: installable standalone app, offline app shell and fonts, prompt-based updates. The service worker caches only the app shell, never AI or Tatoeba API responses. | Accepted |
+| D025 | Phase 8B backup: versioned local JSON export/import of sessions. Merge or replace; backups never include AI keys, app preferences, or the Tatoeba cache. | Accepted |
 
 ---
 
@@ -158,8 +159,8 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 - **App:** scaffolded at the repository root with Vite 8, Svelte 5, and TypeScript.
 - **Phase:** Phase 7 complete (AI/API). Phase 7.5 (Tatoeba examples) A/B complete:
   real examples in the breakdown sidebar, local cache, attribution, generated fallback.
-  7.5C (Home sentence picker) is not approved. Phase 8A (PWA/offline) is complete;
-  8B (export/import) and 8C (optional share link) are pending.
+  7.5C (Home sentence picker) is not approved. Phase 8A (PWA/offline) and 8B
+  (export/import) are complete; 8C (optional share link) and deployment are pending.
 - **Repository:** app at the root; `docs/` and `research/tatoeba/` are subfolders. Local
   design references, prototypes, and third-party research are ignored.
 - **Visual cleanup:** colored left-border accents were removed from the sentence note, AI
@@ -221,4 +222,8 @@ The app's sample content may reuse the sample sentence and breakdown data from t
 - **Tatoeba examples:** real, attributed example sentences shown under Examples in the
   breakdown sidebar. They are read-only and cached locally; generated examples remain the
   fallback.
+- **Backup:** a versioned local JSON file of saved sessions. It contains session text and
+  breakdowns only; never AI keys, preferences, or the Tatoeba cache.
+- **Merge / Replace:** import modes. Merge adds sessions with new ids; Replace restores the
+  file exactly after confirmation.
 - **Guard:** the "designed for desktop" message shown below 900px.

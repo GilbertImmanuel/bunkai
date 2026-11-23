@@ -50,8 +50,8 @@ bunkai-sentence-expansion/
 ├─ src/
 │  ├─ lib/
 │  │  ├─ ai/
-│  │  ├─ components/        # includes PwaUpdate.svelte
-│  │  ├─ data/
+│  │  ├─ components/        # includes PwaUpdate.svelte, DataPanel.svelte
+│  │  ├─ data/              # types, sample, backup, validation
 │  │  ├─ stores/
 │  │  ├─ styles/
 │  │  ├─ tatoeba/
@@ -268,7 +268,20 @@ export interface HistoryItem {
   colors: ChunkColor[];
   sessionId: string;
 }
+
+export interface BackupFile {
+  version: 1;
+  app: "bunkai";
+  exportedAt: string;
+  sessions: Session[];
+}
+
+export type ImportMode = "merge" | "replace";
 ```
+
+Backups contain `sessions` only. They never include `bunkai.ai`, API keys, app
+preferences, or the Tatoeba cache. Import validates the file, then merges by session id or
+replaces the history after an explicit confirmation.
 
 ---
 
@@ -297,6 +310,8 @@ Rules:
 - No backend; no network for core data.
 - Tatoeba requests are direct browser fetches to `api.tatoeba.org`; only the sanitized
   lookup term is sent. No sentence, session, history, or AI key is sent.
+- Backups are local files. Export writes sessions only; import writes `bunkai.sessions`.
+  There is no separate backup key and no server copy.
 - If IndexedDB fails, fall back to in-memory state and show a non-blocking warning.
 - Do not put the API key in IndexedDB; Phase 7 uses localStorage with a clear warning.
 - Do not log the API key.
@@ -346,7 +361,7 @@ Only three scroll areas: history list, center, sidebar body. No page scroll. Aut
 | 6 Dark mode | Warm charcoal, contrast, no olive cast |
 | 7 AI/API | BYO key optional; sample mode default; no backend |
 | 7.5 Tatoeba | A/B complete: sample lookups, cached real examples, attribution, generated fallback; 7.5C not approved |
-| 8 PWA | 8A complete: installable, offline shell, prompt updates; 8B/8C pending |
+| 8 PWA | 8A/8B complete: installable, offline shell, prompt updates, JSON export/import; 8C/deployment pending |
 | 9 Polish | A11y, tests, docs, release |
 
 Every gate requires `HANDOFF.md` updated.
@@ -398,6 +413,15 @@ PWA checks:
 - [ ] AI and Tatoeba API responses are absent from the service-worker precache.
 - [ ] Manual: install from Chrome/Edge, reopen offline, and verify the app shell.
 
+Backup checks:
+
+- [ ] Export downloads `bunkai-sessions-YYYY-MM-DD.json`.
+- [ ] The file contains `version: 1`, `app: "bunkai"`, and a `sessions` array.
+- [ ] The file contains no API keys, preferences, or Tatoeba cache.
+- [ ] Merge adds new ids and skips existing ids.
+- [ ] Replace requires confirmation and restores the file exactly.
+- [ ] Invalid or incomplete backups show an inline error and do not change history.
+
 ---
 
 ## 13. Environment
@@ -430,6 +454,10 @@ PWA checks:
   runtime-cache AI provider requests or Tatoeba API responses.
 - Site data (sessions, preferences, Tatoeba cache, service worker) can be cleared from the
   browser; there is no server-side copy.
+- Exported backups contain session sentences and breakdowns in plain JSON. They never
+  include API keys, preferences, or the Tatoeba cache. Treat a backup as readable text.
+- Replace import is destructive. It requires an explicit confirmation and clears the saved
+  last-session pointer.
 
 ---
 
@@ -446,8 +474,10 @@ PWA checks:
 ## 16. Open decisions
 
 - Phase 7.5C (Home “Find a sentence” picker) is not approved.
+- Phase 8C (read-only share link) and the deployment target are not decided.
 - A Tatoeba opt-out preference is deferred. Automatic fetching for the selected chunk is
   accepted; only the sanitized lookup term leaves the browser.
 - Tatoeba audio with an empty license is intentionally omitted.
+- Backup encryption is not included. Backups are readable plain JSON.
 - Inline attribution of the English translation author is deferred; the source link opens
   the Tatoeba sentence page, which lists all contributors.

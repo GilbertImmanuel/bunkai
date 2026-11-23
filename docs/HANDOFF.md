@@ -11,21 +11,23 @@
 | Field | Value |
 |---|---|
 | Current phase | **Phase 8 — PWA / sharing** |
-| Phase status | **8A complete**; 8B (export/import) and 8C (optional share link) pending |
+| Phase status | **8A/8B complete**; 8C (optional share link) and deployment pending |
 | Last updated | 2026-11-23 |
 | App root | Repository root |
 | Package manager | Bun 1.3.14 |
 | Stack | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3 |
 | Git | [GitHub](https://github.com/GilbertImmanuel/bunkai); private |
 | Deploy | Not deployed |
-| Next action | Review 8A; start 8B export/import |
+| Next action | Review 8B; decide 8C and deployment |
 
 **Summary:** Phase 8A makes the app installable and usable offline. A generated web
 manifest, 文-mark icons, and a Workbox service worker precache the app shell, JS/CSS, and
 `woff2` fonts. New versions prompt with a quiet “A new version is available” banner instead
-of reloading silently. The app remains local-first and desktop-only; AI and Tatoeba API
-responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains complete and
-7.5C is still unapproved.
+of reloading silently. Phase 8B adds a versioned JSON backup in Settings → Data: export all
+sessions, import with merge or replace, validate malformed files, and never include API
+keys, preferences, or the Tatoeba cache. The app remains local-first and desktop-only; AI
+and Tatoeba API responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains
+complete and 7.5C is still unapproved.
 
 ---
 
@@ -641,8 +643,8 @@ responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains comp
 
 ### Phase 8 — PWA / sharing
 
-- **Status:** 8A (PWA/offline) complete. 8B (export/import) and 8C (optional share link)
-  are pending.
+- **Status:** 8A (PWA/offline) and 8B (export/import) complete. 8C (optional share link)
+  and deployment are pending.
 - **Goal:** Installable static app, offline shell, export/import, simple sharing.
 - **Completed (8A):**
   - Added `vite-plugin-pwa` 2.0.0 and generated a web manifest with the 文-mark icon set:
@@ -657,25 +659,50 @@ responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains comp
   - Added `bun run test:pwa` with a built-preview test that checks the manifest, service
     worker control, and offline reload/workspace.
   - Added the PWA icon generator config and `bun run icons`.
+- **Completed (8B):**
+  - Added `src/lib/data/backup.ts`: versioned `BackupFile` schema, 10 MB / 10,000-session
+    limits, strict session/chunk validation, deep copying, and dated filenames.
+  - Export writes session text only. API keys, preferences, and the Tatoeba cache are never
+    included.
+  - Import previews the session count and export date, then supports **Merge** (default,
+    skips existing ids) or **Replace** (requires a confirmation checkbox).
+  - The Settings drawer now has **AI** and **Data** tabs. The topbar gear and close labels
+    are now general “Settings”.
+  - Successful imports close Settings and show a toast; Replace also clears the saved
+    last-session pointer and returns Home. Invalid files show an inline error and leave
+    history unchanged.
+  - Added backup unit tests and five e2e tests: export, merge, replace, invalid file, and
+    duplicate-id merge.
 - **Decisions:**
   - Prompt-based updates (`registerType: 'prompt'`, `skipWaiting: false`,
     `clientsClaim: false`) rather than auto-reload.
   - Precache `woff2` only; the `woff` fallback is not precached.
   - The service worker caches static app assets only, never provider or Tatoeba responses.
   - Icons are generated once from `public/favicon.svg`; the generator is a dev dependency.
+  - Backups live in Settings → Data, not in the history panel; settings is the single
+    configuration surface.
+  - Backups contain sessions only. Preferences are excluded because applying them on import
+    would be a surprising side effect.
+  - Merge is the default; Replace is destructive and requires an explicit checkbox.
+  - Replace clears the last-session pointer so a reload does not restore a removed session.
+  - Backups are plain JSON. There is no encryption and no undo; the file is readable text.
   - No deployment target chosen yet; `dist/` remains a static build.
 - **Files touched:**
   - `vite.config.ts`, `index.html`, `package.json`, `bun.lock`, `tsconfig.node.json`
-  - `pwa-assets.config.ts`, `playwright.pwa.config.ts`, `tests/pwa/pwa.spec.ts`
+  - `pwa-assets.config.ts`, `playwright.pwa.config.ts`, `tests/pwa/pwa.spec.ts`,
+    `tests/e2e/backup.spec.ts`
   - `src/vite-env.d.ts`, `src/App.svelte`, `src/lib/components/PwaUpdate.svelte`
+  - `src/lib/data/backup.ts`, `backup.test.ts`, `sessionValidation.ts`
+  - `src/lib/components/DataPanel.svelte`, `AiSettingsDrawer.svelte`, `TopBar.svelte`
+  - `src/lib/stores/history.svelte.ts`
   - `public/pwa-192x192.png`, `pwa-512x512.png`, `maskable-icon-512x512.png`,
     `apple-touch-icon-180x180.png`
   - `docs/SOURCE_OF_TRUTH.md`, `PLAN.md`, `DESIGN.md`, `manifest.md`, `HANDOFF.md`, `README.md`
 - **Tests:**
   - `bun run check` — pass.
   - `bun run lint` — pass.
-  - `bun run test` — pass, 92 tests.
-  - `bun run test:e2e` — pass, 41 tests.
+  - `bun run test` — pass, 104 tests.
+  - `bun run test:e2e` — pass, 46 tests.
   - `bun run test:pwa` — pass, 1 test (manifest, service worker, offline reload).
   - `bun run build` — pass; `dist/manifest.webmanifest`, `dist/sw.js`, and Workbox runtime
     generated.
@@ -685,9 +712,11 @@ responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains comp
   - Precache: 19 entries, ~3.2 MB, no duplicate URLs.
   - Manual update prompt: forced a waiting service worker; the banner appeared, and Reload
     cleared it. Screenshot: `test-results/pwa-update-1280x800.png`.
+  - Data settings: `test-results/data-settings-1280x800.png`.
+  - Import preview: `test-results/data-import-1280x800.png`.
 - **Blockers:** None.
-- **Next:** 8B — export/import sessions as versioned JSON, with merge/replace and no API
-  keys or Tatoeba cache.
+- **Next:** Decide 8C (optional read-only share link) and the deployment target. The backup
+  export/import layer is complete.
 
 ### Phase 9 — Polish and release
 
@@ -710,7 +739,7 @@ responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains comp
 | Playwright browsers | Not installed | Uses system Chrome via `channel: "chrome"` |
 | Git | 2.44.0 | No repository initialized |
 
-**Dependency status (after Phase 8A):**
+**Dependency status (after Phase 8B):**
 
 - App scaffolded at the repository root with Vite 8.3.5, Svelte 5.57.3, TypeScript 6.0.3.
 - `idb-keyval` 6.3.0 installed and wired to `bunkai.sessions`.
@@ -748,12 +777,15 @@ responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains comp
 - 7.5C (Home sentence picker) is not approved.
 - Phase 8A uses prompt-based PWA updates; the service worker caches only static app assets,
   never AI or Tatoeba API responses.
+- Phase 8B exports sessions as plain JSON and imports with merge/replace; backups exclude
+  API keys, preferences, and the Tatoeba cache.
 
 ---
 
 ## Open questions
 
-- Approve Phase 7.5C (Home “Find a sentence” picker), or proceed to Phase 8?
+- Approve Phase 7.5C (Home “Find a sentence” picker), or proceed to Phase 8C/deployment?
+- Phase 8C (read-only share link) and the deployment target are still undecided.
 - A Tatoeba opt-out preference is deferred. Automatic fetching is accepted; revisit only
   if the user wants an explicit toggle.
 - Inline attribution of the English translation author is deferred; the source link opens
@@ -823,5 +855,8 @@ Before marking a phase complete:
 | PWA cache serves stale assets | `cleanupOutdatedCaches`; prompt the user to reload a waiting service worker |
 | PWA precache is large | Precache `woff2` only (19 entries, ~3.2 MB); no API responses |
 | Silent reload loses unsaved state | Prompt-based updates; Reload is explicit |
+| Backup file is readable plain text | Session text only; no keys or cache; treat backups as sensitive |
+| Replace import is destructive | Explicit confirmation checkbox; clear last-session pointer; no automatic replace |
+| Malformed backup breaks the reader | Strict session/chunk validation before import; inline error and no history change |
 | Playwright browsers missing | Use system Chrome/Edge with `channel`, or install Chromium |
 | Scope creep into phone/marketing/auth | Read `SOURCE_OF_TRUTH.md`; stop and ask |

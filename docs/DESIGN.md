@@ -243,7 +243,7 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 ### Top bar
 
 - Left: history toggle, brand mark + "Bunkai".
-- Right: Save, furigana switches, AI settings, theme toggle.
+- Right: Save, furigana switches, Settings, theme toggle.
 - The note panel toggle lives in the sidebar header and rail, not the topbar.
 - No fullscreen/focus button.
 - Height 52px, 1px bottom border, surface background.
@@ -401,10 +401,22 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - Centered warm-paper panel: “Bunkai is designed for desktop. Resize to at least 900px.”
 - Same type/palette; no app shell; no broken layout.
 
-### Settings drawer (Phase 7, later)
+### Settings drawer
 
-- Right drawer; API key field; “Stored only in this browser”; test/remove; sample mode default.
-- Not part of the current visual reference.
+- Right drawer, 380px; header kicker “Settings”; title changes with the active tab:
+  “AI breakdowns” or “Local data”.
+- Segmented **AI / Data** tabs directly under the header. The active tab uses a quiet
+  full border and surface; no colored underline or left accent.
+- AI tab: provider, model, API key, security note, Save / Test connection / Remove key.
+- Data tab:
+  - **Export**: saved-session count, short explanation, and “Export sessions”. Downloads a
+    JSON file containing session text only.
+  - **Import**: choose a backup file, preview its session count and export date, then
+    choose **Merge** (default) or **Replace**. Replace requires a confirmation checkbox.
+    The import button is full-width and primary.
+  - Backups never include AI keys, app preferences, or the Tatoeba cache.
+- Close by chevron, Esc, or scrim. No new colors; use the existing surfaces, lines, and
+  accent.
 
 ---
 
@@ -429,6 +441,8 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 | Tatoeba audio | Play/pause the recording; no layout change |
 | Search Tatoeba | Open the public Tatoeba search page for the current lookup |
 | PWA update prompt | Reload applies the waiting service worker and reloads; Later dismisses until next launch |
+| Settings gear | Open Settings on the AI tab |
+| Settings → Data | Export or import sessions |
 
 At 900–1099, the sidebar is a drawer: selecting a chunk opens it over the center; the history rail remains visible.
 

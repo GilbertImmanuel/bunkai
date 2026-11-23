@@ -411,8 +411,8 @@ blockers, and whether 7.5C is approved.
 
 **Goal:** Installable static app, offline shell, export/import, simple sharing.
 
-**Status:** 8A (PWA/offline) complete. 8B (export/import) and 8C (optional share
-URL) are pending.
+**Status:** 8A (PWA/offline) and 8B (export/import) complete. 8C (optional share URL)
+and deployment are pending.
 
 ### 8A — PWA / offline
 
@@ -424,10 +424,10 @@ URL) are pending.
 
 ### 8B — Export / import
 
-- [ ] Export sessions as versioned JSON.
-- [ ] Import with merge and replace; validate malformed files.
-- [ ] Exclude AI keys and the Tatoeba cache from backups.
-- [ ] Settings → Data UI.
+- [x] Export sessions as versioned JSON.
+- [x] Import with merge and replace; validate malformed files.
+- [x] Exclude AI keys, preferences, and the Tatoeba cache from backups.
+- [x] Settings → Data UI.
 
 ### 8C — Optional share URL
 
@@ -451,7 +451,8 @@ URL) are pending.
 
 - `bun run build` + preview; Lighthouse/PWA install; offline reload.
 - `bun run test:pwa` — manifest, service worker, offline shell.
-- Manual: export/import (8B).
+- `bun run test` — backup schema, merge/replace, validation.
+- `bun run test:e2e` — export download, merge, replace, invalid backup, duplicate ids.
 
 ### Handoff checkpoint
 
@@ -511,6 +512,7 @@ Test states:
 - Sidebar with generated fallback (Tatoeba empty/error)
 - Sidebar drawer (900–1099)
 - PWA offline shell
+- Settings → Data
 - Guard at 899
 
 ## Global definition of done
@@ -526,4 +528,6 @@ Test states:
 - Tatoeba examples are optional, attributed, locally cached, and never required for the
   app to work. No live Tatoeba calls in automated tests.
 - The static build is installable, reloads offline, and prompts before applying an update.
+- Backups are local, versioned JSON; they exclude API keys, preferences, and the Tatoeba
+  cache. Import supports merge and confirmed replace.
 - `HANDOFF.md` updated after every part.
