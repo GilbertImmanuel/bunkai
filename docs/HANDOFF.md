@@ -17,7 +17,7 @@
 | Package manager | Bun 1.3.14                                                                         |
 | Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                                      |
 | Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private                       |
-| Source          | `main`; hardening commit `68dfa42`; docs checkpoint follows                        |
+| Source          | `main`; hardening `68dfa42`, no-referrer `8cfed32`, docs `b9210c5`                 |
 | Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance                 |
 | License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                                     |
 | Next action     | Final docs check, then decide whether to share the private repo with reviewers     |
@@ -41,14 +41,16 @@ remains complete and 7.5C is still unapproved.
   kept outside the repository.
 - **Phase:** 8A (PWA/offline) and 8B (export/import) complete. Security hardening complete.
   Distribution is local-only; 8C is not planned.
-- **Source:** `main`; hardening code commit `68dfa42`; docs checkpoint follows.
+- **Source:** `main`; hardening commit `68dfa42`, no-referrer follow-up `8cfed32`, docs
+  checkpoint `b9210c5`.
 - **Hardening applied:**
   - Strict bounded import/load validation: chunk/example/construction/furigana/note caps,
     string lengths, unique positive chunk ids, HTTPS-only URLs with Tatoeba host checks.
   - Stale-enrichment guard, `persisted: false` toasts, and undo reset on import.
   - Proxy canonicalization (HTTPS or loopback HTTP, no credentials/query/fragment) and
     verified key removal.
-  - Production-only meta CSP; PWA test now checks the policy and backup export under it.
+  - Production-only meta CSP and a no-referrer policy; PWA test checks both and exports a
+    backup under the CSP.
   - Decoded-byte caps and body-read deadlines for AI and Tatoeba; parser field caps;
     connection-test body cancellation.
   - CI actions pinned by SHA; `persist-credentials: false`; MIT license.
