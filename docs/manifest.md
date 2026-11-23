@@ -1,8 +1,9 @@
 # Bunkai — Project Manifest
 
-**Status:** Implementation inventory and contract. Last updated: 2026-11-17.
+**Status:** Implementation inventory and contract. Last updated: 2026-11-23.
 
-This is the **project manifest**, not the PWA manifest. The PWA `manifest.webmanifest` is separate and arrives in Phase 8.
+This is the **project manifest**, not the PWA manifest. The generated PWA
+`manifest.webmanifest` is a separate build artifact.
 
 **Companion docs:** `SOURCE_OF_TRUTH.md` (authority), `DESIGN.md` (design), `PLAN.md` (execution), `HANDOFF.md` (live state).
 
@@ -10,22 +11,22 @@ This is the **project manifest**, not the PWA manifest. The PWA `manifest.webman
 
 ## 1. Identity
 
-| Field | Value |
-|---|---|
-| Project | Bunkai |
-| Product | Desktop-first Japanese sentence breakdown app |
-| Repo root | `C:\Users\Gilbert\Documents\Projects\bunkai-sentence-expansion` |
-| App root | Repository root |
-| Package manager | **Bun 1.3.14** |
-| Runtime | Node 24.21.0 |
-| Framework | **Vite 8 + Svelte 5 + TypeScript** |
-| Styling | Plain CSS + design tokens |
-| Persistence | `localStorage` + IndexedDB via `idb-keyval` |
-| Backend | None |
-| Auth | None |
-| Deployment | Static `dist/` |
-| Supported width | **900–1920px**; guard below 900 |
-| Reference | Local-only `design/02-11-2026/bunkaiver2.html` (not committed) |
+| Field           | Value                                                                      |
+| --------------- | -------------------------------------------------------------------------- |
+| Project         | Bunkai                                                                     |
+| Product         | Desktop-first Japanese sentence breakdown app                              |
+| Repo root       | `C:\Users\Gilbert\Documents\Projects\bunkai-sentence-expansion`            |
+| App root        | Repository root                                                            |
+| Package manager | **Bun 1.3.14**                                                             |
+| Runtime         | Node 24.21.0                                                               |
+| Framework       | **Vite 8 + Svelte 5 + TypeScript**                                         |
+| Styling         | Plain CSS + design tokens                                                  |
+| Persistence     | `localStorage` + IndexedDB via `idb-keyval`                                |
+| Backend         | None                                                                       |
+| Auth            | None                                                                       |
+| Deployment      | Local-only: static `dist/` served on the user's device; no hosted instance |
+| Supported width | **900–1920px**; guard below 900                                            |
+| Reference       | Local-only `design/02-11-2026/bunkaiver2.html` (not committed)             |
 
 ---
 
@@ -87,20 +88,20 @@ grammar research files. They are ignored by `.gitignore`.
 
 Run from the repository root:
 
-| Command | Purpose |
-|---|---|
-| `bun install` | Install dependencies |
-| `bun run dev` | Local dev server |
-| `bun run build` | Static production build → `dist/` |
-| `bun run preview` | Preview the build |
-| `bun run check` | `svelte-check` + TypeScript |
-| `bun run lint` | ESLint |
-| `bun run format` | Prettier write |
-| `bun run test` | Vitest |
-| `bun run test:e2e` | Playwright |
-| `bun run test:pwa` | Build + preview; manifest, service worker, offline shell |
-| `bun run icons` | Regenerate PWA icons from `public/favicon.svg` |
-| `bunx playwright install chromium` | Optional; or use system Chrome/Edge via `channel` |
+| Command                            | Purpose                                                  |
+| ---------------------------------- | -------------------------------------------------------- |
+| `bun install`                      | Install dependencies                                     |
+| `bun run dev`                      | Local dev server                                         |
+| `bun run build`                    | Static production build → `dist/`                        |
+| `bun run preview`                  | Preview the build                                        |
+| `bun run check`                    | `svelte-check` + TypeScript                              |
+| `bun run lint`                     | ESLint                                                   |
+| `bun run format`                   | Prettier write                                           |
+| `bun run test`                     | Vitest                                                   |
+| `bun run test:e2e`                 | Playwright                                               |
+| `bun run test:pwa`                 | Build + preview; manifest, service worker, offline shell |
+| `bun run icons`                    | Regenerate PWA icons from `public/favicon.svg`           |
+| `bunx playwright install chromium` | Optional; or use system Chrome/Edge via `channel`        |
 
 Scaffold (Phase 0, already completed; the app is at the root):
 
@@ -122,26 +123,26 @@ are not runtime-cached.
 
 Use `^` ranges and commit `bun.lock`. These are the known latest versions at docs creation:
 
-| Package | Range | Use |
-|---|---|---|
-| `svelte` | `^5.57.3` | UI |
-| `vite` | `^8.3.5` | Build/dev |
-| `@sveltejs/vite-plugin-svelte` | `^7.3.1` | Svelte integration |
-| `typescript` | `^5` | Types |
-| `svelte-check` | latest compatible | Type checking |
-| `vitest` | `^5.0.5` | Unit tests |
-| `@playwright/test` | `^1.64.1` | E2E/visual |
-| `idb-keyval` | `^6.3.0` | IndexedDB |
-| `@fontsource/shippori-mincho` | `^5.3.0` | Japanese |
-| `@fontsource/vollkorn` | `^5.3.0` | English reading |
-| `@fontsource/ia-writer-quattro` | `^5.3.0` | UI |
-| `@fontsource/ia-writer-mono` | `^5.3.0` | Data |
-| `eslint` | `^9` | Lint |
-| `prettier` | `^3` | Format |
-| `eslint-plugin-svelte` | latest compatible | Svelte lint |
-| `prettier-plugin-svelte` | latest compatible | Svelte format |
-| `vite-plugin-pwa` | `^2.0.0` | PWA manifest, service worker, updates |
-| `@vite-pwa/assets-generator` | `^2.0.0` | Dev-only PWA icon generation |
+| Package                         | Range             | Use                                   |
+| ------------------------------- | ----------------- | ------------------------------------- |
+| `svelte`                        | `^5.57.3`         | UI                                    |
+| `vite`                          | `^8.3.5`          | Build/dev                             |
+| `@sveltejs/vite-plugin-svelte`  | `^7.3.1`          | Svelte integration                    |
+| `typescript`                    | `^5`              | Types                                 |
+| `svelte-check`                  | latest compatible | Type checking                         |
+| `vitest`                        | `^5.0.5`          | Unit tests                            |
+| `@playwright/test`              | `^1.64.1`         | E2E/visual                            |
+| `idb-keyval`                    | `^6.3.0`          | IndexedDB                             |
+| `@fontsource/shippori-mincho`   | `^5.3.0`          | Japanese                              |
+| `@fontsource/vollkorn`          | `^5.3.0`          | English reading                       |
+| `@fontsource/ia-writer-quattro` | `^5.3.0`          | UI                                    |
+| `@fontsource/ia-writer-mono`    | `^5.3.0`          | Data                                  |
+| `eslint`                        | `^9`              | Lint                                  |
+| `prettier`                      | `^3`              | Format                                |
+| `eslint-plugin-svelte`          | latest compatible | Svelte lint                           |
+| `prettier-plugin-svelte`        | latest compatible | Svelte format                         |
+| `vite-plugin-pwa`               | `^2.0.0`          | PWA manifest, service worker, updates |
+| `@vite-pwa/assets-generator`    | `^2.0.0`          | Dev-only PWA icon generation          |
 
 Add `"packageManager": "bun@1.3.14"` and `"engines": { "node": ">=22" }` to `package.json`.
 
@@ -198,10 +199,10 @@ src/
 
 ## 6. Views and routes
 
-| View | Trigger | Layout |
-|---|---|---|
-| `home` | Brand click / new breakdown | History + center; no sidebar |
-| `workspace` | Sample click / input send / history item | History + center + sidebar |
+| View        | Trigger                                  | Layout                       |
+| ----------- | ---------------------------------------- | ---------------------------- |
+| `home`      | Brand click / new breakdown              | History + center; no sidebar |
+| `workspace` | Sample click / input send / history item | History + center + sidebar   |
 
 No router. Use Svelte state. Optional URL hash later: `#session=<id>&chunk=<n>`.
 
@@ -210,73 +211,73 @@ No router. Use Svelte state. Optional URL hash later: `#session=<id>&chunk=<n>`.
 ## 7. Data contracts
 
 ```ts
-export type ChunkColor = 1 | 2 | 3 | 4 | 5 | 6;
-export type TranslationMode = "natural" | "raw";
-export type Theme = "light" | "dark";
-export type View = "home" | "workspace";
-export type PanelState = "open" | "collapsed";
+export type ChunkColor = 1 | 2 | 3 | 4 | 5 | 6
+export type TranslationMode = 'natural' | 'raw'
+export type Theme = 'light' | 'dark'
+export type View = 'home' | 'workspace'
+export type PanelState = 'open' | 'collapsed'
 
 export interface ConstructionStep {
-  jp: string;
-  en: string;
+  jp: string
+  en: string
 }
 
 export interface Example {
-  jp: string;
-  en: string;
-  source?: "ai" | "tatoeba";
-  id?: number;
-  url?: string;
-  author?: string;
-  license?: string;
-  audioUrl?: string;
-  audioAuthor?: string;      // required to attribute Tatoeba audio
-  audioLicense?: string;
+  jp: string
+  en: string
+  source?: 'ai' | 'tatoeba'
+  id?: number
+  url?: string
+  author?: string
+  license?: string
+  audioUrl?: string
+  audioAuthor?: string // required to attribute Tatoeba audio
+  audioLicense?: string
 }
 
 export interface Chunk {
-  n: number;
-  jp: string;
-  kana: string;
-  gloss: string;
-  role: string;
-  color: ChunkColor;
-  note: string;
-  construction: ConstructionStep[];
-  examples: Example[];
-  furigana?: FuriganaSegment[];
-  lookup?: string;           // short Tatoeba search term; derived on read when absent
+  n: number
+  jp: string
+  kana: string
+  gloss: string
+  role: string
+  color: ChunkColor
+  note: string
+  construction: ConstructionStep[]
+  examples: Example[]
+  furigana?: FuriganaSegment[]
+  lookup?: string // short Tatoeba search term; derived on read when absent
 }
 
 export interface Session {
-  id: string;
-  sentence: string;
-  reading: string;
-  natural: string;
-  raw: string;              // pipe-separated literal chunk order
-  chunks: Chunk[];
-  sentenceNote: string[];   // 2–3 short paragraphs/bullets
-  createdAt: string;        // ISO
-  source?: "sample" | "manual" | "ai";
+  id: string
+  sentence: string
+  reading: string
+  natural: string
+  raw: string // pipe-separated literal chunk order
+  chunks: Chunk[]
+  sentenceNote: string[] // 2–3 short paragraphs/bullets
+  createdAt: string // ISO
+  source?: 'sample' | 'manual' | 'ai'
 }
 
 export interface HistoryItem {
-  id: string;
-  preview: string;
-  time: string;
-  count: number;
-  colors: ChunkColor[];
-  sessionId: string;
+  id: string
+  preview: string
+  time: string
+  count: number
+  colors: ChunkColor[]
+  sessionId: string
 }
 
 export interface BackupFile {
-  version: 1;
-  app: "bunkai";
-  exportedAt: string;
-  sessions: Session[];
+  version: 1
+  app: 'bunkai'
+  exportedAt: string
+  sessions: Session[]
 }
 
-export type ImportMode = "merge" | "replace";
+export type ImportMode = 'merge' | 'replace'
 ```
 
 Backups contain `sessions` only. They never include `bunkai.ai`, API keys, app
@@ -289,20 +290,20 @@ replaces the history after an explicit confirmation.
 
 ### localStorage
 
-| Key | Value |
-|---|---|
-| `bunkai.theme` | `"light" \| "dark"` |
-| `bunkai.layout` | `{ history: PanelState; note: PanelState }` |
-| `bunkai.translation` | `"natural" \| "raw"` (default `"raw"`) |
-| `bunkai.furigana` | `{ name: boolean; word: boolean }` (default both `true`; legacy string modes migrate) |
-| `bunkai.lastSession` | session id |
-| `bunkai.ai` | per-provider AI keys, models, and OpenCode proxy URLs; local only |
+| Key                  | Value                                                                                 |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| `bunkai.theme`       | `"light" \| "dark"`                                                                   |
+| `bunkai.layout`      | `{ history: PanelState; note: PanelState }`                                           |
+| `bunkai.translation` | `"natural" \| "raw"` (default `"raw"`)                                                |
+| `bunkai.furigana`    | `{ name: boolean; word: boolean }` (default both `true`; legacy string modes migrate) |
+| `bunkai.lastSession` | session id                                                                            |
+| `bunkai.ai`          | per-provider AI keys, models, and OpenCode proxy URLs; local only                     |
 
 ### IndexedDB (`idb-keyval`)
 
-| Key | Value |
-|---|---|
-| `bunkai.sessions` | `Session[]` |
+| Key                    | Value                                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `bunkai.sessions`      | `Session[]`                                                                                                        |
 | `bunkai.tatoeba.cache` | `Record<string, { examples: Example[]; fetchedAt: number }>`; mapped Tatoeba examples, 30-day TTL, max 500 entries |
 
 Rules:
@@ -320,14 +321,14 @@ Rules:
 
 ## 9. Typography and assets
 
-| Asset | Source |
-|---|---|
-| Shippori Mincho | `@fontsource/shippori-mincho` |
-| Vollkorn | `@fontsource/vollkorn` |
+| Asset             | Source                          |
+| ----------------- | ------------------------------- |
+| Shippori Mincho   | `@fontsource/shippori-mincho`   |
+| Vollkorn          | `@fontsource/vollkorn`          |
 | iA Writer Quattro | `@fontsource/ia-writer-quattro` |
-| iA Writer Mono | `@fontsource/ia-writer-mono` |
-| Icons | Inline SVG in components |
-| PWA icons | Phase 8, `public/icons/` |
+| iA Writer Mono    | `@fontsource/ia-writer-mono`    |
+| Icons             | Inline SVG in components        |
+| PWA icons         | Phase 8, `public/icons/`        |
 
 No Google Fonts CDN in production. No icon library.
 
@@ -335,14 +336,14 @@ No Google Fonts CDN in production. No icon library.
 
 ## 10. Layout and breakpoints
 
-| Width | History | Sidebar | Center | Key/map |
-|---|---|---|---|---|
-| <900 | Guard | Guard | Guard | Guard |
-| 900 | 56 rail | 44 rail/drawer | 800 | stacked |
-| 901–1099 | 56 rail | 44 rail/drawer | 801–999 | 2-col/horizontal |
-| 1100–1279 | 56 rail | 300 column | 744–923 | 2-col/horizontal |
-| 1280–1439 | 240 column | 300 column | 740–899 | 2-col/horizontal |
-| ≥1440 | 240 column | 320 column | 880+ | 2-col/horizontal |
+| Width     | History    | Sidebar        | Center  | Key/map          |
+| --------- | ---------- | -------------- | ------- | ---------------- |
+| <900      | Guard      | Guard          | Guard   | Guard            |
+| 900       | 56 rail    | 44 rail/drawer | 800     | stacked          |
+| 901–1099  | 56 rail    | 44 rail/drawer | 801–999 | 2-col/horizontal |
+| 1100–1279 | 56 rail    | 300 column     | 744–923 | 2-col/horizontal |
+| 1280–1439 | 240 column | 300 column     | 740–899 | 2-col/horizontal |
+| ≥1440     | 240 column | 320 column     | 880+    | 2-col/horizontal |
 
 Only three scroll areas: history list, center, sidebar body. No page scroll. Auto-hide scrollbars.
 
@@ -350,19 +351,19 @@ Only three scroll areas: history list, center, sidebar body. No page scroll. Aut
 
 ## 11. Phase gates
 
-| Phase | Gate |
-|---|---|
-| 0 Foundation | App scaffolded, tokens/fonts/sample data, shell renders |
-| 1 Home | Sample card, input/send, history rail, no page scroll |
-| 2 Reader | Sentence, kana, translation toggle, map, key, note |
-| 3 Sidebar | Full breakdown, reclick collapse, no separate page |
-| 4 History | IndexedDB sessions, save/undo, search, reload persistence |
-| 5 Responsive | 900/1024/1100/1200/1280/1440; guard <900 |
-| 6 Dark mode | Warm charcoal, contrast, no olive cast |
-| 7 AI/API | BYO key optional; sample mode default; no backend |
-| 7.5 Tatoeba | A/B complete: sample lookups, cached real examples, attribution, generated fallback; 7.5C not approved |
-| 8 PWA | 8A/8B complete: installable, offline shell, prompt updates, JSON export/import; 8C/deployment pending |
-| 9 Polish | A11y, tests, docs, release |
+| Phase        | Gate                                                                                                                             |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| 0 Foundation | App scaffolded, tokens/fonts/sample data, shell renders                                                                          |
+| 1 Home       | Sample card, input/send, history rail, no page scroll                                                                            |
+| 2 Reader     | Sentence, kana, translation toggle, map, key, note                                                                               |
+| 3 Sidebar    | Full breakdown, reclick collapse, no separate page                                                                               |
+| 4 History    | IndexedDB sessions, save/undo, search, reload persistence                                                                        |
+| 5 Responsive | 900/1024/1100/1200/1280/1440; guard <900                                                                                         |
+| 6 Dark mode  | Warm charcoal, contrast, no olive cast                                                                                           |
+| 7 AI/API     | BYO key optional; sample mode default; no backend                                                                                |
+| 7.5 Tatoeba  | A/B complete: sample lookups, cached real examples, attribution, generated fallback; 7.5C not approved                           |
+| 8 PWA        | 8A/8B + hardening complete: installable, offline shell, prompt updates, JSON export/import, meta CSP; local-only, 8C not planned |
+| 9 Polish     | A11y, tests, docs, release                                                                                                       |
 
 Every gate requires `HANDOFF.md` updated.
 
@@ -377,6 +378,7 @@ bun run check
 bun run lint
 bun run test
 bun run test:e2e
+bun run test:pwa
 bun run build
 ```
 
@@ -406,11 +408,14 @@ allowed and should be recorded in `research/tatoeba/log.md`.
 
 PWA checks:
 
-- [ ] `bun run test:pwa` passes (manifest link, service worker, offline reload).
+- [ ] `bun run test:pwa` passes (manifest link, service worker, offline reload, CSP, backup
+      export).
 - [ ] Build output contains `dist/manifest.webmanifest`, `dist/sw.js`, and
       `dist/workbox-*.js`.
 - [ ] The manifest icons resolve, including the maskable icon.
 - [ ] AI and Tatoeba API responses are absent from the service-worker precache.
+- [ ] `dist/index.html` contains the meta Content Security Policy.
+- [ ] No CSP console errors on the sample flow.
 - [ ] Manual: install from Chrome/Edge, reopen offline, and verify the app shell.
 
 Backup checks:
@@ -421,30 +426,39 @@ Backup checks:
 - [ ] Merge adds new ids and skips existing ids.
 - [ ] Replace requires confirmation and restores the file exactly.
 - [ ] Invalid or incomplete backups show an inline error and do not change history.
+- [ ] Duplicate chunk numbers, unsafe URLs, and oversized sessions are rejected.
 
 ---
 
 ## 13. Environment
 
-| Tool | Version | Note |
-|---|---|---|
-| Node | 24.21.0 | `>=22` |
-| Bun | 1.3.14 | Package manager |
-| npm | 9.7.1 | Not used |
-| Chrome | 156.0.8078.74 | Manual/Playwright channel |
-| Edge | 156.0.4314.58 | Manual/Playwright channel |
-| Playwright browsers | Not installed | Install Chromium or use channel |
-| Git | 2.44.0 | Repo not initialized |
+| Tool                | Version       | Note                                   |
+| ------------------- | ------------- | -------------------------------------- |
+| Node                | 24.21.0       | `>=22`                                 |
+| Bun                 | 1.3.14        | Package manager                        |
+| npm                 | 9.7.1         | Not used                               |
+| Chrome              | 156.0.8078.74 | Manual/Playwright channel              |
+| Edge                | 156.0.4314.58 | Manual/Playwright channel              |
+| Playwright browsers | Not installed | Install Chromium or use channel        |
+| Git                 | 2.44.0        | Repository initialized; private remote |
 
 ---
 
 ## 14. Security and privacy
 
-- No backend, no accounts, no analytics.
-- Core data stays in the browser.
-- Phase 7 API key is optional and stored locally; browser storage is not a vault.
-- Direct provider calls are allowed only if the provider supports browser CORS; otherwise a local proxy is required and must be a separate decision.
+- No backend, no accounts, no analytics, no hosted instance.
+- Core data stays in the browser on the user's device.
+- The API key is optional and stored locally; browser storage is not a vault. Removing it
+  deletes the local copy but does not revoke it at the provider.
+- Direct provider calls are allowed only if the provider supports browser CORS; OpenCode
+  uses a user-supplied proxy restricted to HTTPS or loopback HTTP.
 - Do not log keys or send them to any Bunkai server.
+- The production build injects a meta CSP: `script-src 'self'`, restricted
+  `connect-src`/`media-src`, `object-src 'none'`, `base-uri 'none'`.
+- Imported sessions are strictly bounded and validated: chunk/example/note counts, string
+  lengths, unique positive chunk ids, and HTTPS-only Tatoeba URLs.
+- AI and Tatoeba response bodies are decoded-byte capped; request deadlines stay active
+  through body reads.
 - Export/import is local JSON.
 - Tatoeba is a direct browser request to `api.tatoeba.org`; only the sanitized lookup
   term is sent. The app does not send the sentence, session, history, or any key.
@@ -474,7 +488,10 @@ Backup checks:
 ## 16. Open decisions
 
 - Phase 7.5C (Home “Find a sentence” picker) is not approved.
-- Phase 8C (read-only share link) and the deployment target are not decided.
+- Phase 8C (read-only share link) is not planned. Distribution is local-only; a
+  `localhost` share URL would not work for another person.
+- A native desktop wrapper (Tauri/Electron) is a possible later phase, not part of the
+  current scope.
 - A Tatoeba opt-out preference is deferred. Automatic fetching for the selected chunk is
   accepted; only the sanitized lookup term leaves the browser.
 - Tatoeba audio with an empty license is intentionally omitted.

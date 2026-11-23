@@ -29,7 +29,10 @@ Bunkai is a desktop-first, local-first Japanese sentence breakdown app. Paste a 
 see it chunked, and select a chunk to read its role, construction, literal gloss, real
 example sentences, and grammar note.
 
-It is a reading desk, not a dictionary, chatbot, flashcard app, or course.
+The app and your local data run entirely on your device. There is no hosted instance, no
+account, and no Bunkai server; optional AI and Tatoeba calls go directly from your browser
+to those services. It is a reading desk, not a dictionary, chatbot, flashcard app, or
+course.
 
 ## What you get
 
@@ -47,8 +50,8 @@ It is a reading desk, not a dictionary, chatbot, flashcard app, or course.
   account or a server.
 - **Bring your own AI key (optional).** OpenRouter, OpenCode via your proxy, OpenAI, or
   Claude. With no key, the sample and manual modes work fully.
-- **Local-first.** No backend, no login, no cloud sync, no analytics. AI keys and sessions
-  stay in your browser.
+- **Local-first.** No hosted instance, backend, login, cloud sync, or analytics. AI keys
+  and sessions stay in your browser on your machine.
 - **Installable and offline.** Install from desktop Chrome/Edge; the app shell and fonts
   load offline. Updates prompt instead of reloading silently. AI and Tatoeba API responses
   are never cached by the service worker.
@@ -73,26 +76,39 @@ cd bunkai
 Or use **Code → Download ZIP** on GitHub, unzip the archive, and open a terminal in
 that folder.
 
-### 2. Run locally
+### 2. Run it
 
 All commands run from the repository root (the folder containing `package.json`).
 
 ```bash
-bun install
-bun run dev
+bun install --frozen-lockfile
+bun run build
+bun run preview
 ```
 
-Open `http://localhost:5173` and click the sample, or paste a Japanese sentence.
+Open the URL printed in the terminal — usually `http://localhost:4173` — and click the
+sample, or paste a Japanese sentence. Keep the terminal open while you use the app.
+
+> **Do not open `dist/index.html` directly.** The built app must be served over HTTP;
+> module scripts and the service worker do not work from `file://`.
+
+**Use the same URL every time.** Keys, history, and PWA state are scoped to the exact
+origin and port. `localhost:4173`, `127.0.0.1:4173`, and `localhost:5173` are three
+different stores. `bun run preview` is the normal way to use the app; `bun run dev` is
+for development and uses a separate origin.
+
+### Development
 
 ```bash
+bun run dev         # development server at http://localhost:5173
 bun run check       # svelte-check + TypeScript
 bun run lint        # ESLint
 bun run test        # Vitest
 bun run test:e2e    # Playwright (system Chrome by default)
-bun run test:pwa    # build + preview; manifest, service worker, offline shell
+bun run test:pwa    # build + preview; manifest, service worker, offline shell, CSP
 bun run icons       # regenerate PWA icons from public/favicon.svg
 bun run build       # static build in dist/
-bun run preview     # preview the build
+bun run preview     # serve the production build
 ```
 
 The app is desktop-only. Below 900px it shows a guard instead of a broken layout.
@@ -100,7 +116,7 @@ The app is desktop-only. Below 900px it shows a guard instead of a broken layout
 ## Install and offline
 
 PWA assets are generated for production. The dev server does not register the production
-service worker. To try installation and offline mode locally:
+service worker. Use the production preview:
 
 ```bash
 bun run build
@@ -108,8 +124,27 @@ bun run preview
 ```
 
 Open the preview URL in Chrome or Edge and use the install icon in the address bar. The
-first visit caches the app shell and fonts; later loads work offline. AI and Tatoeba
-requests still need a network connection and degrade to their normal fallbacks.
+first visit caches the app shell and fonts; later loads work offline. After installation,
+the app can open offline; the preview server is only needed for the first install and for
+updates. AI and Tatoeba requests still need a network connection and degrade to their
+normal fallbacks.
+
+You can close the preview terminal after the app has installed and cached once. If you
+clear site data, reinstall from the preview URL.
+
+## Troubleshooting
+
+- **Keys or history disappeared.** You are on a different host or port. Use the same URL
+  as before (`localhost` vs `127.0.0.1` matters), or import a backup.
+- **The PWA install icon is missing.** Open the production preview, not `bun run dev`, and
+  do not use `file://`. Chrome or Edge is required.
+- **AI calls fail.** Check the key, the model name, and the provider's browser/CORS policy.
+  OpenCode requires the local proxy endpoint. The app always falls back to sample/manual
+  mode without a key.
+- **Tatoeba examples are missing.** The API may be unavailable or blocked on your network;
+  generated examples remain available.
+- **Offline mode does not work.** Load the app online once from the preview URL so the
+  service worker can cache the shell.
 
 ## Project structure
 
@@ -126,10 +161,11 @@ requests still need a network connection and degrade to their normal fallbacks.
 │  ├─ App.svelte
 │  └─ main.ts
 ├─ tests/e2e/         # Playwright coverage with mocked AI/Tatoeba routes
-├─ tests/pwa/         # manifest, service worker, and offline shell
+├─ tests/pwa/         # manifest, service worker, offline shell, CSP
 ├─ docs/              # product, design, plan, manifest, handoff, docs index
 ├─ research/tatoeba/  # verified API and licensing research
 ├─ public/            # favicon and PWA icons
+├─ LICENSE            # MIT
 └─ pwa-assets.config.ts
 ```
 
@@ -137,12 +173,36 @@ requests still need a network connection and degrade to their normal fallbacks.
 
 - Sessions are stored in **IndexedDB** (`bunkai.sessions`); preferences in `localStorage`.
 - AI keys are stored locally under `bunkai.ai` and go directly from your browser to the
-  provider you choose. Browser storage is not a vault; use a scoped key.
+  provider you choose. Browser storage is not a vault; use a scoped, revocable key.
+- Removing a key in Settings deletes the local copy. It does **not** revoke the key at the
+  provider; revoke it in the provider dashboard if it may have been exposed.
 - Tatoeba examples are fetched directly from `api.tatoeba.org` and cached locally. Only
   the short lookup term is sent. No Bunkai server is involved.
 - Backups are local JSON files containing session text only. They exclude API keys,
-  preferences, and the Tatoeba cache.
+  preferences, and the Tatoeba cache. A backup is readable text; treat it as sensitive.
 - The sample and manual modes work without any API key.
+
+## Security model
+
+- **No hosted service.** Nobody operates a Bunkai server that receives your keys,
+  sentences, or history.
+- **Keys stay local.** The key is read from this origin's `localStorage` and sent only to
+  the provider you selected (or the OpenCode proxy you configured).
+- **The production build adds a Content Security Policy.** It restricts scripts to the app
+  bundle and network requests to the provider, Tatoeba, and loopback proxy origins. This is
+  defense in depth; it does not make a compromised device safe. Because it is a meta tag,
+  `frame-ancestors` is unavailable; clickjacking is an accepted low risk for this local app.
+- **Use a limited key.** Prefer a key with a spending limit that you can revoke. Do not use
+  a shared or production key.
+- **Backups are plain JSON.** They contain sentences and breakdowns, not keys. Store or
+  share them accordingly.
+- **Local data is origin-scoped.** Changing the host or port creates a separate store. Use
+  the same URL and export a backup before moving to another machine.
+- **No warranty.** This is a personal project shared as-is. See `LICENSE`.
+
+What this cannot protect against: a compromised device, a malicious browser extension, a
+modified fork, or a compromised dependency. Keep the dependency tree small and review
+updates before installing them.
 
 ## Credits
 
@@ -166,4 +226,4 @@ requests still need a network connection and degrade to their normal fallbacks.
 
 ## License
 
-MIT is planned. The `LICENSE` file will be added before the repository is made public.
+MIT © 2026 Gilbert Immanuel Hasiholan. See [LICENSE](./LICENSE).

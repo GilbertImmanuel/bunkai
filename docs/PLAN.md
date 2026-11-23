@@ -1,6 +1,6 @@
 # Bunkai — Implementation Plan
 
-**Status:** Execution plan. Last updated: 2026-11-17.
+**Status:** Execution plan. Last updated: 2026-11-23.
 
 **Companion:** Read `SOURCE_OF_TRUTH.md` and `DESIGN.md` before starting any part. `HANDOFF.md` is the live state.
 
@@ -407,12 +407,13 @@ blockers, and whether 7.5C is approved.
 
 ---
 
-# Part 8 — PWA / sharing
+# Part 8 — PWA / local distribution
 
-**Goal:** Installable static app, offline shell, export/import, simple sharing.
+**Goal:** Installable static app, offline shell, export/import, and a source-only local
+install. No hosted deployment.
 
-**Status:** 8A (PWA/offline) and 8B (export/import) complete. 8C (optional share URL)
-and deployment are pending.
+**Status:** 8A (PWA/offline), 8B (export/import), and the security hardening pass are
+complete. Distribution is local-only. 8C (share URL) is not planned.
 
 ### 8A — PWA / offline
 
@@ -429,34 +430,41 @@ and deployment are pending.
 - [x] Exclude AI keys, preferences, and the Tatoeba cache from backups.
 - [x] Settings → Data UI.
 
-### 8C — Optional share URL
+### 8C — Share URL
 
-- [ ] Read-only share link only if the privacy tradeoff is accepted.
-- [ ] Otherwise keep sharing to export/import.
+- **Not planned.** A local-only app cannot share a `localhost` link with another person.
+- Backups are the sharing mechanism: export JSON and send the file.
 
 ### Delivery
 
-- [ ] Static deployment (`dist/`) to Cloudflare Pages/Netlify/Vercel.
+- [x] Static build (`dist/`) runs from a local server (`bun run preview`).
+- [x] No hosted deployment, no public origin, no share link.
 - [x] No accounts.
+- [x] MIT license and a README security model.
+- [ ] Optional native desktop wrapper (Tauri/Electron) is a separate future phase.
 
 ### Acceptance criteria
 
 - `bun run build` produces a static `dist`.
-- Installable and loads offline.
+- Installable and loads offline from the local preview.
 - Updates prompt instead of reloading silently.
 - Export/import round-trips sessions (8B).
-- No backend.
+- No backend and no hosted service.
+- The README explains origin-scoped keys/history and the same-URL rule.
+- The production build carries a restrictive meta CSP.
 
 ### Tests
 
-- `bun run build` + preview; Lighthouse/PWA install; offline reload.
-- `bun run test:pwa` — manifest, service worker, offline shell.
-- `bun run test` — backup schema, merge/replace, validation.
+- `bun run build` + preview; PWA install; offline reload.
+- `bun run test:pwa` — manifest, service worker, offline shell, CSP, backup export.
+- `bun run test` — backup schema, merge/replace, strict import validation, proxy rules,
+  response limits.
 - `bun run test:e2e` — export download, merge, replace, invalid backup, duplicate ids.
 
 ### Handoff checkpoint
 
-Update `HANDOFF.md`: deploy URL, PWA status, export/import notes.
+Update `HANDOFF.md`: local distribution model, PWA status, export/import notes, hardening
+summary.
 
 ---
 
@@ -471,7 +479,7 @@ Update `HANDOFF.md`: deploy URL, PWA status, export/import notes.
 - [ ] Tests: `bun run check`, `bun run test`, `bun run test:e2e`.
 - [ ] Remove unused prototype CSS/assets.
 - [ ] Update `DESIGN.md`, `manifest.md`, `HANDOFF.md`.
-- [ ] Final build and deploy.
+- [ ] Final build and local install check.
 - [ ] Write a short release note.
 
 ### Acceptance criteria
@@ -485,22 +493,22 @@ Update `HANDOFF.md`: deploy URL, PWA status, export/import notes.
 
 ### Handoff checkpoint
 
-Update `HANDOFF.md`: release status, deploy, test summary, known issues, next ideas.
+Update `HANDOFF.md`: release status, local install, test summary, known issues, next ideas.
 
 ---
 
 ## Global test matrix
 
 | Width | Light | Dark |
-|---|---|---|
-| 900 | ✓ | ✓ |
-| 1024 | ✓ | ✓ |
-| 1099 | ✓ | ✓ |
-| 1100 | ✓ | ✓ |
-| 1200 | ✓ | ✓ |
-| 1279 | ✓ | ✓ |
-| 1280 | ✓ | ✓ |
-| 1440 | ✓ | ✓ |
+| ----- | ----- | ---- |
+| 900   | ✓     | ✓    |
+| 1024  | ✓     | ✓    |
+| 1099  | ✓     | ✓    |
+| 1100  | ✓     | ✓    |
+| 1200  | ✓     | ✓    |
+| 1279  | ✓     | ✓    |
+| 1280  | ✓     | ✓    |
+| 1440  | ✓     | ✓    |
 
 Test states:
 

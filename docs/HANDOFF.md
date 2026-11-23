@@ -8,45 +8,54 @@
 
 ## Current status
 
-| Field | Value |
-|---|---|
-| Current phase | **Phase 8 — PWA / sharing** |
-| Phase status | **8A/8B complete**; 8C (optional share link) and deployment pending |
-| Last updated | 2026-11-23 |
-| App root | Repository root |
-| Package manager | Bun 1.3.14 |
-| Stack | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3 |
-| Git | [GitHub](https://github.com/GilbertImmanuel/bunkai); private |
-| Source | `main`; last code commit `c2be097`; this checkpoint is docs-only |
-| Deploy | Not deployed |
-| Next action | Run the security audit, then decide 8C and deployment |
+| Field           | Value                                                                              |
+| --------------- | ---------------------------------------------------------------------------------- |
+| Current phase   | **Phase 8 — PWA / local distribution**                                             |
+| Phase status    | **8A/8B + security hardening complete**; local-only, no deployment; 8C not planned |
+| Last updated    | 2026-11-23                                                                         |
+| App root        | Repository root                                                                    |
+| Package manager | Bun 1.3.14                                                                         |
+| Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                                      |
+| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private                       |
+| Source          | `main`; hardening commit `68dfa42`; docs checkpoint follows                        |
+| Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance                 |
+| License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                                     |
+| Next action     | Final docs check, then decide whether to share the private repo with reviewers     |
 
 **Summary:** Phase 8A makes the app installable and usable offline. A generated web
 manifest, 文-mark icons, and a Workbox service worker precache the app shell, JS/CSS, and
 `woff2` fonts. New versions prompt with a quiet “A new version is available” banner instead
 of reloading silently. Phase 8B adds a versioned JSON backup in Settings → Data: export all
 sessions, import with merge or replace, validate malformed files, and never include API
-keys, preferences, or the Tatoeba cache. The app remains local-first and desktop-only; AI
-and Tatoeba API responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains
-complete and 7.5C is still unapproved.
+keys, preferences, or the Tatoeba cache. The security hardening pass adds a production-only
+meta CSP, strict bounded import validation, unique chunk ids, proxy canonicalization,
+verified key removal, stale-enrichment guards, and decoded-byte/deadline limits for AI and
+Tatoeba responses. Distribution is **local-only**: there is no hosted instance and no
+share URL. The repository is private and MIT licensed. Phase 7.5A/B (Tatoeba examples)
+remains complete and 7.5C is still unapproved.
 
-## Session checkpoint — 2026-11-23
+## Session checkpoint — 2026-11-23 (security + hardening)
 
-- **Phase:** 8A (PWA/offline) and 8B (export/import) complete. 8C (optional share link)
-  and deployment pending.
-- **Source:** `main`; last code commit `c2be097`; this checkpoint is docs-only. Run
-  `git rev-parse HEAD` for the exact audit ref; the worktree is clean.
-- **Commands:** `bun run check`, `bun run lint`, `bun run test` (104), `bun run test:e2e`
-  (46), `bun run test:pwa` (1), `bun run build` all pass.
-- **Screenshots:** `test-results/data-settings-1280x800.png`,
-  `test-results/data-import-1280x800.png`, `test-results/pwa-update-1280x800.png`.
-- **Next before 8C/deployment:** run a security audit. Use `@security-audit` as the primary
-  full audit and `/claude-security scan-codebase` as a scoped second opinion. Audit the
-  current HEAD, focus on `src/`, `tests/`, `.github/`, and root configs; ignore the
-  local-only `design/`, `play/`, `archive/`, and third-party research. Write audit artifacts
-  outside the repo. Do not apply `suggest-patches` until findings are triaged.
-- **Pending decisions:** 8C (recommended defer), deployment target (Cloudflare Pages,
-  Netlify, or Vercel), and MIT license (deferred until public release).
+- **Audit:** full source audit at `a917a00` (code unchanged at the time); `0` confirmed
+  vulnerabilities, `0` needs-validation records, `40` hardening observations. Artifacts
+  kept outside the repository.
+- **Phase:** 8A (PWA/offline) and 8B (export/import) complete. Security hardening complete.
+  Distribution is local-only; 8C is not planned.
+- **Source:** `main`; hardening code commit `68dfa42`; docs checkpoint follows.
+- **Hardening applied:**
+  - Strict bounded import/load validation: chunk/example/construction/furigana/note caps,
+    string lengths, unique positive chunk ids, HTTPS-only URLs with Tatoeba host checks.
+  - Stale-enrichment guard, `persisted: false` toasts, and undo reset on import.
+  - Proxy canonicalization (HTTPS or loopback HTTP, no credentials/query/fragment) and
+    verified key removal.
+  - Production-only meta CSP; PWA test now checks the policy and backup export under it.
+  - Decoded-byte caps and body-read deadlines for AI and Tatoeba; parser field caps;
+    connection-test body cancellation.
+  - CI actions pinned by SHA; `persist-credentials: false`; MIT license.
+- **Commands:** `bun run check`, `bun run lint`, `bun run test` (115), `bun run test:e2e`
+  (46), `bun run test:pwa` (2), `bun run build` all pass.
+- **Next:** review the docs, then share the private repository with reviewers if desired.
+  A native desktop wrapper and 7.5C remain separate future decisions.
 
 ---
 
@@ -636,7 +645,7 @@ complete and 7.5C is still unapproved.
   - Added `.github/readme/hero.png` and a minimal `.github/workflows/ci.yml`.
   - Added the private GitHub remote at
     `https://github.com/GilbertImmanuel/bunkai` and pushed `main`.
-  - No `LICENSE` yet; MIT is planned for the public release.
+  - No `LICENSE` yet at this point; MIT was added later in the Phase 8 security pass.
 - **Decisions:**
   - The app lives at the repository root; `docs/` and `research/tatoeba/` are subfolders.
   - `design/`, `play/`, `archive/`, and the third-party research files are local-only.
@@ -660,11 +669,12 @@ complete and 7.5C is still unapproved.
 - **Blockers:** None.
 - **Next:** Approve 7.5C, or proceed to Phase 8 — PWA and sharing.
 
-### Phase 8 — PWA / sharing
+### Phase 8 — PWA / local distribution
 
-- **Status:** 8A (PWA/offline) and 8B (export/import) complete. 8C (optional share link)
-  and deployment are pending.
-- **Goal:** Installable static app, offline shell, export/import, simple sharing.
+- **Status:** 8A (PWA/offline), 8B (export/import), and the security hardening pass are
+  complete. Distribution is local-only. 8C (share URL) is not planned.
+- **Goal:** Installable static app, offline shell, export/import, and a source-only local
+  install. No hosted deployment.
 - **Completed (8A):**
   - Added `vite-plugin-pwa` 2.0.0 and generated a web manifest with the 文-mark icon set:
     192, 512, maskable 512, and Apple touch.
@@ -692,6 +702,20 @@ complete and 7.5C is still unapproved.
     history unchanged.
   - Added backup unit tests and five e2e tests: export, merge, replace, invalid file, and
     duplicate-id merge.
+- **Completed (security hardening):**
+  - Strict session validation on load and import: per-session/per-chunk cardinality and
+    string caps, unique positive chunk ids, HTTPS-only example URLs with Tatoeba host
+    checks, and a visited guard in the sentence map.
+  - Import clears pending undo state; a stale AI enrichment cannot replace a switched
+    session or re-insert a removed one; persistence failures surface as tab-only toasts.
+  - Proxy URLs are canonicalized with `new URL`: HTTPS or loopback HTTP only, no
+    credentials, query strings, fragments, or protocol-relative values.
+  - Key removal is verified after the write and reports storage failures.
+  - Production build injects a meta CSP; the PWA test checks it and exports a backup under
+    it.
+  - AI and Tatoeba responses are decoded-byte capped; AI deadlines stay active through
+    body reads; parsers cap fields and arrays; connection tests cancel the body.
+  - CI actions are pinned by commit SHA and checkout no longer persists credentials.
 - **Decisions:**
   - Prompt-based updates (`registerType: 'prompt'`, `skipWaiting: false`,
     `clientsClaim: false`) rather than auto-reload.
@@ -705,24 +729,33 @@ complete and 7.5C is still unapproved.
   - Merge is the default; Replace is destructive and requires an explicit checkbox.
   - Replace clears the last-session pointer so a reload does not restore a removed session.
   - Backups are plain JSON. There is no encryption and no undo; the file is readable text.
-  - No deployment target chosen yet; `dist/` remains a static build.
+  - Distribution is local-only. There is no hosted deployment, public demo, or share URL.
+  - The repository stays private for now and is MIT licensed.
+  - 8C (share URL) is not planned; backups are the sharing mechanism.
+  - A native desktop wrapper (Tauri/Electron) is a possible later phase, not current scope.
 - **Files touched:**
   - `vite.config.ts`, `index.html`, `package.json`, `bun.lock`, `tsconfig.node.json`
   - `pwa-assets.config.ts`, `playwright.pwa.config.ts`, `tests/pwa/pwa.spec.ts`,
     `tests/e2e/backup.spec.ts`
   - `src/vite-env.d.ts`, `src/App.svelte`, `src/lib/components/PwaUpdate.svelte`
-  - `src/lib/data/backup.ts`, `backup.test.ts`, `sessionValidation.ts`
-  - `src/lib/components/DataPanel.svelte`, `AiSettingsDrawer.svelte`, `TopBar.svelte`
-  - `src/lib/stores/history.svelte.ts`
+  - `src/lib/data/backup.ts`, `backup.test.ts`, `sessionValidation.ts`, `sentenceMap.ts`
+  - `src/lib/components/DataPanel.svelte`, `AiSettingsDrawer.svelte`, `TopBar.svelte`,
+    `Home.svelte`, `ReadingSheet.svelte`
+  - `src/lib/stores/history.svelte.ts`, `ai.svelte.ts`
+  - `src/lib/ai/breakdown.ts`, `breakdown.test.ts`, `settings.ts`, `settings.test.ts`
+  - `src/lib/tatoeba/client.ts`, `client.test.ts`
+  - `src/lib/utils/limitedResponse.ts`, `limitedResponse.test.ts`
+  - `LICENSE`, `.github/workflows/ci.yml`, `package.json`, `vite.config.ts`
   - `public/pwa-192x192.png`, `pwa-512x512.png`, `maskable-icon-512x512.png`,
     `apple-touch-icon-180x180.png`
   - `docs/SOURCE_OF_TRUTH.md`, `PLAN.md`, `DESIGN.md`, `manifest.md`, `HANDOFF.md`, `README.md`
 - **Tests:**
   - `bun run check` — pass.
   - `bun run lint` — pass.
-  - `bun run test` — pass, 104 tests.
+  - `bun run test` — pass, 115 tests.
   - `bun run test:e2e` — pass, 46 tests.
-  - `bun run test:pwa` — pass, 1 test (manifest, service worker, offline reload).
+  - `bun run test:pwa` — pass, 2 tests (manifest, service worker, offline reload, CSP,
+    backup export).
   - `bun run build` — pass; `dist/manifest.webmanifest`, `dist/sw.js`, and Workbox runtime
     generated.
 - **Screenshots/checks:**
@@ -733,9 +766,12 @@ complete and 7.5C is still unapproved.
     cleared it. Screenshot: `test-results/pwa-update-1280x800.png`.
   - Data settings: `test-results/data-settings-1280x800.png`.
   - Import preview: `test-results/data-import-1280x800.png`.
+  - CSP: `dist/index.html` contains the meta policy; the PWA test reports no CSP console
+    errors and exports a backup under the policy.
 - **Blockers:** None.
-- **Next:** Decide 8C (optional read-only share link) and the deployment target. The backup
-  export/import layer is complete.
+- **Next:** Review the docs and local install. Share the private repository with reviewers
+  if desired. 7.5C, a native wrapper, and any future hosted deployment are separate
+  decisions.
 
 ### Phase 9 — Polish and release
 
@@ -748,17 +784,17 @@ complete and 7.5C is still unapproved.
 
 ## Environment
 
-| Tool | Version | Note |
-|---|---|---|
-| Node | 24.21.0 | Compatible with Vite 8 / Svelte 5 |
-| Bun | 1.3.14 | Confirmed package manager |
-| npm | 9.7.1 | Not used |
-| Chrome | 156.0.8078.74 | Manual/Playwright channel |
-| Edge | 156.0.4314.58 | Manual/Playwright channel |
-| Playwright browsers | Not installed | Uses system Chrome via `channel: "chrome"` |
-| Git | 2.44.0 | No repository initialized |
+| Tool                | Version       | Note                                          |
+| ------------------- | ------------- | --------------------------------------------- |
+| Node                | 24.21.0       | Compatible with Vite 8 / Svelte 5             |
+| Bun                 | 1.3.14        | Confirmed package manager                     |
+| npm                 | 9.7.1         | Not used                                      |
+| Chrome              | 156.0.8078.74 | Manual/Playwright channel                     |
+| Edge                | 156.0.4314.58 | Manual/Playwright channel                     |
+| Playwright browsers | Not installed | Uses system Chrome via `channel: "chrome"`    |
+| Git                 | 2.44.0        | Repository initialized; private GitHub remote |
 
-**Dependency status (after Phase 8B):**
+**Dependency status (after security hardening):**
 
 - App scaffolded at the repository root with Vite 8.3.5, Svelte 5.57.3, TypeScript 6.0.3.
 - `idb-keyval` 6.3.0 installed and wired to `bunkai.sessions`.
@@ -798,13 +834,17 @@ complete and 7.5C is still unapproved.
   never AI or Tatoeba API responses.
 - Phase 8B exports sessions as plain JSON and imports with merge/replace; backups exclude
   API keys, preferences, and the Tatoeba cache.
+- Distribution is local-only; there is no hosted deployment or 8C share URL.
+- The repository is private and MIT licensed (copyright 2026 Gilbert Immanuel Hasiholan).
+- The production build injects a meta CSP; imports and AI/Tatoeba responses are bounded.
 
 ---
 
 ## Open questions
 
-- Approve Phase 7.5C (Home “Find a sentence” picker), or proceed to Phase 8C/deployment?
-- Phase 8C (read-only share link) and the deployment target are still undecided.
+- Approve Phase 7.5C (Home “Find a sentence” picker)?
+- A native desktop wrapper (Tauri/Electron) is not planned; revisit only if a double-click
+  install becomes necessary.
 - A Tatoeba opt-out preference is deferred. Automatic fetching is accepted; revisit only
   if the user wants an explicit toggle.
 - Inline attribution of the English translation author is deferred; the source link opens
@@ -860,22 +900,22 @@ Before marking a phase complete:
 
 ## Known risks
 
-| Risk | Mitigation |
-|---|---|
-| Prototype was a single HTML file; porting may copy its inline state | Componentize; use Svelte state/stores; do not copy the single file |
-| Google Fonts CDN creates network dependency | Self-host Fontsource; verify no Google Fonts requests |
-| Dark mode can drift olive/green | Use the tokens in `DESIGN.md`; screenshot at 1280/1024 |
-| Responsive breakpoints can invert | Verify 1200/1279/1280; history must be a rail below 1280 |
-| Sidebar drawer can cover history | Drawer starts at right; history rail remains visible; scrim + close |
-| API key in browser is not secure | Phase 7 warning; no backend; never log; sample mode default |
-| Tatoeba latency spikes | 12s timeout, 30-day cache, generated fallback, retry link |
-| Tatoeba search noise | short content lookups, containment filter, duplicate removal |
-| Tatoeba licensing/attribution mistakes | per-sentence and per-audio attribution; omit empty-license audio; source links |
-| PWA cache serves stale assets | `cleanupOutdatedCaches`; prompt the user to reload a waiting service worker |
-| PWA precache is large | Precache `woff2` only (19 entries, ~3.2 MB); no API responses |
-| Silent reload loses unsaved state | Prompt-based updates; Reload is explicit |
-| Backup file is readable plain text | Session text only; no keys or cache; treat backups as sensitive |
-| Replace import is destructive | Explicit confirmation checkbox; clear last-session pointer; no automatic replace |
-| Malformed backup breaks the reader | Strict session/chunk validation before import; inline error and no history change |
-| Playwright browsers missing | Use system Chrome/Edge with `channel`, or install Chromium |
-| Scope creep into phone/marketing/auth | Read `SOURCE_OF_TRUTH.md`; stop and ask |
+| Risk                                                                | Mitigation                                                                        |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Prototype was a single HTML file; porting may copy its inline state | Componentize; use Svelte state/stores; do not copy the single file                |
+| Google Fonts CDN creates network dependency                         | Self-host Fontsource; verify no Google Fonts requests                             |
+| Dark mode can drift olive/green                                     | Use the tokens in `DESIGN.md`; screenshot at 1280/1024                            |
+| Responsive breakpoints can invert                                   | Verify 1200/1279/1280; history must be a rail below 1280                          |
+| Sidebar drawer can cover history                                    | Drawer starts at right; history rail remains visible; scrim + close               |
+| API key in browser is not secure                                    | Phase 7 warning; no backend; never log; sample mode default                       |
+| Tatoeba latency spikes                                              | 12s timeout, 30-day cache, generated fallback, retry link                         |
+| Tatoeba search noise                                                | short content lookups, containment filter, duplicate removal                      |
+| Tatoeba licensing/attribution mistakes                              | per-sentence and per-audio attribution; omit empty-license audio; source links    |
+| PWA cache serves stale assets                                       | `cleanupOutdatedCaches`; prompt the user to reload a waiting service worker       |
+| PWA precache is large                                               | Precache `woff2` only (19 entries, ~3.2 MB); no API responses                     |
+| Silent reload loses unsaved state                                   | Prompt-based updates; Reload is explicit                                          |
+| Backup file is readable plain text                                  | Session text only; no keys or cache; treat backups as sensitive                   |
+| Replace import is destructive                                       | Explicit confirmation checkbox; clear last-session pointer; no automatic replace  |
+| Malformed backup breaks the reader                                  | Strict session/chunk validation before import; inline error and no history change |
+| Playwright browsers missing                                         | Use system Chrome/Edge with `channel`, or install Chromium                        |
+| Scope creep into phone/marketing/auth                               | Read `SOURCE_OF_TRUTH.md`; stop and ask                                           |
