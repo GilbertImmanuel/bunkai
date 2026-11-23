@@ -52,7 +52,24 @@ It is a reading desk, not a dictionary, chatbot, flashcard app, or course.
 
 ## Quick start
 
-Requires **Bun 1.3.14+** and **Node 22+**.
+**Prerequisites:** Bun 1.3.14+ and Node 22+. Install Bun from
+[bun.sh](https://bun.sh/docs/installation) if needed.
+
+### 1. Get the code
+
+Clone the repository:
+
+```bash
+git clone https://github.com/GilbertImmanuel/bunkai.git
+cd bunkai
+```
+
+Or use **Code → Download ZIP** on GitHub, unzip the archive, and open a terminal in
+that folder.
+
+### 2. Run locally
+
+All commands run from the repository root (the folder containing `package.json`).
 
 ```bash
 bun install
