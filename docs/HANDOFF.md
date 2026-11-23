@@ -17,8 +17,9 @@
 | Package manager | Bun 1.3.14 |
 | Stack | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3 |
 | Git | [GitHub](https://github.com/GilbertImmanuel/bunkai); private |
+| Source | `main`; last code commit `c2be097`; this checkpoint is docs-only |
 | Deploy | Not deployed |
-| Next action | Review 8B; decide 8C and deployment |
+| Next action | Run the security audit, then decide 8C and deployment |
 
 **Summary:** Phase 8A makes the app installable and usable offline. A generated web
 manifest, 文-mark icons, and a Workbox service worker precache the app shell, JS/CSS, and
@@ -28,6 +29,24 @@ sessions, import with merge or replace, validate malformed files, and never incl
 keys, preferences, or the Tatoeba cache. The app remains local-first and desktop-only; AI
 and Tatoeba API responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains
 complete and 7.5C is still unapproved.
+
+## Session checkpoint — 2026-11-23
+
+- **Phase:** 8A (PWA/offline) and 8B (export/import) complete. 8C (optional share link)
+  and deployment pending.
+- **Source:** `main`; last code commit `c2be097`; this checkpoint is docs-only. Run
+  `git rev-parse HEAD` for the exact audit ref; the worktree is clean.
+- **Commands:** `bun run check`, `bun run lint`, `bun run test` (104), `bun run test:e2e`
+  (46), `bun run test:pwa` (1), `bun run build` all pass.
+- **Screenshots:** `test-results/data-settings-1280x800.png`,
+  `test-results/data-import-1280x800.png`, `test-results/pwa-update-1280x800.png`.
+- **Next before 8C/deployment:** run a security audit. Use `@security-audit` as the primary
+  full audit and `/claude-security scan-codebase` as a scoped second opinion. Audit the
+  current HEAD, focus on `src/`, `tests/`, `.github/`, and root configs; ignore the
+  local-only `design/`, `play/`, `archive/`, and third-party research. Write audit artifacts
+  outside the repo. Do not apply `suggest-patches` until findings are triaged.
+- **Pending decisions:** 8C (recommended defer), deployment target (Cloudflare Pages,
+  Netlify, or Vercel), and MIT license (deferred until public release).
 
 ---
 
