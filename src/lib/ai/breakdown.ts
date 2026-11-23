@@ -143,7 +143,7 @@ interface RequestParts {
   body: Record<string, unknown>
 }
 
-const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1'])
 
 function invalidProxy(message: string): AiRequestError {
   return new AiRequestError('invalid-proxy', message)
