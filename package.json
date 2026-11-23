@@ -15,7 +15,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:pwa": "playwright test --config playwright.pwa.config.ts",
+    "icons": "pwa-assets-generator"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -23,6 +25,7 @@
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.19.2",
+    "@vite-pwa/assets-generator": "^2.0.0",
     "eslint": "^10.14.0",
     "eslint-plugin-svelte": "^3.23.1",
     "fake-indexeddb": "^6.2.7",
@@ -34,6 +37,7 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",
     "vite": "^8.3.5",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.5"
   },
   "dependencies": {

@@ -5,6 +5,7 @@
   import DesktopGuard from './lib/components/DesktopGuard.svelte'
   import HistoryPanel from './lib/components/HistoryPanel.svelte'
   import Home from './lib/components/Home.svelte'
+  import PwaUpdate from './lib/components/PwaUpdate.svelte'
   import ReadingSheet from './lib/components/ReadingSheet.svelte'
   import Toast from './lib/components/Toast.svelte'
   import TopBar from './lib/components/TopBar.svelte'
@@ -39,6 +40,9 @@
 
   $effect(() => {
     document.documentElement.dataset.theme = appState.theme
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', appState.theme === 'dark' ? '#12100e' : '#e7dcc9')
   })
 
   $effect(() => {
@@ -99,6 +103,8 @@
       <BreakdownSidebar />
     {/if}
   </div>
+
+  <PwaUpdate />
 </div>
 
 <Toast />
