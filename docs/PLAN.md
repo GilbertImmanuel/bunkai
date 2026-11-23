@@ -472,24 +472,32 @@ summary.
 
 **Goal:** Final quality pass, accessibility, tests, docs, and a clean handoff.
 
+**Status:** Complete. v0.1.0 is the first local desktop release.
+
 ### Tasks
 
-- [ ] Accessibility: focus rings, keyboard flow, ARIA, contrast, reduced motion.
-- [ ] Visual QA: 900, 1024, 1100, 1200, 1280, 1440; light/dark.
-- [ ] Tests: `bun run check`, `bun run test`, `bun run test:e2e`.
-- [ ] Remove unused prototype CSS/assets.
-- [ ] Update `DESIGN.md`, `manifest.md`, `HANDOFF.md`.
-- [ ] Final build and local install check.
-- [ ] Write a short release note.
+- [x] Accessibility: skip link, headings, focus rings, keyboard flow, ARIA, contrast,
+      reduced motion, focus return, tab/radiogroup keys.
+- [x] Visual QA: 900, 1024, 1100, 1200, 1280, 1440; light/dark; boundary widths.
+- [x] Tests: `check`, `lint`, `test`, `test:e2e`, `test:pwa`, `build`.
+- [x] Remove unused prototype CSS/assets.
+- [x] Update `DESIGN.md`, `manifest.md`, `HANDOFF.md`.
+- [x] Update the README security model and local-run guide.
+- [x] Final build and local install check.
+- [x] Write `docs/RELEASE.md` for v0.1.0.
+- [x] Bump `package.json` to 0.1.0.
+- [ ] Create a `v0.1.0` git tag after the release review (optional).
 
 ### Acceptance criteria
 
 - All tests pass; no console errors.
 - No horizontal scroll/clipping at supported widths.
 - Light/dark readable; no 9px labels.
+- Skip link, headings, tab/radiogroup keys, focus return, and reduced motion verified.
 - Sample mode works without a key.
 - Docs match the shipped app.
 - `HANDOFF.md` is final and accurate.
+- v0.1.0 release notes exist.
 
 ### Handoff checkpoint
 

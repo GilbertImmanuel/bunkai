@@ -14,6 +14,7 @@ This is the **project manifest**, not the PWA manifest. The generated PWA
 | Field           | Value                                                                      |
 | --------------- | -------------------------------------------------------------------------- |
 | Project         | Bunkai                                                                     |
+| Version         | **0.1.0** (first local desktop release)                                    |
 | Product         | Desktop-first Japanese sentence breakdown app                              |
 | Repo root       | `C:\Users\Gilbert\Documents\Projects\bunkai-sentence-expansion`            |
 | App root        | Repository root                                                            |
@@ -363,7 +364,7 @@ Only three scroll areas: history list, center, sidebar body. No page scroll. Aut
 | 7 AI/API     | BYO key optional; sample mode default; no backend                                                                                |
 | 7.5 Tatoeba  | A/B complete: sample lookups, cached real examples, attribution, generated fallback; 7.5C not approved                           |
 | 8 PWA        | 8A/8B + hardening complete: installable, offline shell, prompt updates, JSON export/import, meta CSP; local-only, 8C not planned |
-| 9 Polish     | A11y, tests, docs, release                                                                                                       |
+| 9 Polish     | Complete: accessibility/visual QA, tests, docs, local install check, v0.1.0 release notes                                        |
 
 Every gate requires `HANDOFF.md` updated.
 
@@ -382,6 +383,21 @@ bun run test:pwa
 bun run build
 ```
 
+Release baseline (v0.1.0): `check`, `lint`, 117 unit tests, 49 e2e tests, 2 PWA tests, and
+the production build pass. Run the two browser suites sequentially.
+
+Accessibility checks:
+
+- [ ] Skip link focuses the main landmark.
+- [ ] One `h1` per view; reading sections use `h2`; sidebar/data sections use `h3`.
+- [ ] Settings tabs support Left/Right/Home/End and return focus to the trigger on close.
+- [ ] Import mode radios support arrow keys and roving `tabindex`.
+- [ ] The active history item exposes `aria-current`.
+- [ ] Drawer focus returns to the selected chunk or rail button.
+- [ ] Light/dark contrast tests pass; muted text meets 4.5:1 on all light surfaces.
+- [ ] Dark surfaces are progressively lighter (`bg → surface → surface-2`).
+- [ ] No `100vh` remains in `src`; full-height surfaces use `100dvh`.
+
 Manual checks:
 
 - [ ] 900, 1024, 1099, 1100, 1200, 1279, 1280, 1440.
@@ -389,6 +405,7 @@ Manual checks:
 - [ ] Home, reader with sidebar open/collapsed, sidebar drawer, guard.
 - [ ] No horizontal scroll or clipped topbar/meta.
 - [ ] No 9px labels.
+- [ ] Inset radii use outer radius minus padding; control borders use `--control-line`.
 - [ ] Flat pills; no underlines/blend.
 - [ ] Sentence not orphaned.
 - [ ] Sidebar never covers history.

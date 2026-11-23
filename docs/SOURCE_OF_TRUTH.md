@@ -155,6 +155,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D026 | Distribution is **local-only**. No hosted deployment, public demo, or share URL. Users run the static build on their own device; keys and history stay origin-scoped. 8C is not planned.                                                                                                  | Accepted |
 | D027 | The project is **MIT licensed**, copyright 2026 Gilbert Immanuel Hasiholan. The repository stays private until the owner chooses to publish it.                                                                                                                                           | Accepted |
 | D028 | Local security posture: production build injects a restrictive meta CSP; imports are strictly bounded and validated; AI/Tatoeba responses are byte- and field-capped; API keys remain in browser storage and are sent only to the selected provider/proxy.                                | Accepted |
+| D029 | v0.1.0 is the first local desktop release. It is source-only; no installer, hosted deployment, or share link. Phase 9 accessibility and visual QA are complete.                                                                                                                           | Accepted |
 
 ---
 
@@ -165,11 +166,12 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 - **Phase:** Phase 7 complete (AI/API). Phase 7.5 (Tatoeba examples) A/B complete:
   real examples in the breakdown sidebar, local cache, attribution, generated fallback.
   7.5C (Home sentence picker) is not approved. Phase 8A (PWA/offline), 8B
-  (export/import), and the security hardening pass are complete. Distribution is
+  (export/import), and the security hardening pass are complete. Phase 9 (polish and
+  release) is complete; v0.1.0 is the first local desktop release. Distribution is
   local-only; 8C (share URL) is not planned and there is no hosted deployment.
 - **Repository:** app at the root; `docs/` and `research/tatoeba/` are subfolders. Local
   design references, prototypes, and third-party research are ignored. Private GitHub
-  remote; MIT license in the repository.
+  remote; MIT license in the repository. Current release: v0.1.0.
 - **Visual cleanup:** colored left-border accents were removed from the sentence note, AI
   warning/error blocks, active history rows, and sentence-map tree boxes. Neutral panel
   edges and the reading-sheet rule remain.

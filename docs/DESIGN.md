@@ -40,12 +40,12 @@ The sentence is the hero. The app's job is to make the sentence's structure visi
 
 ### Families
 
-| Role | Family | Fallback |
-|---|---|---|
-| Japanese | **Shippori Mincho** | Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, MS Mincho, serif |
-| English reading | **Vollkorn** | Iowan Old Style, Charter, Georgia, serif |
-| UI/labels | **iA Writer Quattro** | Avenir Next, Segoe UI, system-ui, sans-serif |
-| Numbers/data | **iA Writer Mono** | ui-monospace, SF Mono, JetBrains Mono, Menlo, monospace |
+| Role            | Family                | Fallback                                                         |
+| --------------- | --------------------- | ---------------------------------------------------------------- |
+| Japanese        | **Shippori Mincho**   | Yu Mincho, Hiragino Mincho ProN, Noto Serif JP, MS Mincho, serif |
+| English reading | **Vollkorn**          | Iowan Old Style, Charter, Georgia, serif                         |
+| UI/labels       | **iA Writer Quattro** | Avenir Next, Segoe UI, system-ui, sans-serif                     |
+| Numbers/data    | **iA Writer Mono**    | ui-monospace, SF Mono, JetBrains Mono, Menlo, monospace          |
 
 Self-host via Fontsource:
 
@@ -57,14 +57,14 @@ No Google Fonts CDN in production.
 
 ### Scale
 
-| Token | Size / line height | Use |
-|---|---|---|
-| `--fs-jp` | 22px / 1.8 | The Japanese sentence |
-| `--fs-kana` | 14px / 1.6 (15px in dark) | Kana reading |
-| `--fs-gloss` | 16px / 1.5 | English gloss, natural/raw translation |
-| `--fs-note` | 15px / 1.65 | Grammar note, sentence note |
-| `--fs-label` | 12px / 1.2 | Section labels, small UI labels |
-| `--fs-data` | 11px / 1.2 | Numbers, roles, metadata |
+| Token        | Size / line height        | Use                                    |
+| ------------ | ------------------------- | -------------------------------------- |
+| `--fs-jp`    | 22px / 1.8                | The Japanese sentence                  |
+| `--fs-kana`  | 14px / 1.6 (15px in dark) | Kana reading                           |
+| `--fs-gloss` | 16px / 1.5                | English gloss, natural/raw translation |
+| `--fs-note`  | 15px / 1.65               | Grammar note, sentence note            |
+| `--fs-label` | 12px / 1.2                | Section labels, small UI labels        |
+| `--fs-data`  | 11px / 1.2                | Numbers, roles, metadata               |
 
 Rules:
 
@@ -81,19 +81,20 @@ Rules:
 
 ### Light theme
 
-| Token | Value | Use |
-|---|---|---|
-| `--bg` | `#E7DCC9` | Warm desk / page background |
-| `--surface` | `#FBF8F1` | Reading sheet |
-| `--surface-2` | `#F3EBDD` | History, sidebar, raised panels |
-| `--ink` | `#1E1C17` | Primary text |
-| `--muted` | `#756F63` | Secondary text, labels |
-| `--line` | `#D2C6B2` | Dividers |
-| `--line-strong` | `#C4B69F` | Panel and sheet borders |
-| `--accent` | `#2F5D8A` | Primary action, links, selected states |
-| `--accent-fg` | `#FAF7EF` | Text on accent |
-| `--accent-soft` | `#DCE7F0` | Soft accent fill |
-| `--desk` | `#22302A` | Brand mark; small dark accent only |
+| Token            | Value     | Use                                          |
+| ---------------- | --------- | -------------------------------------------- |
+| `--bg`           | `#E7DCC9` | Warm desk / page background                  |
+| `--surface`      | `#FBF8F1` | Reading sheet                                |
+| `--surface-2`    | `#F3EBDD` | History, sidebar, raised panels              |
+| `--ink`          | `#1E1C17` | Primary text                                 |
+| `--muted`        | `#686155` | Secondary text, labels                       |
+| `--line`         | `#D2C6B2` | Decorative dividers                          |
+| `--line-strong`  | `#C4B69F` | Decorative panel and sheet borders           |
+| `--control-line` | `#897B62` | Input, button, and toggle boundaries (≥ 3:1) |
+| `--accent`       | `#2F5D8A` | Primary action, links, selected states       |
+| `--accent-fg`    | `#FAF7EF` | Text on accent                               |
+| `--accent-soft`  | `#DCE7F0` | Soft accent fill                             |
+| `--desk`         | `#22302A` | Brand mark; small dark accent only           |
 
 Background gradient: `linear-gradient(180deg, #F4EDE0 0%, #E5D8C4 100%)`.
 
@@ -101,41 +102,44 @@ Background gradient: `linear-gradient(180deg, #F4EDE0 0%, #E5D8C4 100%)`.
 
 Warm charcoal, **not olive/green**:
 
-| Token | Value | Use |
-|---|---|---|
-| `--bg` | `#12100E` | Warm near-black |
-| `--surface` | `#1D1A16` | Reading sheet |
-| `--surface-2` | `#26221D` | History, sidebar, raised panels |
-| `--ink` | `#F4EEE3` | Primary text |
-| `--muted` | `#C8C0B2` | Secondary text, labels |
-| `--line` | `#5C554B` | Dividers |
-| `--line-strong` | `#7A7062` | Panel and sheet borders |
-| `--accent` | `#9CC5E8` | Primary action, links |
-| `--accent-fg` | `#12100E` | Text on accent |
-| `--accent-soft` | `#26333D` | Soft accent fill |
-| `--desk` | `#2C2A24` | Neutral dark; brand mark uses accent in dark |
+| Token            | Value     | Use                                          |
+| ---------------- | --------- | -------------------------------------------- |
+| `--bg`           | `#12100E` | Warm near-black                              |
+| `--surface`      | `#1D1A16` | Reading sheet                                |
+| `--surface-2`    | `#26221D` | History, sidebar, raised panels              |
+| `--ink`          | `#F4EEE3` | Primary text                                 |
+| `--muted`        | `#C8C0B2` | Secondary text, labels                       |
+| `--line`         | `#5C554B` | Decorative dividers                          |
+| `--line-strong`  | `#7A7062` | Decorative panel and sheet borders           |
+| `--control-line` | `#7A7062` | Input, button, and toggle boundaries (≥ 3:1) |
+| `--accent`       | `#9CC5E8` | Primary action, links                        |
+| `--accent-fg`    | `#12100E` | Text on accent                               |
+| `--accent-soft`  | `#26333D` | Soft accent fill                             |
+| `--desk`         | `#2C2A24` | Neutral dark; brand mark uses accent in dark |
 
 Background gradient: `linear-gradient(180deg, #171411 0%, #100E0C 100%)`.
 
 Contrast targets:
 
 - Ink on sheet: **≥ 7:1**
-- Muted text: **≥ 4.5:1**
-- UI borders / focus: **≥ 3:1**
+- Muted text: **≥ 4.5:1** on `--surface`, `--surface-2`, and `--bg`
+- Interactive control boundaries and focus: **≥ 3:1** via `--control-line`
+- Decorative hairlines (`--line`, `--line-strong`) may stay quieter; they must not be the
+  only way to identify a control.
 - No color-only meaning; pair color with number, label, or border.
 
 ### Chunk palette
 
 Six fixed hues. Light mode uses saturated ink colors; dark mode uses lighter variants.
 
-| # | Light | Dark | Name |
-|---|---|---|---|
-| 1 | `#3E7CB1` | `#8FB8E0` | blue |
-| 2 | `#6E8B5E` | `#B3C58F` | sage |
-| 3 | `#B8862E` | `#E3BC6E` | amber |
-| 4 | `#C15B4A` | `#E58F7B` | coral |
-| 5 | `#8A6FAE` | `#C6A6DE` | mauve |
-| 6 | `#3C8C84` | `#86C9C0` | teal |
+| #   | Light     | Dark      | Name  |
+| --- | --------- | --------- | ----- |
+| 1   | `#3E7CB1` | `#8FB8E0` | blue  |
+| 2   | `#6E8B5E` | `#B3C58F` | sage  |
+| 3   | `#B8862E` | `#E3BC6E` | amber |
+| 4   | `#C15B4A` | `#E58F7B` | coral |
+| 5   | `#8A6FAE` | `#C6A6DE` | mauve |
+| 6   | `#3C8C84` | `#86C9C0` | teal  |
 
 Highlight recipe:
 
@@ -153,13 +157,17 @@ Dark mode must not use green/olive for large surfaces. The two green-ish chunk h
 
 ### Radius
 
-| Token | Value | Use |
-|---|---|---|
-| `--r-hl` | 3px | Inline chunk highlights, tags |
-| `--r-btn` | 8px | Buttons, inputs, small controls |
-| `--r-note` | 12px | Sidebar cards, key cells, examples |
-| `--r-sheet` | 16px | Reading sheet, drawers, bottom sheet |
-| full | 999px | Icon buttons, circled numbers only |
+| Token       | Value | Use                                  |
+| ----------- | ----- | ------------------------------------ |
+| `--r-hl`    | 3px   | Inline chunk highlights, tags        |
+| `--r-btn`   | 8px   | Buttons, inputs, small controls      |
+| `--r-note`  | 12px  | Sidebar cards, key cells, examples   |
+| `--r-sheet` | 16px  | Reading sheet, drawers, bottom sheet |
+| full        | 999px | Icon buttons, circled numbers only   |
+
+Nested rounding rule: an inset rounded child should use the outer radius minus its padding,
+e.g. a 6px control inside an 8px container with 2px padding. Use `calc()` with the radius
+token (`calc(var(--r-btn) - 2px)`) so the curves stay parallel.
 
 Do not use pills for primary buttons. Do not round every element.
 
@@ -168,6 +176,8 @@ Do not use pills for primary buttons. Do not round every element.
 - Reading sheet: `--surface`, `1px solid var(--line-strong)`, `--r-sheet`, soft warm shadow.
 - History/sidebar: `--surface-2`, `1px solid var(--line)`, slightly flatter than the sheet.
 - Topbar: `--surface` or `--surface-2`, 1px bottom border.
+- Interactive controls use `--control-line`, not the decorative `--line` tokens. Borders over
+  tinted surfaces may use `color-mix()` or alpha; solid hairlines remain for paper structure.
 - Light shadow: `0 1px 2px rgba(60,45,25,.06), 0 12px 32px rgba(60,45,25,.08), inset 0 1px 0 rgba(255,255,255,.5)`.
 - Dark: use borders + tonal separation; no heavy black shadows.
 
@@ -422,27 +432,27 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 
 ## 9. Interactions
 
-| Action | Result |
-|---|---|
-| Click chunk | Select; open/update sidebar; scroll sidebar to top |
-| Click selected chunk again | Collapse sidebar; keep chunk selected |
-| `1–6` | Select chunk; open sidebar |
-| `Enter` | Open sidebar if collapsed |
-| `Esc` | Collapse sidebar / close drawer |
-| Note toggle | Open/collapse sidebar |
-| History toggle / `Cmd/Ctrl+B` | Open/collapse history |
-| Theme toggle | Light/dark; persist |
-| Save | Inline toast with Undo |
-| Translation Natural/Raw | Swap translation text; persist preference |
-| History item | Load session; reset center/sidebar scroll to top |
-| `+` / New breakdown | Return home with input focused |
-| Sidebar Prev/Next | Move selected chunk; keep sidebar open |
-| Drawer scrim click | Close drawer |
-| Tatoeba audio | Play/pause the recording; no layout change |
-| Search Tatoeba | Open the public Tatoeba search page for the current lookup |
-| PWA update prompt | Reload applies the waiting service worker and reloads; Later dismisses until next launch |
-| Settings gear | Open Settings on the AI tab |
-| Settings → Data | Export or import sessions |
+| Action                        | Result                                                                                   |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| Click chunk                   | Select; open/update sidebar; scroll sidebar to top                                       |
+| Click selected chunk again    | Collapse sidebar; keep chunk selected                                                    |
+| `1–6`                         | Select chunk; open sidebar                                                               |
+| `Enter`                       | Open sidebar if collapsed                                                                |
+| `Esc`                         | Collapse sidebar / close drawer                                                          |
+| Note toggle                   | Open/collapse sidebar                                                                    |
+| History toggle / `Cmd/Ctrl+B` | Open/collapse history                                                                    |
+| Theme toggle                  | Light/dark; persist                                                                      |
+| Save                          | Inline toast with Undo                                                                   |
+| Translation Natural/Raw       | Swap translation text; persist preference                                                |
+| History item                  | Load session; reset center/sidebar scroll to top                                         |
+| `+` / New breakdown           | Return home with input focused                                                           |
+| Sidebar Prev/Next             | Move selected chunk; keep sidebar open                                                   |
+| Drawer scrim click            | Close drawer                                                                             |
+| Tatoeba audio                 | Play/pause the recording; no layout change                                               |
+| Search Tatoeba                | Open the public Tatoeba search page for the current lookup                               |
+| PWA update prompt             | Reload applies the waiting service worker and reloads; Later dismisses until next launch |
+| Settings gear                 | Open Settings on the AI tab                                                              |
+| Settings → Data               | Export or import sessions                                                                |
 
 At 900–1099, the sidebar is a drawer: selecting a chunk opens it over the center; the history rail remains visible.
 
@@ -450,14 +460,14 @@ At 900–1099, the sidebar is a drawer: selecting a chunk opens it over the cent
 
 ## 10. Responsive rules (desktop only)
 
-| Width | History | Sidebar | Center | Key/map |
-|---|---|---|---|---|
-| **< 900** | Guard | Guard | Guard | Guard |
-| **900** | 56 rail | 44 rail; opens as drawer | 800px | Stacked (≤900) |
-| **901–1099** | 56 rail | 44 rail; opens as drawer | 801–999px | 2-col/horizontal |
-| **1100–1279** | 56 rail | 300 column | 744–923px | 2-col/horizontal |
-| **1280–1439** | 240 column | 300 column | 740–899px | 2-col/horizontal |
-| **≥1440** | 240 column | 320 column | 880px+ | 2-col/horizontal |
+| Width         | History    | Sidebar                  | Center    | Key/map          |
+| ------------- | ---------- | ------------------------ | --------- | ---------------- |
+| **< 900**     | Guard      | Guard                    | Guard     | Guard            |
+| **900**       | 56 rail    | 44 rail; opens as drawer | 800px     | Stacked (≤900)   |
+| **901–1099**  | 56 rail    | 44 rail; opens as drawer | 801–999px | 2-col/horizontal |
+| **1100–1279** | 56 rail    | 300 column               | 744–923px | 2-col/horizontal |
+| **1280–1439** | 240 column | 300 column               | 740–899px | 2-col/horizontal |
+| **≥1440**     | 240 column | 320 column               | 880px+    | 2-col/horizontal |
 
 Rules:
 
@@ -471,19 +481,34 @@ Rules:
 
 ## 11. Accessibility
 
-- Contrast: ink/sheet ≥ 7:1; muted ≥ 4.5:1; borders/focus ≥ 3:1.
+- Contrast: ink/sheet ≥ 7:1; muted ≥ 4.5:1 on all three light surfaces; interactive
+  boundaries, focus rings, and the accent ≥ 3:1. `tokens.test.ts` checks light/dark.
 - Every interactive element has a visible `:focus-visible` ring (2px accent).
-- Chunks are buttons; keyboard `1–6`, Enter, Esc.
-- Scroll regions are focusable with `tabindex="0"` and labeled.
-- `aria-pressed` for toggles; `aria-label` for icon buttons.
+- A “Skip to main content” link is the first focusable element. Each view has one `h1`;
+  reading sections use `h2`, and sidebar/data sections use `h3`.
+- Chunks are buttons; keyboard `1–6`, Enter, Esc. Scroll regions are focusable with
+  `tabindex="0"` and labeled.
+- Settings uses a `tablist` with roving `tabindex` and Left/Right/Home/End keys; the Data
+  import mode is a `radiogroup` with arrow-key selection.
+- Dialogs and the 900–1099 sidebar drawer trap focus, close with Esc, and return focus to
+  the element that opened them. The rail button returns focus after a scrim close.
+- `aria-pressed` for toggles; `aria-current` for the active history item; `aria-expanded`
+  for the settings and popover triggers; `aria-label` for icon buttons.
 - Color is never the only signal: chunk numbers, role labels, selected border.
-- Respect `prefers-reduced-motion`; no reading-surface animation.
-- Japanese text must remain readable at 200% zoom; no fixed-height text containers.
-- Drawers: scrim, close button, Esc, focus trap (target behavior).
+- Respect `prefers-reduced-motion`; no reading-surface animation. Drawers and scrims snap
+  or cross-fade when reduced motion is requested.
+- Dark-mode depth comes from progressively lighter surfaces (`bg → surface → surface-2`),
+  not shadows. `tokens.test.ts` checks this ordering.
+- All viewport-height calculations use `100dvh`, never `100vh`.
+- UI icon strokes stay at 1.7 so they sit consistently beside 500/600-weight text; do not
+  mix thin and heavy icons in one toolbar.
 - No 8–9px labels.
 - Tatoeba audio buttons have descriptive `aria-label`s and `aria-pressed`; Tatoeba status
   messages use `role="status"`; source and search links open in a new tab with
   `rel="noreferrer"`.
+- **Desktop-only limitation:** below 900px the guard replaces the app, so full WCAG reflow
+  at 200%/400% zoom is intentionally unsupported. Japanese text remains readable at 200%
+  within supported desktop widths; fixed-height text containers are not used.
 
 ---
 
@@ -527,6 +552,9 @@ Rules:
 - Use the six hues consistently.
 - Make the first screen a tool, not a pitch.
 - Show real Tatoeba sentences with a source link and attribution.
+- Use `--control-line` for interactive boundaries and `calc()` for inset radii.
+- Keep dark-mode elevation progressive (`bg → surface → surface-2`).
+- Use `100dvh` for full-height surfaces.
 
 **Don't**
 
@@ -547,6 +575,9 @@ Rules:
 - Don't show Tatoeba and generated examples as two competing lists.
 - Don't use colored left-border accents on notes, error boxes, active rows, or diagram
   boxes. Use tint, spacing, hairlines, dots, and type instead.
+- Don't use a decorative hairline as the only boundary of a control.
+- Don't add carousel edge masks, blur icon swaps, or multiply-blended product images; none
+  of those patterns fit the current content.
 
 ---
 

@@ -34,6 +34,8 @@ account, and no Bunkai server; optional AI and Tatoeba calls go directly from yo
 to those services. It is a reading desk, not a dictionary, chatbot, flashcard app, or
 course.
 
+**Release:** v0.1.0 local desktop release. See [release notes](./docs/RELEASE.md).
+
 ## What you get
 
 - **Chunked reading.** The sentence is the hero. Every chunk has a colour, a role, kana,
@@ -222,6 +224,7 @@ updates before installing them.
 - [Implementation plan](./docs/PLAN.md)
 - [Project manifest](./docs/manifest.md)
 - [Living handoff](./docs/HANDOFF.md)
+- [Release notes](./docs/RELEASE.md)
 - [Tatoeba research](./research/tatoeba/README.md)
 
 ## License

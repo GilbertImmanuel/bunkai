@@ -8,19 +8,19 @@
 
 ## Current status
 
-| Field           | Value                                                                              |
-| --------------- | ---------------------------------------------------------------------------------- |
-| Current phase   | **Phase 8 — PWA / local distribution**                                             |
-| Phase status    | **8A/8B + security hardening complete**; local-only, no deployment; 8C not planned |
-| Last updated    | 2026-11-23                                                                         |
-| App root        | Repository root                                                                    |
-| Package manager | Bun 1.3.14                                                                         |
-| Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                                      |
-| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private                       |
-| Source          | `main`; hardening through `aeea7dc`; docs `b9210c5`                                |
-| Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance                 |
-| License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                                     |
-| Next action     | Final docs check, then decide whether to share the private repo with reviewers     |
+| Field           | Value                                                                       |
+| --------------- | --------------------------------------------------------------------------- |
+| Current phase   | **Phase 9 — Polish and release (complete)**                                 |
+| Phase status    | **v0.1.0 local desktop release**; local-only, no deployment; 8C not planned |
+| Last updated    | 2026-11-23                                                                  |
+| App root        | Repository root                                                             |
+| Package manager | Bun 1.3.14                                                                  |
+| Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                               |
+| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private                |
+| Source          | `main`; release code `f063bf8`; docs checkpoint follows                     |
+| Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance          |
+| License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                              |
+| Next action     | Review v0.1.0; tag/release and reviewer access are optional next steps      |
 
 **Summary:** Phase 8A makes the app installable and usable offline. A generated web
 manifest, 文-mark icons, and a Workbox service worker precache the app shell, JS/CSS, and
@@ -30,9 +30,12 @@ sessions, import with merge or replace, validate malformed files, and never incl
 keys, preferences, or the Tatoeba cache. The security hardening pass adds a production-only
 meta CSP, strict bounded import validation, unique chunk ids, proxy canonicalization,
 verified key removal, stale-enrichment guards, and decoded-byte/deadline limits for AI and
-Tatoeba responses. Distribution is **local-only**: there is no hosted instance and no
-share URL. The repository is private and MIT licensed. Phase 7.5A/B (Tatoeba examples)
-remains complete and 7.5C is still unapproved.
+Tatoeba responses. Phase 9 completes the accessibility and visual polish pass: skip link,
+heading hierarchy, tab/radiogroup keyboard support, focus return, light/dark contrast tokens,
+concentric radii, and control-border tokens. Distribution is **local-only**: there is no
+hosted instance and no share URL. The repository is private, MIT licensed, and v0.1.0 is the
+first local desktop release. Phase 7.5A/B (Tatoeba examples) remains complete and 7.5C is
+still unapproved.
 
 ## Session checkpoint — 2026-11-23 (security + hardening)
 
@@ -58,6 +61,34 @@ remains complete and 7.5C is still unapproved.
   (46), `bun run test:pwa` (2), `bun run build` all pass.
 - **Next:** review the docs, then share the private repository with reviewers if desired.
   A native desktop wrapper and 7.5C remain separate future decisions.
+
+## Session checkpoint — 2026-11-23 (Phase 9 release)
+
+- **Phase:** Phase 9 complete. `package.json` is `0.1.0`; `docs/RELEASE.md` is the v0.1.0
+  release note. The repo remains private and local-only.
+- **Accessibility:**
+  - Skip link, one `h1` per view, `h2` reading sections, `h3` sidebar/data sections.
+  - Settings tabs use roving `tabindex` and Left/Right/Home/End; import mode uses an
+    arrow-key `radiogroup`.
+  - Settings and the 900–1099 drawer return focus to their trigger; the active history item
+    exposes `aria-current`; the hidden backup file input is removed from the tab order.
+  - Light-mode `--muted` now meets 4.5:1 on all three surfaces; `--control-line` gives
+    interactive boundaries ≥3:1 without darkening every decorative hairline.
+  - Focus rings, reduced motion, and dark-mode elevation are covered by tests/QA.
+- **Visual polish:** concentric radii use `calc(var(--r-btn) - 2px)`; controls use
+  `--control-line`; dark elevation stays `bg → surface → surface-2`; all full-height
+  surfaces use `100dvh`. Masked carousels, blur icon swaps, and multiply blending were
+  rejected as not applicable.
+- **Cleanup:** no unused Svelte components or public assets were found; no `100vh` remains
+  in `src`.
+- **Verification:** `bun run check`, `bun run lint`, `bun run test` (117), `bun run test:e2e`
+  (49), `bun run test:pwa` (2), `bun run build` all pass. Browser suites were run
+  sequentially.
+- **Known limitations:** desktop-only below 900px (no full WCAG reflow at high zoom); no
+  installer, hosted deployment, or share URL; plaintext backups; no multi-tab sync or
+  history delete.
+- **Next:** review v0.1.0 and decide whether to tag `v0.1.0` and/or share the private repo.
+  Phase 7.5C and a native desktop wrapper remain separate future decisions.
 
 ---
 
@@ -777,10 +808,47 @@ remains complete and 7.5C is still unapproved.
 
 ### Phase 9 — Polish and release
 
-- **Status:** Pending
-- **Completed:** —
-- **Tests:** —
-- **Next:** —
+- **Status:** Complete; v0.1.0 local desktop release.
+- **Goal:** Final quality pass: accessibility, visual QA, tests, cleanup, docs, local
+  install check, release note.
+- **Completed:**
+  - Added a skip link, hidden page `h1` for the workspace, and `h2`/`h3` section headings.
+  - Settings tabs now use roving `tabindex`, ARIA tab/tabpanel relationships, and
+    Left/Right/Home/End keys. Import mode is an arrow-key `radiogroup`.
+  - Settings and the 900–1099 drawer return focus to their trigger; the active history item
+    exposes `aria-current`.
+  - Added light-mode contrast tests, `--control-line` for interactive boundaries, a darker
+    light `--muted`, and a dark-elevation ordering test.
+  - Applied concentric inner radii with `calc()` and audited control borders, icon stroke
+    weight, `100dvh`, and dark surface depth.
+  - Removed no components/assets because none were unused; confirmed no `100vh` remains.
+  - Updated README, DESIGN, manifest, PLAN, SOURCE_OF_TRUTH, HANDOFF, and added
+    `docs/RELEASE.md`; bumped `package.json` to 0.1.0.
+- **Files touched:**
+  - `src/App.svelte`, `TopBar.svelte`, `AiSettingsDrawer.svelte`, `DataPanel.svelte`,
+    `HistoryPanel.svelte`, `BreakdownSidebar.svelte`, `ReadingSheet.svelte`,
+    `LiteralKey.svelte`, `SentenceMap.svelte`, `SentenceNote.svelte`,
+    `TranslationToggle.svelte`, `Home.svelte`
+  - `src/lib/styles/tokens.css`, `base.css`, `tokens.test.ts`
+  - `tests/e2e/smoke.spec.ts`, `tests/e2e/backup.spec.ts`
+  - `README.md`, `docs/DESIGN.md`, `docs/PLAN.md`, `docs/SOURCE_OF_TRUTH.md`,
+    `docs/manifest.md`, `docs/HANDOFF.md`, `docs/README.md`, `docs/RELEASE.md`,
+    `package.json`
+- **Tests:**
+  - `bun run check` — pass.
+  - `bun run lint` — pass.
+  - `bun run test` — 117 pass.
+  - `bun run test:e2e` — 49 pass.
+  - `bun run test:pwa` — 2 pass.
+  - `bun run build` — pass; CSP, no-referrer, manifest, service worker, 19-entry precache.
+- **Screenshots/checks:**
+  - Existing e2e screenshots cover 900/1024/1099/1100/1200/1279/1280/1440, light/dark
+    reader, drawer, settings, backup import, toast, and Tatoeba.
+  - Keyboard checks: settings tabs, import mode, drawer/settings focus return, history
+    `aria-current`, skip link, workspace heading.
+- **Blockers:** None.
+- **Next:** Tag `v0.1.0` and/or share the private repo. 7.5C and a native wrapper remain
+  separate future decisions.
 
 ---
 
@@ -796,9 +864,10 @@ remains complete and 7.5C is still unapproved.
 | Playwright browsers | Not installed | Uses system Chrome via `channel: "chrome"`    |
 | Git                 | 2.44.0        | Repository initialized; private GitHub remote |
 
-**Dependency status (after security hardening):**
+**Dependency status (v0.1.0):**
 
 - App scaffolded at the repository root with Vite 8.3.5, Svelte 5.57.3, TypeScript 6.0.3.
+- `package.json` version is 0.1.0.
 - `idb-keyval` 6.3.0 installed and wired to `bunkai.sessions`.
 - `fake-indexeddb` 6.2.7 installed for Vitest persistence tests.
 - `motion` 14.9.0 installed for Framer Motion DOM animations.
@@ -839,11 +908,17 @@ remains complete and 7.5C is still unapproved.
 - Distribution is local-only; there is no hosted deployment or 8C share URL.
 - The repository is private and MIT licensed (copyright 2026 Gilbert Immanuel Hasiholan).
 - The production build injects a meta CSP; imports and AI/Tatoeba responses are bounded.
+- Phase 9 is complete; v0.1.0 is the first local desktop release.
+- Interactive controls use `--control-line`; decorative hairlines stay quieter.
+- Full-height surfaces use `100dvh`; dark depth comes from progressive surface lightness.
+- Desktop-only remains a known limitation; no mobile/reflow layout.
 
 ---
 
 ## Open questions
 
+- Tag `v0.1.0` and publish a private release note, or keep the version untagged for now?
+- Share the private repository with reviewers now?
 - Approve Phase 7.5C (Home “Find a sentence” picker)?
 - A native desktop wrapper (Tauri/Electron) is not planned; revisit only if a double-click
   install becomes necessary.
