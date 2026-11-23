@@ -19,7 +19,8 @@ wins over every other document.
 - The app is desktop-first and local-first: no backend, login, or cloud sync.
 - Sample and manual modes work without an API key.
 - Phase 7.5A/B (Tatoeba examples) is complete; Phase 7.5C is not approved.
-- Phase 8 (PWA/sharing) is pending.
+- Phase 8A (PWA/offline) is complete; Phase 8B (export/import) and 8C (optional share
+  link) are pending.
 
 ## Local-only material
 

@@ -10,27 +10,22 @@
 
 | Field | Value |
 |---|---|
-| Current phase | **Phase 7.5 — Tatoeba examples** |
-| Phase status | **7.5A/7.5B complete**; 7.5C awaiting approval |
+| Current phase | **Phase 8 — PWA / sharing** |
+| Phase status | **8A complete**; 8B (export/import) and 8C (optional share link) pending |
 | Last updated | 2026-11-23 |
 | App root | Repository root |
 | Package manager | Bun 1.3.14 |
 | Stack | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3 |
 | Git | [GitHub](https://github.com/GilbertImmanuel/bunkai); private |
 | Deploy | Not deployed |
-| Next action | Review 7.5A/B; approve 7.5C or start Phase 8 |
+| Next action | Review 8A; start 8B export/import |
 
-**Summary:** Phase 7.5A/B add an optional Tatoeba example layer to the breakdown sidebar.
-Selecting a chunk now looks up a short Japanese term and shows 2–3 real Tatoeba sentences
-with approved English translations, source links, contributor and license attribution, and
-licensed audio where available. Results are cached in IndexedDB for 30 days, fetched only
-while the sidebar is open, and aborted when the chunk changes. If Tatoeba is slow, empty,
-unavailable, or the chunk has no automatic lookup, the existing generated examples remain
-as a labelled fallback. The integration is direct-from-browser: no backend, auth, proxy, or
-new dependency. Phase 7.5C (Home sentence picker) is not started. A later visual cleanup
-removed the colored left-border accent pattern from the sentence note, AI warning/error
-boxes, active history rows, and sentence-map tree boxes; neutral panel edges and the
-reading-sheet rule remain.
+**Summary:** Phase 8A makes the app installable and usable offline. A generated web
+manifest, 文-mark icons, and a Workbox service worker precache the app shell, JS/CSS, and
+`woff2` fonts. New versions prompt with a quiet “A new version is available” banner instead
+of reloading silently. The app remains local-first and desktop-only; AI and Tatoeba API
+responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains complete and
+7.5C is still unapproved.
 
 ---
 
@@ -646,10 +641,51 @@ reading-sheet rule remain.
 
 ### Phase 8 — PWA / sharing
 
-- **Status:** Pending
-- **Completed:** —
-- **Tests:** —
-- **Next:** —
+- **Status:** 8A (PWA/offline) complete. 8B (export/import) and 8C (optional share link)
+  are pending.
+- **Goal:** Installable static app, offline shell, export/import, simple sharing.
+- **Completed (8A):**
+  - Added `vite-plugin-pwa` 2.0.0 and generated a web manifest with the 文-mark icon set:
+    192, 512, maskable 512, and Apple touch.
+  - Precache the app shell, hashed JS/CSS, `woff2` fonts, favicon, and icons. No AI or
+    Tatoeba API responses are runtime-cached.
+  - Added an SPA navigation fallback and `cleanupOutdatedCaches`.
+  - Added a quiet update banner driven by `virtual:pwa-register`: Reload applies the waiting
+    service worker; Later dismisses it until the next launch. No silent reload.
+  - Show “Ready to work offline” through the existing toast on first install.
+  - Updated the theme-color meta with light/dark mode and added the Apple touch icon link.
+  - Added `bun run test:pwa` with a built-preview test that checks the manifest, service
+    worker control, and offline reload/workspace.
+  - Added the PWA icon generator config and `bun run icons`.
+- **Decisions:**
+  - Prompt-based updates (`registerType: 'prompt'`, `skipWaiting: false`,
+    `clientsClaim: false`) rather than auto-reload.
+  - Precache `woff2` only; the `woff` fallback is not precached.
+  - The service worker caches static app assets only, never provider or Tatoeba responses.
+  - Icons are generated once from `public/favicon.svg`; the generator is a dev dependency.
+  - No deployment target chosen yet; `dist/` remains a static build.
+- **Files touched:**
+  - `vite.config.ts`, `index.html`, `package.json`, `bun.lock`, `tsconfig.node.json`
+  - `pwa-assets.config.ts`, `playwright.pwa.config.ts`, `tests/pwa/pwa.spec.ts`
+  - `src/vite-env.d.ts`, `src/App.svelte`, `src/lib/components/PwaUpdate.svelte`
+  - `public/pwa-192x192.png`, `pwa-512x512.png`, `maskable-icon-512x512.png`,
+    `apple-touch-icon-180x180.png`
+  - `docs/SOURCE_OF_TRUTH.md`, `PLAN.md`, `DESIGN.md`, `manifest.md`, `HANDOFF.md`, `README.md`
+- **Tests:**
+  - `bun run check` — pass.
+  - `bun run lint` — pass.
+  - `bun run test` — pass, 92 tests.
+  - `bun run test:e2e` — pass, 41 tests.
+  - `bun run test:pwa` — pass, 1 test (manifest, service worker, offline reload).
+  - `bun run build` — pass; `dist/manifest.webmanifest`, `dist/sw.js`, and Workbox runtime
+    generated.
+- **Screenshots/checks:**
+  - PWA icons: `public/pwa-192x192.png`, `public/pwa-512x512.png`,
+    `public/maskable-icon-512x512.png`, `public/apple-touch-icon-180x180.png`.
+  - Precache: 19 entries, ~3.2 MB, no duplicate URLs.
+- **Blockers:** None.
+- **Next:** 8B — export/import sessions as versioned JSON, with merge/replace and no API
+  keys or Tatoeba cache.
 
 ### Phase 9 — Polish and release
 
@@ -672,16 +708,18 @@ reading-sheet rule remain.
 | Playwright browsers | Not installed | Uses system Chrome via `channel: "chrome"` |
 | Git | 2.44.0 | No repository initialized |
 
-**Dependency status (after Phase 7.5):**
+**Dependency status (after Phase 8A):**
 
 - App scaffolded at the repository root with Vite 8.3.5, Svelte 5.57.3, TypeScript 6.0.3.
 - `idb-keyval` 6.3.0 installed and wired to `bunkai.sessions`.
 - `fake-indexeddb` 6.2.7 installed for Vitest persistence tests.
 - `motion` 14.9.0 installed for Framer Motion DOM animations.
 - No new runtime dependency for Tatoeba; `idb-keyval` 6.3.0 is reused for the cache.
+- `vite-plugin-pwa` 2.0.0 and `@vite-pwa/assets-generator` 2.0.0 installed as dev
+  dependencies for the PWA manifest, service worker, and icon generation.
 - Fontsource Shippori Mincho, Vollkorn, iA Writer Quattro, and iA Writer Mono 5.3.0 installed and self-hosted.
 - Vitest 5.0.5, Playwright 1.64.1, svelte-check 4.7.8, ESLint 10.14.0, Prettier 3.9.10 installed.
-- `bun.lock` present. No PWA plugin yet.
+- `bun.lock` present.
 
 ---
 
@@ -706,6 +744,8 @@ reading-sheet rule remain.
   key, local cache. Generated examples remain the fallback.
 - Tatoeba text and audio are attributed; empty-license audio is not reused.
 - 7.5C (Home sentence picker) is not approved.
+- Phase 8A uses prompt-based PWA updates; the service worker caches only static app assets,
+  never AI or Tatoeba API responses.
 
 ---
 
@@ -778,5 +818,8 @@ Before marking a phase complete:
 | Tatoeba latency spikes | 12s timeout, 30-day cache, generated fallback, retry link |
 | Tatoeba search noise | short content lookups, containment filter, duplicate removal |
 | Tatoeba licensing/attribution mistakes | per-sentence and per-audio attribution; omit empty-license audio; source links |
+| PWA cache serves stale assets | `cleanupOutdatedCaches`; prompt the user to reload a waiting service worker |
+| PWA precache is large | Precache `woff2` only (19 entries, ~3.2 MB); no API responses |
+| Silent reload loses unsaved state | Prompt-based updates; Reload is explicit |
 | Playwright browsers missing | Use system Chrome/Edge with `channel`, or install Chromium |
 | Scope creep into phone/marketing/auth | Read `SOURCE_OF_TRUTH.md`; stop and ask |

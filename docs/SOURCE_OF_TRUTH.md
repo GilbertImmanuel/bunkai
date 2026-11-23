@@ -78,7 +78,7 @@ The first usable version includes:
 | Tests | Vitest + Playwright |
 | Lint/format | ESLint + Prettier, TypeScript strict |
 | Deployment | Static build (`dist/`) on Cloudflare Pages, Netlify, or Vercel |
-| PWA | Later, Phase 8 (`vite-plugin-pwa`) |
+| PWA | Phase 8A complete: `vite-plugin-pwa` 2.0.0, installable, offline shell, prompt updates |
 | AI/API | Phase 7 complete: BYO key, sample mode default, no backend |
 | Example corpus | Tatoeba API v1: optional, read-only, direct browser fetch, no backend |
 
@@ -148,6 +148,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D021 | App root is the repository root; `docs/` and `research/tatoeba/` stay in subfolders. Local-only design references, prototypes, and third-party research are not committed. | Accepted |
 | D022 | Tatoeba is an optional, read-only example layer. Direct browser fetches, no backend or key, 2–3 examples per selected chunk, local IndexedDB cache. Text attribution is CC BY 2.0 FR; audio is shown only when licensed and is attributed per recording. AI examples remain the fallback. | Accepted |
 | D023 | No colored left-border accents on notes, cards, active rows, or diagram boxes. Structure comes from tint, spacing, hairlines, dots, and type; panel edges and the neutral reading rule remain. | Accepted |
+| D024 | Phase 8A PWA: installable standalone app, offline app shell and fonts, prompt-based updates. The service worker caches only the app shell, never AI or Tatoeba API responses. | Accepted |
 
 ---
 
@@ -157,7 +158,8 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 - **App:** scaffolded at the repository root with Vite 8, Svelte 5, and TypeScript.
 - **Phase:** Phase 7 complete (AI/API). Phase 7.5 (Tatoeba examples) A/B complete:
   real examples in the breakdown sidebar, local cache, attribution, generated fallback.
-  7.5C (Home sentence picker) is not approved.
+  7.5C (Home sentence picker) is not approved. Phase 8A (PWA/offline) is complete;
+  8B (export/import) and 8C (optional share link) are pending.
 - **Repository:** app at the root; `docs/` and `research/tatoeba/` are subfolders. Local
   design references, prototypes, and third-party research are ignored.
 - **Visual cleanup:** colored left-border accents were removed from the sentence note, AI

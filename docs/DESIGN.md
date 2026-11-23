@@ -374,6 +374,27 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 
 - Bottom center; dark surface; text + Undo; 3s; accessible live region.
 
+### PWA update banner
+
+- Fixed bottom center, 76px above the toast; only visible when a new service worker is
+  waiting.
+- 13px UI text; `--surface-2` background; 1px `--line-strong` border; `--r-btn` radius;
+  `--shadow-panel`. No colored left accent.
+- Copy: “A new version is available.” plus Reload (accent) and Later (muted).
+- No auto-dismiss; Later hides it until the next launch. Reload activates the waiting
+  service worker and reloads. No layout shift.
+- The offline-ready event uses the existing Toast: “Ready to work offline”.
+
+### PWA / offline
+
+- Manifest icons use the same 文 mark as the favicon. The app is standalone, with
+  `theme_color` and `background_color` `#e7dcc9`; the theme-color meta follows light/dark.
+- Precache the app shell, hashed JS/CSS, `woff2` fonts, favicon, and icons.
+- Do not runtime-cache AI or Tatoeba API responses. Sessions and preferences already live
+  in IndexedDB/localStorage, so they work offline. AI/Tatoeba degrade to their existing
+  errors and fallbacks.
+- Desktop-only; the PWA does not add a phone layout.
+
 ### Guard
 
 - Shown below 900px.
@@ -407,6 +428,7 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 | Drawer scrim click | Close drawer |
 | Tatoeba audio | Play/pause the recording; no layout change |
 | Search Tatoeba | Open the public Tatoeba search page for the current lookup |
+| PWA update prompt | Reload applies the waiting service worker and reloads; Later dismisses until next launch |
 
 At 900–1099, the sidebar is a drawer: selecting a chunk opens it over the center; the history rail remains visible.
 

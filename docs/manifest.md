@@ -46,25 +46,30 @@ bunkai-sentence-expansion/
 │  └─ KICKOFF.md
 ├─ research/
 │  └─ tatoeba/              # committed integration research
-├─ public/                  # favicon and future PWA icons
+├─ public/                  # favicon, PWA icons
 ├─ src/
 │  ├─ lib/
 │  │  ├─ ai/
-│  │  ├─ components/
+│  │  ├─ components/        # includes PwaUpdate.svelte
 │  │  ├─ data/
 │  │  ├─ stores/
 │  │  ├─ styles/
 │  │  ├─ tatoeba/
 │  │  └─ utils/
 │  ├─ App.svelte
-│  └─ main.ts
+│  ├─ main.ts
+│  └─ vite-env.d.ts
 ├─ tests/
+│  ├─ e2e/
+│  └─ pwa/
 ├─ index.html
 ├─ package.json
 ├─ bun.lock
 ├─ vite.config.ts
 ├─ vitest.config.ts
 ├─ playwright.config.ts
+├─ playwright.pwa.config.ts
+├─ pwa-assets.config.ts
 ├─ svelte.config.js
 ├─ tsconfig.json
 ├─ eslint.config.js
@@ -93,6 +98,8 @@ Run from the repository root:
 | `bun run format` | Prettier write |
 | `bun run test` | Vitest |
 | `bun run test:e2e` | Playwright |
+| `bun run test:pwa` | Build + preview; manifest, service worker, offline shell |
+| `bun run icons` | Regenerate PWA icons from `public/favicon.svg` |
 | `bunx playwright install chromium` | Optional; or use system Chrome/Edge via `channel` |
 
 Scaffold (Phase 0, already completed; the app is at the root):
@@ -104,6 +111,10 @@ bun add idb-keyval
 bun add @fontsource/shippori-mincho @fontsource/vollkorn @fontsource/ia-writer-quattro @fontsource/ia-writer-mono
 bun add -d vitest @playwright/test svelte-check eslint prettier eslint-plugin-svelte prettier-plugin-svelte
 ```
+
+PWA build outputs: `dist/manifest.webmanifest`, `dist/sw.js`, `dist/workbox-*.js`, and a
+precache of the app shell, JS/CSS, `woff2` fonts, and icons. AI and Tatoeba API responses
+are not runtime-cached.
 
 ---
 
@@ -129,7 +140,8 @@ Use `^` ranges and commit `bun.lock`. These are the known latest versions at doc
 | `prettier` | `^3` | Format |
 | `eslint-plugin-svelte` | latest compatible | Svelte lint |
 | `prettier-plugin-svelte` | latest compatible | Svelte format |
-| `vite-plugin-pwa` | Phase 8 | PWA |
+| `vite-plugin-pwa` | `^2.0.0` | PWA manifest, service worker, updates |
+| `@vite-pwa/assets-generator` | `^2.0.0` | Dev-only PWA icon generation |
 
 Add `"packageManager": "bun@1.3.14"` and `"engines": { "node": ">=22" }` to `package.json`.
 
@@ -334,7 +346,7 @@ Only three scroll areas: history list, center, sidebar body. No page scroll. Aut
 | 6 Dark mode | Warm charcoal, contrast, no olive cast |
 | 7 AI/API | BYO key optional; sample mode default; no backend |
 | 7.5 Tatoeba | A/B complete: sample lookups, cached real examples, attribution, generated fallback; 7.5C not approved |
-| 8 PWA | Installable, offline, export/import, static deploy |
+| 8 PWA | 8A complete: installable, offline shell, prompt updates; 8B/8C pending |
 | 9 Polish | A11y, tests, docs, release |
 
 Every gate requires `HANDOFF.md` updated.
@@ -377,6 +389,15 @@ Automated Tatoeba coverage uses a mocked `https://api.tatoeba.org/**` route. No 
 Tatoeba call is part of `bun run test` or `bun run test:e2e`. Manual live checks are
 allowed and should be recorded in `research/tatoeba/log.md`.
 
+PWA checks:
+
+- [ ] `bun run test:pwa` passes (manifest link, service worker, offline reload).
+- [ ] Build output contains `dist/manifest.webmanifest`, `dist/sw.js`, and
+      `dist/workbox-*.js`.
+- [ ] The manifest icons resolve, including the maskable icon.
+- [ ] AI and Tatoeba API responses are absent from the service-worker precache.
+- [ ] Manual: install from Chrome/Edge, reopen offline, and verify the app shell.
+
 ---
 
 ## 13. Environment
@@ -405,6 +426,10 @@ allowed and should be recorded in `research/tatoeba/log.md`.
   term is sent. The app does not send the sentence, session, history, or any key.
 - Tatoeba examples are cached locally in IndexedDB. Do not bulk-download the corpus.
 - Tatoeba text and audio attribution is required. Empty-license audio is not reused.
+- The PWA service worker caches only the app shell and static assets. It must not
+  runtime-cache AI provider requests or Tatoeba API responses.
+- Site data (sessions, preferences, Tatoeba cache, service worker) can be cleared from the
+  browser; there is no server-side copy.
 
 ---
 

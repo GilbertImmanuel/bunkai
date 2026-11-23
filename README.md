@@ -49,6 +49,9 @@ It is a reading desk, not a dictionary, chatbot, flashcard app, or course.
   Claude. With no key, the sample and manual modes work fully.
 - **Local-first.** No backend, no login, no cloud sync, no analytics. AI keys and sessions
   stay in your browser.
+- **Installable and offline.** Install from desktop Chrome/Edge; the app shell and fonts
+  load offline. Updates prompt instead of reloading silently. AI and Tatoeba API responses
+  are never cached by the service worker.
 
 ## Quick start
 
@@ -83,6 +86,8 @@ bun run check       # svelte-check + TypeScript
 bun run lint        # ESLint
 bun run test        # Vitest
 bun run test:e2e    # Playwright (system Chrome by default)
+bun run test:pwa    # build + preview; manifest, service worker, offline shell
+bun run icons       # regenerate PWA icons from public/favicon.svg
 bun run build       # static build in dist/
 bun run preview     # preview the build
 ```
@@ -104,9 +109,11 @@ The app is desktop-only. Below 900px it shows a guard instead of a broken layout
 │  ├─ App.svelte
 │  └─ main.ts
 ├─ tests/e2e/         # Playwright coverage with mocked AI/Tatoeba routes
+├─ tests/pwa/         # manifest, service worker, and offline shell
 ├─ docs/              # product, design, plan, manifest, handoff, docs index
 ├─ research/tatoeba/  # verified API and licensing research
-└─ public/            # favicon
+├─ public/            # favicon and PWA icons
+└─ pwa-assets.config.ts
 ```
 
 ## Local-first notes

@@ -407,30 +407,51 @@ blockers, and whether 7.5C is approved.
 
 ---
 
-# Part 8 — PWA / sharing (later)
+# Part 8 — PWA / sharing
 
 **Goal:** Installable static app, offline shell, export/import, simple sharing.
 
-### Tasks
+**Status:** 8A (PWA/offline) complete. 8B (export/import) and 8C (optional share
+URL) are pending.
 
-- [ ] `vite-plugin-pwa`; `manifest.webmanifest`; icons; theme colors.
-- [ ] Offline shell and fonts.
-- [ ] Export/import sessions as JSON.
+### 8A — PWA / offline
+
+- [x] `vite-plugin-pwa` 2.0.0; `manifest.webmanifest`; 文-mark icons; theme colors.
+- [x] Offline app shell and self-hosted `woff2` fonts.
+- [x] Prompt-based update banner; no silent reload.
+- [x] Do not runtime-cache AI or Tatoeba API responses.
+- [x] `bun run test:pwa` verifies the manifest, service worker, and offline reload.
+
+### 8B — Export / import
+
+- [ ] Export sessions as versioned JSON.
+- [ ] Import with merge and replace; validate malformed files.
+- [ ] Exclude AI keys and the Tatoeba cache from backups.
+- [ ] Settings → Data UI.
+
+### 8C — Optional share URL
+
+- [ ] Read-only share link only if the privacy tradeoff is accepted.
+- [ ] Otherwise keep sharing to export/import.
+
+### Delivery
+
 - [ ] Static deployment (`dist/`) to Cloudflare Pages/Netlify/Vercel.
-- [ ] Optional share URL only if privacy is acceptable; otherwise export/import.
-- [ ] No accounts.
+- [x] No accounts.
 
 ### Acceptance criteria
 
 - `bun run build` produces a static `dist`.
 - Installable and loads offline.
-- Export/import round-trips sessions.
+- Updates prompt instead of reloading silently.
+- Export/import round-trips sessions (8B).
 - No backend.
 
 ### Tests
 
 - `bun run build` + preview; Lighthouse/PWA install; offline reload.
-- Manual: export/import.
+- `bun run test:pwa` — manifest, service worker, offline shell.
+- Manual: export/import (8B).
 
 ### Handoff checkpoint
 
@@ -489,6 +510,7 @@ Test states:
 - Sidebar with Tatoeba examples
 - Sidebar with generated fallback (Tatoeba empty/error)
 - Sidebar drawer (900–1099)
+- PWA offline shell
 - Guard at 899
 
 ## Global definition of done
@@ -503,4 +525,5 @@ Test states:
 - Dark mode is warm charcoal, not olive.
 - Tatoeba examples are optional, attributed, locally cached, and never required for the
   app to work. No live Tatoeba calls in automated tests.
+- The static build is installable, reloads offline, and prompts before applying an update.
 - `HANDOFF.md` updated after every part.
