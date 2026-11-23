@@ -1,6 +1,8 @@
 /* eslint-disable svelte/prefer-svelte-reactivity -- dates here are local clock values, not reactive state */
 import type { Session } from '../data/types'
 import { sampleSessions } from '../data/sessions'
+import { mergeSessions, replaceSessions } from '../data/backup'
+import { isSession } from '../data/sessionValidation'
 import { applyLayout, openSession } from './app.svelte'
 import {
   clearLastSessionId,
@@ -31,19 +33,6 @@ export const historyState = $state<HistoryState>({
 let initialized = false
 let undoSessionId: string | null = null
 let previousLastSessionId: string | null = null
-
-function isSession(value: unknown): value is Session {
-  if (!value || typeof value !== 'object') return false
-
-  const session = value as Partial<Session>
-  return (
-    typeof session.id === 'string' &&
-    typeof session.sentence === 'string' &&
-    typeof session.createdAt === 'string' &&
-    Array.isArray(session.chunks) &&
-    session.chunks.length > 0
-  )
-}
 
 function sortSessions(sessions: Session[]): Session[] {
   return [...sessions].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
@@ -183,6 +172,52 @@ export async function updateSession(session: Session): Promise<boolean> {
       'History is available for this tab only. IndexedDB could not be written.'
     return false
   }
+}
+
+export type ImportMode = 'merge' | 'replace'
+
+export interface ImportSessionsResult {
+  imported: number
+  skipped: number
+  persisted: boolean
+  mode: ImportMode
+}
+
+export async function importSessions(
+  sessions: Session[],
+  mode: ImportMode,
+): Promise<ImportSessionsResult> {
+  const clean = sessions.filter(isSession)
+  let next: Session[]
+  let imported: number
+  let skipped: number
+
+  if (mode === 'replace') {
+    const result = replaceSessions(clean)
+    next = result.sessions
+    imported = result.imported
+    skipped = result.skipped
+    clearLastSessionId()
+  } else {
+    const result = mergeSessions(historyState.sessions, clean)
+    next = result.sessions
+    imported = result.added
+    skipped = result.skipped
+  }
+
+  historyState.sessions = sortSessions(next)
+
+  let persisted = true
+  try {
+    await writeSessions(snapshotSessions(historyState.sessions))
+    historyState.storageWarning = null
+  } catch {
+    persisted = false
+    historyState.storageWarning =
+      'History is available for this tab only. IndexedDB could not be written.'
+  }
+
+  return { imported, skipped, persisted, mode }
 }
 
 export async function undoLastSave(): Promise<void> {

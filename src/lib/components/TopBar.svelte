@@ -170,9 +170,10 @@
     <button
       class="icon-btn"
       type="button"
-      aria-label="AI settings"
+      aria-label="Settings"
       aria-pressed={aiState.settingsOpen}
-      title="AI settings"
+      title="Settings"
+      data-testid="settings-toggle"
       onclick={toggleAiSettings}
     >
       <svg

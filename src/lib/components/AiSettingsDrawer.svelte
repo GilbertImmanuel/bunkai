@@ -13,8 +13,10 @@
     storedProxy,
     testAiConnection,
   } from '../stores/ai.svelte'
+  import DataPanel from './DataPanel.svelte'
 
   type StatusKind = 'idle' | 'info' | 'success' | 'error'
+  type SettingsTab = 'ai' | 'data'
 
   const initialProvider = aiState.settings.provider
   let providerId = $state<AiProviderId>(initialProvider)
@@ -27,7 +29,9 @@
     message: '',
   })
   let panelEl: HTMLElement | undefined = $state()
+  let bodyEl: HTMLElement | undefined = $state()
   let closeEl: HTMLButtonElement | undefined = $state()
+  let tab = $state<SettingsTab>('ai')
 
   const provider = $derived(getAiProvider(providerId))
   const keySaved = $derived(hasStoredKey(providerId))
@@ -132,6 +136,11 @@
       message: 'Key removed. Sample mode remains available.',
     }
   }
+
+  function setTab(next: SettingsTab): void {
+    tab = next
+    if (bodyEl) bodyEl.scrollTop = 0
+  }
 </script>
 
 <div class="settings-layer">
@@ -139,7 +148,7 @@
     class="settings-scrim"
     type="button"
     tabindex="-1"
-    aria-label="Close AI settings"
+    aria-label="Close settings"
     onclick={closeAiSettings}
   ></button>
 
@@ -148,20 +157,22 @@
     bind:this={panelEl}
     role="dialog"
     aria-modal="true"
-    aria-labelledby="ai-settings-title"
+    aria-labelledby="settings-title"
     data-testid="ai-settings"
   >
     <header class="settings-head">
       <div>
         <p class="panel-label">Settings</p>
-        <h2 class="settings-title" id="ai-settings-title">AI breakdowns</h2>
+        <h2 class="settings-title" id="settings-title">
+          {tab === 'ai' ? 'AI breakdowns' : 'Local data'}
+        </h2>
       </div>
       <button
         class="icon-btn"
         type="button"
         bind:this={closeEl}
-        aria-label="Close AI settings"
-        title="Close AI settings"
+        aria-label="Close settings"
+        title="Close settings"
         onclick={closeAiSettings}
       >
         <svg
@@ -177,120 +188,151 @@
       </button>
     </header>
 
+    <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+      <button
+        class="settings-tab"
+        class:is-active={tab === 'ai'}
+        type="button"
+        role="tab"
+        aria-selected={tab === 'ai'}
+        data-testid="settings-tab-ai"
+        onclick={() => setTab('ai')}
+      >
+        AI
+      </button>
+      <button
+        class="settings-tab"
+        class:is-active={tab === 'data'}
+        type="button"
+        role="tab"
+        aria-selected={tab === 'data'}
+        data-testid="settings-tab-data"
+        onclick={() => setTab('data')}
+      >
+        Data
+      </button>
+    </div>
+
     <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <div
       class="settings-body scroll-region"
       role="region"
       tabindex="0"
-      aria-label="AI settings form"
+      aria-label="Settings"
+      bind:this={bodyEl}
     >
-      <p class="settings-lede">
-        Optional. Bunkai always works in sample and manual mode without a key.
-      </p>
+      {#if tab === 'ai'}
+        <p class="settings-lede">
+          Optional. Bunkai always works in sample and manual mode without a key.
+        </p>
 
-      <form class="settings-form" onsubmit={handleSave}>
-        <label class="field">
-          <span class="field-label">Provider</span>
-          <select value={providerId} onchange={selectProvider}>
-            {#each AI_PROVIDERS as option (option.id)}
-              <option value={option.id}>{option.label}</option>
-            {/each}
-          </select>
-        </label>
-
-        {#if provider.note}
-          <p class="provider-note">{provider.note}</p>
-        {/if}
-
-        {#if provider.requiresProxy}
+        <form class="settings-form" onsubmit={handleSave}>
           <label class="field">
-            <span class="field-label">Proxy base URL</span>
+            <span class="field-label">Provider</span>
+            <select value={providerId} onchange={selectProvider}>
+              {#each AI_PROVIDERS as option (option.id)}
+                <option value={option.id}>{option.label}</option>
+              {/each}
+            </select>
+          </label>
+
+          {#if provider.note}
+            <p class="provider-note">{provider.note}</p>
+          {/if}
+
+          {#if provider.requiresProxy}
+            <label class="field">
+              <span class="field-label">Proxy base URL</span>
+              <input
+                type="url"
+                placeholder={provider.proxyPlaceholder}
+                autocomplete="off"
+                spellcheck="false"
+                bind:value={proxy}
+              />
+            </label>
+            <p class="field-help">
+              Paste the proxy base URL or the full chat-completions URL. Bunkai adds
+              /chat/completions when needed. The proxy must allow browser CORS and can see the API
+              key.
+            </p>
+          {/if}
+
+          <label class="field">
+            <span class="field-label">Model</span>
             <input
-              type="url"
-              placeholder={provider.proxyPlaceholder}
+              type="text"
+              placeholder={provider.defaultModel}
               autocomplete="off"
               spellcheck="false"
-              bind:value={proxy}
+              bind:value={model}
+            />
+          </label>
+          <p class="field-help">Default: {provider.defaultModel}</p>
+
+          <label class="field">
+            <span class="field-label">API key</span>
+            <input
+              type="password"
+              placeholder={keySaved
+                ? 'Key saved — enter a new key to replace'
+                : provider.keyPlaceholder}
+              autocomplete="off"
+              spellcheck="false"
+              bind:value={key}
             />
           </label>
           <p class="field-help">
-            Paste the proxy base URL or the full chat-completions URL. Bunkai adds /chat/completions
-            when needed. The proxy must allow browser CORS and can see the API key.
+            {keySaved
+              ? 'A key is saved for this provider. It is never shown again.'
+              : 'Stored only in this browser.'}
           </p>
-        {/if}
 
-        <label class="field">
-          <span class="field-label">Model</span>
-          <input
-            type="text"
-            placeholder={provider.defaultModel}
-            autocomplete="off"
-            spellcheck="false"
-            bind:value={model}
-          />
-        </label>
-        <p class="field-help">Default: {provider.defaultModel}</p>
-
-        <label class="field">
-          <span class="field-label">API key</span>
-          <input
-            type="password"
-            placeholder={keySaved
-              ? 'Key saved — enter a new key to replace'
-              : provider.keyPlaceholder}
-            autocomplete="off"
-            spellcheck="false"
-            bind:value={key}
-          />
-        </label>
-        <p class="field-help">
-          {keySaved
-            ? 'A key is saved for this provider. It is never shown again.'
-            : 'Stored only in this browser.'}
-        </p>
-
-        <p class="security-note">
-          Browser storage is not a vault. Use a scoped key and do not share this device. Requests go
-          directly from this browser to {provider.label}; there is no Bunkai server. AI output can
-          be wrong — verify it before saving.
-        </p>
-
-        <a class="key-link" href={provider.keyUrl} target="_blank" rel="noreferrer">
-          Get a {provider.label} key ↗
-        </a>
-
-        <div class="actions">
-          <button class="button button-primary" type="submit">Save</button>
-          <button
-            class="button button-secondary"
-            type="button"
-            disabled={!canTest}
-            onclick={handleTest}
-          >
-            {testing ? 'Testing…' : 'Test connection'}
-          </button>
-          <button
-            class="button button-ghost"
-            type="button"
-            disabled={!keySaved}
-            onclick={handleRemove}
-          >
-            Remove key
-          </button>
-        </div>
-
-        {#if status.message}
-          <p
-            class="status"
-            class:is-error={status.kind === 'error'}
-            class:is-success={status.kind === 'success'}
-            role="status"
-            aria-live="polite"
-          >
-            {status.message}
+          <p class="security-note">
+            Browser storage is not a vault. Use a scoped key and do not share this device. Requests
+            go directly from this browser to {provider.label}; there is no Bunkai server. AI output
+            can be wrong — verify it before saving.
           </p>
-        {/if}
-      </form>
+
+          <a class="key-link" href={provider.keyUrl} target="_blank" rel="noreferrer">
+            Get a {provider.label} key ↗
+          </a>
+
+          <div class="actions">
+            <button class="button button-primary" type="submit">Save</button>
+            <button
+              class="button button-secondary"
+              type="button"
+              disabled={!canTest}
+              onclick={handleTest}
+            >
+              {testing ? 'Testing…' : 'Test connection'}
+            </button>
+            <button
+              class="button button-ghost"
+              type="button"
+              disabled={!keySaved}
+              onclick={handleRemove}
+            >
+              Remove key
+            </button>
+          </div>
+
+          {#if status.message}
+            <p
+              class="status"
+              class:is-error={status.kind === 'error'}
+              class:is-success={status.kind === 'success'}
+              role="status"
+              aria-live="polite"
+            >
+              {status.message}
+            </p>
+          {/if}
+        </form>
+      {:else}
+        <DataPanel />
+      {/if}
     </div>
   </div>
 </div>
@@ -343,7 +385,29 @@
     justify-content: space-between;
     gap: 12px;
     padding: 16px 18px 14px;
+  }
+
+  .settings-tabs {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 4px;
+    padding: 0 18px 10px;
     border-bottom: 1px solid var(--line);
+  }
+
+  .settings-tab {
+    min-height: 30px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: var(--r-btn);
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .settings-tab.is-active {
+    border-color: var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
   }
 
   .settings-title {

@@ -1230,7 +1230,7 @@ test('AI settings save, test, hide, and remove the key', async ({ page }) => {
   await mockOpenRouter(page, { body: {} })
   await page.goto('/')
 
-  await page.getByRole('button', { name: 'AI settings', exact: true }).click()
+  await page.getByTestId('settings-toggle').click()
   const drawer = page.getByTestId('ai-settings')
   await expect(drawer).toBeVisible()
   await expect(drawer).toContainText('Stored only in this browser')
@@ -1249,11 +1249,11 @@ test('AI settings save, test, hide, and remove the key', async ({ page }) => {
   expect(consoleMessages.join('\n')).not.toContain(secret)
   await page.screenshot({ path: 'test-results/ai-settings-1280x800.png' })
 
-  await drawer.getByRole('button', { name: 'Close AI settings' }).click()
+  await drawer.getByRole('button', { name: 'Close settings' }).click()
   await expect(drawer).toHaveCount(0)
   await expect(page.getByTestId('ai-status')).toContainText('AI breakdown via OpenRouter')
 
-  await page.getByRole('button', { name: 'AI settings', exact: true }).click()
+  await page.getByTestId('settings-toggle').click()
   const reopened = page.getByTestId('ai-settings')
   await expect(reopened.getByLabel('Provider')).toHaveValue('openrouter')
   await expect(reopened.getByLabel('Model')).toHaveValue('openrouter/auto')
@@ -1272,7 +1272,7 @@ test('AI settings save, test, hide, and remove the key', async ({ page }) => {
   await expect(reopened).toContainText('Key removed')
   await expect(reopened.getByRole('button', { name: 'Remove key' })).toBeDisabled()
 
-  await reopened.getByRole('button', { name: 'Close AI settings' }).click()
+  await reopened.getByRole('button', { name: 'Close settings' }).click()
   await expect(page.getByTestId('ai-status')).toContainText('Sample mode')
 
   expect(consoleErrors).toEqual([])
@@ -1283,7 +1283,7 @@ test('AI settings do not alter the workspace sidebar when closed with Escape', a
   await page.getByTestId('sample-card').click()
   await expectSidebarState(page, true)
 
-  await page.getByRole('button', { name: 'AI settings', exact: true }).click()
+  await page.getByTestId('settings-toggle').click()
   await expect(page.getByTestId('ai-settings')).toBeVisible()
 
   await page.keyboard.press('Escape')
@@ -1518,12 +1518,12 @@ test('rate-limit errors are explained inline', async ({ page }) => {
 test('AI settings render in dark mode', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Switch to dark theme' }).click()
-  await page.getByRole('button', { name: 'AI settings', exact: true }).click()
+  await page.getByTestId('settings-toggle').click()
 
   const drawer = page.getByTestId('ai-settings')
   await expect(drawer).toBeVisible()
   await expect(drawer).toHaveCSS('opacity', '1')
-  await expect(page.getByRole('button', { name: 'Close AI settings' }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Close settings' }).first()).toBeVisible()
 
   const styles = await page.evaluate(() => {
     const panel = document.querySelector<HTMLElement>('[data-testid="ai-settings"]')
