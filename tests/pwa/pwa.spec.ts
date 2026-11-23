@@ -19,6 +19,8 @@ test('installs a manifest and serves the shell offline', async ({ page, context 
   expect(csp).toContain('http://127.0.0.1:*')
   expect(csp).toContain("object-src 'none'")
 
+  await expect(page.locator('meta[name="referrer"]')).toHaveAttribute('content', 'no-referrer')
+
   const manifestLink = page.locator('link[rel="manifest"]')
   await expect(manifestLink).toHaveAttribute('href', '/manifest.webmanifest')
 
