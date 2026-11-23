@@ -16,7 +16,7 @@
 | App root | Repository root |
 | Package manager | Bun 1.3.14 |
 | Stack | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3 |
-| Git | Repository initialized; private remote |
+| Git | [GitHub](https://github.com/GilbertImmanuel/bunkai); private |
 | Deploy | Not deployed |
 | Next action | Review 7.5A/B; approve 7.5C or start Phase 8 |
 
@@ -618,7 +618,8 @@ reading-sheet rule remain.
     quick start, docs links, and Tatoeba/Fontsource credits.
   - Added `docs/README.md` as the docs index.
   - Added `.github/readme/hero.png` and a minimal `.github/workflows/ci.yml`.
-  - Added the private GitHub remote and pushed the retrospective commit series.
+  - Added the private GitHub remote at
+    `https://github.com/GilbertImmanuel/bunkai` and pushed `main`.
   - No `LICENSE` yet; MIT is planned for the public release.
 - **Decisions:**
   - The app lives at the repository root; `docs/` and `research/tatoeba/` are subfolders.
