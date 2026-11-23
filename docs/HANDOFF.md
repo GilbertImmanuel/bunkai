@@ -683,6 +683,8 @@ responses are never runtime-cached. Phase 7.5A/B (Tatoeba examples) remains comp
   - PWA icons: `public/pwa-192x192.png`, `public/pwa-512x512.png`,
     `public/maskable-icon-512x512.png`, `public/apple-touch-icon-180x180.png`.
   - Precache: 19 entries, ~3.2 MB, no duplicate URLs.
+  - Manual update prompt: forced a waiting service worker; the banner appeared, and Reload
+    cleared it. Screenshot: `test-results/pwa-update-1280x800.png`.
 - **Blockers:** None.
 - **Next:** 8B — export/import sessions as versioned JSON, with merge/replace and no API
   keys or Tatoeba cache.

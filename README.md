@@ -94,6 +94,20 @@ bun run preview     # preview the build
 
 The app is desktop-only. Below 900px it shows a guard instead of a broken layout.
 
+## Install and offline
+
+PWA assets are generated for production. The dev server does not register the production
+service worker. To try installation and offline mode locally:
+
+```bash
+bun run build
+bun run preview
+```
+
+Open the preview URL in Chrome or Edge and use the install icon in the address bar. The
+first visit caches the app shell and fonts; later loads work offline. AI and Tatoeba
+requests still need a network connection and degrade to their normal fallbacks.
+
 ## Project structure
 
 ```
