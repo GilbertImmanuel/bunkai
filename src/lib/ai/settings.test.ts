@@ -57,6 +57,16 @@ describe('AI settings', () => {
     expect(readAiSettings()).toEqual(settings)
   })
 
+  it('reports a failed storage write', () => {
+    const storage = new MemoryStorage()
+    storage.setItem = () => {
+      throw new Error('quota exceeded')
+    }
+    vi.stubGlobal('localStorage', storage)
+
+    expect(writeAiSettings(defaultAiSettings())).toBe(false)
+  })
+
   it('validates settings and requires a proxy for OpenCode', () => {
     localStorage.setItem(
       AI_SETTINGS_KEY,

@@ -8,10 +8,24 @@ import type {
   TranslationPart,
 } from '../data/types'
 import { getAiProvider, type AiProvider, type AiProviderId } from './providers'
+import { ResponseLimitError, readLimitedText } from '../utils/limitedResponse'
+
+const MAX_AI_RESPONSE_BYTES = 256 * 1024
+const MAX_AI_CHUNKS = 8
+const MAX_AI_EXAMPLES = 6
+const MAX_AI_CONSTRUCTION_STEPS = 12
+const MAX_AI_FURIGANA_SEGMENTS = 200
+const MAX_AI_NATURAL_PARTS = 100
+const MAX_AI_SENTENCE_NOTES = 8
+const MAX_AI_SHORT_TEXT = 500
+const MAX_AI_TEXT = 2000
+const MAX_AI_LONG_TEXT = 10_000
+const MAX_AI_ENRICHMENT_ENTRIES = 200
 
 export type AiErrorKind =
   | 'missing-key'
   | 'missing-proxy'
+  | 'invalid-proxy'
   | 'invalid-key'
   | 'rate-limit'
   | 'model'
@@ -129,28 +143,58 @@ interface RequestParts {
   body: Record<string, unknown>
 }
 
-function normalizeProxyEndpoint(proxy: string): string {
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
+
+function invalidProxy(message: string): AiRequestError {
+  return new AiRequestError('invalid-proxy', message)
+}
+
+/**
+ * Canonicalizes the user-supplied OpenCode proxy. Only HTTPS endpoints and
+ * loopback HTTP endpoints are accepted; credentials, protocol-relative URLs,
+ * query strings, and fragments are rejected.
+ */
+export function normalizeProxyEndpoint(proxy: string): string {
   const trimmed = proxy.trim()
   if (!trimmed) {
     throw new AiRequestError('missing-proxy', 'OpenCode needs a proxy endpoint in AI settings.')
   }
 
-  if (
-    !trimmed.startsWith('http://') &&
-    !trimmed.startsWith('https://') &&
-    !trimmed.startsWith('/')
-  ) {
-    throw new AiRequestError('missing-proxy', 'The OpenCode proxy endpoint is not a valid URL.')
+  if (trimmed.startsWith('//')) {
+    throw invalidProxy('Use an HTTPS proxy, or an HTTP proxy on localhost.')
   }
 
-  const clean = trimmed.replace(/\/+$/, '')
-  if (clean.endsWith('/chat/completions')) return clean
-  if (clean.endsWith('/v1')) return `${clean}/chat/completions`
-  if (/^https?:\/\/[^/]+$/.test(clean) || clean === '' || clean === '/') {
-    return `${clean}/v1/chat/completions`
+  const base = typeof window !== 'undefined' ? window.location.origin : 'http://localhost'
+  let url: URL
+  try {
+    url = new URL(trimmed, base)
+  } catch {
+    throw invalidProxy('The OpenCode proxy endpoint is not a valid URL.')
   }
 
-  return `${clean}/chat/completions`
+  if (url.username || url.password) {
+    throw invalidProxy('The proxy URL must not include a username or password.')
+  }
+
+  const isLoopback = url.protocol === 'http:' && LOOPBACK_HOSTS.has(url.hostname)
+  const isSameOrigin = typeof window !== 'undefined' && url.origin === window.location.origin
+  if (url.protocol !== 'https:' && !isLoopback && !isSameOrigin) {
+    throw invalidProxy('Use an HTTPS proxy, or an HTTP proxy on localhost.')
+  }
+
+  if (url.search || url.hash) {
+    throw invalidProxy('The proxy URL must not include a query string or fragment.')
+  }
+
+  let path = url.pathname.replace(/\/+$/, '')
+  if (!path) {
+    path = '/v1/chat/completions'
+  } else if (!path.endsWith('/chat/completions')) {
+    path = `${path}/chat/completions`
+  }
+
+  url.pathname = path
+  return url.toString()
 }
 
 function resolveEndpoint(provider: AiProvider, proxyUrl = ''): string {
@@ -267,23 +311,21 @@ async function sendRequest(
   parts: RequestParts,
   provider: AiProvider,
   fetchImpl: typeof fetch,
-  timeoutMs: number,
+  signal: AbortSignal,
 ): Promise<Response> {
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), timeoutMs)
-
   try {
     const response = await fetchImpl(parts.endpoint, {
       method: 'POST',
       headers: parts.headers,
       body: JSON.stringify(parts.body),
-      signal: controller.signal,
+      signal,
     })
 
     if (!response.ok) throw mapStatus(provider, response.status)
     return response
   } catch (error) {
     if (error instanceof AiRequestError) throw error
+    if (signal.aborted) throw error
 
     const name = (error as { name?: string } | null)?.name
     if (name === 'AbortError') {
@@ -296,6 +338,27 @@ async function sendRequest(
         ? 'Could not reach the OpenCode proxy. Check that it is running and returns Access-Control-Allow-Origin on POST responses.'
         : `Could not reach ${provider.label} from this browser. It may block direct browser requests.`,
     )
+  }
+}
+
+async function withDeadline<T>(
+  timeoutMs: number,
+  task: (signal: AbortSignal) => Promise<T>,
+): Promise<T> {
+  const controller = new AbortController()
+  let timedOut = false
+  const timer = setTimeout(() => {
+    timedOut = true
+    controller.abort()
+  }, timeoutMs)
+
+  try {
+    return await task(controller.signal)
+  } catch (error) {
+    if (timedOut && !(error instanceof AiRequestError)) {
+      throw new AiRequestError('timeout', 'The request timed out. Try again.')
+    }
+    throw error
   } finally {
     clearTimeout(timer)
   }
@@ -318,10 +381,27 @@ function contentString(content: unknown): string {
     .join('\n')
 }
 
-async function readResponseText(response: Response, provider: AiProvider): Promise<string> {
+async function readResponseText(
+  response: Response,
+  provider: AiProvider,
+  signal: AbortSignal,
+): Promise<string> {
+  let bodyText: string
+  try {
+    bodyText = await readLimitedText(response, MAX_AI_RESPONSE_BYTES, signal)
+  } catch (error) {
+    if (error instanceof ResponseLimitError) {
+      throw new AiRequestError(
+        'format',
+        'The provider returned too much data. Try again or use the sample.',
+      )
+    }
+    throw error
+  }
+
   let data: unknown
   try {
-    data = await response.json()
+    data = JSON.parse(bodyText)
   } catch {
     throw new AiRequestError(
       'format',
@@ -371,25 +451,32 @@ async function readResponseText(response: Response, provider: AiProvider): Promi
   return text
 }
 
-function stringValue(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
+function stringValue(value: unknown, max = MAX_AI_TEXT): string {
+  return typeof value === 'string' ? value.trim().slice(0, max) : ''
 }
 
 function stringArray(value: unknown): string[] {
-  if (typeof value === 'string') return value.trim() ? [value.trim()] : []
+  if (typeof value === 'string') {
+    const text = stringValue(value)
+    return text ? [text] : []
+  }
   if (!Array.isArray(value)) return []
-  return value.map(stringValue).filter(Boolean)
+  return value
+    .slice(0, MAX_AI_SENTENCE_NOTES)
+    .map((item) => stringValue(item))
+    .filter(Boolean)
 }
 
 function constructionSteps(value: unknown): ConstructionStep[] {
   if (!Array.isArray(value)) return []
 
   return value
+    .slice(0, MAX_AI_CONSTRUCTION_STEPS)
     .map((step) => {
       if (!step || typeof step !== 'object') return null
       const raw = step as Record<string, unknown>
-      const jp = stringValue(raw.jp)
-      const en = stringValue(raw.en)
+      const jp = stringValue(raw.jp, MAX_AI_SHORT_TEXT)
+      const en = stringValue(raw.en, MAX_AI_SHORT_TEXT)
       return jp && en ? { jp, en } : null
     })
     .filter((step): step is ConstructionStep => Boolean(step))
@@ -399,11 +486,12 @@ function examples(value: unknown): Example[] {
   if (!Array.isArray(value)) return []
 
   return value
+    .slice(0, MAX_AI_EXAMPLES)
     .map((example) => {
       if (!example || typeof example !== 'object') return null
       const raw = example as Record<string, unknown>
-      const jp = stringValue(raw.jp)
-      const en = stringValue(raw.en)
+      const jp = stringValue(raw.jp, MAX_AI_SHORT_TEXT)
+      const en = stringValue(raw.en, MAX_AI_SHORT_TEXT)
       return jp && en ? { jp, en } : null
     })
     .filter((example): example is Example => Boolean(example))
@@ -432,13 +520,13 @@ function furiganaSegments(value: unknown, jp: string): FuriganaSegment[] | undef
   const segments: FuriganaSegment[] = []
   let hasReading = false
 
-  for (const item of value) {
+  for (const item of value.slice(0, MAX_AI_FURIGANA_SEGMENTS)) {
     if (!item || typeof item !== 'object') continue
     const raw = item as Record<string, unknown>
-    const text = typeof raw.text === 'string' ? raw.text : ''
+    const text = typeof raw.text === 'string' ? raw.text.slice(0, MAX_AI_SHORT_TEXT) : ''
     if (!text) continue
 
-    const reading = typeof raw.reading === 'string' ? raw.reading.trim() : ''
+    const reading = stringValue(raw.reading, MAX_AI_SHORT_TEXT)
     const kind = raw.kind === 'name' || raw.kind === 'word' ? raw.kind : undefined
 
     if (reading) {
@@ -477,10 +565,10 @@ function naturalParts(
   const parts: TranslationPart[] = []
   let joined = ''
 
-  for (const item of value) {
+  for (const item of value.slice(0, MAX_AI_NATURAL_PARTS)) {
     if (!item || typeof item !== 'object') continue
     const raw = item as Record<string, unknown>
-    const rawText = typeof raw.text === 'string' ? raw.text : ''
+    const rawText = typeof raw.text === 'string' ? raw.text.slice(0, MAX_AI_TEXT) : ''
     if (!rawText) continue
 
     const text = joinNaturalText(joined, rawText)
@@ -537,17 +625,17 @@ export function parseBreakdownResponse(
   for (const [index, value] of rawChunks.entries()) {
     if (!value || typeof value !== 'object') continue
     const chunk = value as Record<string, unknown>
-    const jp = stringValue(chunk.jp)
+    const jp = stringValue(chunk.jp, MAX_AI_TEXT)
     if (!jp) continue
     const furigana = furiganaSegments(chunk.furigana, jp)
-    const lookup = stringValue(chunk.lookup)
+    const lookup = stringValue(chunk.lookup, 100)
 
     chunks.push({
       n: chunks.length + 1,
       jp,
-      kana: stringValue(chunk.kana),
-      gloss: stringValue(chunk.gloss),
-      role: stringValue(chunk.role) || 'chunk',
+      kana: stringValue(chunk.kana, MAX_AI_SHORT_TEXT),
+      gloss: stringValue(chunk.gloss, MAX_AI_SHORT_TEXT),
+      role: stringValue(chunk.role, MAX_AI_SHORT_TEXT) || 'chunk',
       color: colorValue(chunk.color, index),
       note: stringValue(chunk.note),
       construction: constructionSteps(chunk.construction),
@@ -556,7 +644,7 @@ export function parseBreakdownResponse(
       ...(lookup ? { lookup } : {}),
     })
 
-    if (chunks.length >= 8) break
+    if (chunks.length >= MAX_AI_CHUNKS) break
   }
 
   if (chunks.length === 0) {
@@ -590,19 +678,20 @@ export function parseBreakdownResponse(
   }
 
   const note = stringArray(raw.sentenceNote)
-  const natural = stringValue(raw.natural)
+  const natural = stringValue(raw.natural, MAX_AI_LONG_TEXT)
   const parts = naturalParts(raw.naturalParts, natural, chunks)
   const rawGloss =
-    stringValue(raw.raw) ||
+    stringValue(raw.raw, MAX_AI_LONG_TEXT) ||
     chunks
       .map((chunk) => chunk.gloss)
       .filter(Boolean)
       .join(' | ')
+      .slice(0, MAX_AI_LONG_TEXT)
 
   return {
     id: `ai-${now.getTime()}`,
     sentence: input,
-    reading: stringValue(raw.reading),
+    reading: stringValue(raw.reading, MAX_AI_LONG_TEXT),
     natural,
     ...(parts ? { naturalParts: parts } : {}),
     raw: rawGloss,
@@ -646,7 +735,7 @@ function parseSessionEnrichmentResponse(
   const furigana: Array<{ n: number; furigana: FuriganaSegment[] }> = []
 
   if (Array.isArray(raw.chunks)) {
-    for (const item of raw.chunks) {
+    for (const item of raw.chunks.slice(0, MAX_AI_ENRICHMENT_ENTRIES)) {
       if (!item || typeof item !== 'object') continue
       const entry = item as Record<string, unknown>
       const n = typeof entry.n === 'number' ? entry.n : Number(entry.n)
@@ -680,8 +769,10 @@ export async function requestBreakdown(options: AiRequestOptions): Promise<Sessi
     `Sentence to analyze:\n${options.sentence}`,
     options.proxyUrl ?? '',
   )
-  const response = await sendRequest(parts, provider, options.fetchImpl ?? fetch, 60_000)
-  const text = await readResponseText(response, provider)
+  const text = await withDeadline(60_000, async (signal) => {
+    const response = await sendRequest(parts, provider, options.fetchImpl ?? fetch, signal)
+    return readResponseText(response, provider, signal)
+  })
   return parseBreakdownResponse(text, options.sentence, options.now ?? new Date())
 }
 
@@ -733,8 +824,10 @@ export async function requestSessionEnrichment(
     SESSION_ENRICHMENT_PROMPT,
     2_400,
   )
-  const response = await sendRequest(parts, provider, options.fetchImpl ?? fetch, 60_000)
-  const text = await readResponseText(response, provider)
+  const text = await withDeadline(60_000, async (signal) => {
+    const response = await sendRequest(parts, provider, options.fetchImpl ?? fetch, signal)
+    return readResponseText(response, provider, signal)
+  })
   return parseSessionEnrichmentResponse(text, options.natural, options.chunks)
 }
 
@@ -762,5 +855,8 @@ export async function testProviderConnection(
     parts.body.max_tokens = 8
   }
 
-  await sendRequest(parts, provider, options.fetchImpl ?? fetch, 20_000)
+  await withDeadline(20_000, async (signal) => {
+    const response = await sendRequest(parts, provider, options.fetchImpl ?? fetch, signal)
+    await response.body?.cancel().catch(() => {})
+  })
 }

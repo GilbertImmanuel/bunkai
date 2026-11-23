@@ -192,6 +192,11 @@ export async function importSessions(
   let imported: number
   let skipped: number
 
+  // A pending Undo from an earlier save must not remove an imported session
+  // that happens to reuse the saved id.
+  undoSessionId = null
+  previousLastSessionId = null
+
   if (mode === 'replace') {
     const result = replaceSessions(clean)
     next = result.sessions

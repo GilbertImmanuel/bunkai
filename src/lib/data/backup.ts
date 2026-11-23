@@ -68,8 +68,8 @@ function copyChunk(chunk: Chunk): Chunk {
     role: chunk.role,
     color: chunk.color,
     note: chunk.note,
-    construction: chunk.construction.map(copyConstructionStep),
-    examples: chunk.examples.map(copyExample),
+    construction: (chunk.construction ?? []).map(copyConstructionStep),
+    examples: (chunk.examples ?? []).map(copyExample),
     ...(chunk.furigana ? { furigana: chunk.furigana.map(copyFurigana) } : {}),
     ...(chunk.lookup ? { lookup: chunk.lookup } : {}),
   }
@@ -92,8 +92,8 @@ function copySession(session: Session): Session {
       ? { naturalParts: session.naturalParts.map(copyTranslationPart) }
       : {}),
     raw: session.raw,
-    chunks: session.chunks.map(copyChunk),
-    sentenceNote: [...session.sentenceNote],
+    chunks: (session.chunks ?? []).map(copyChunk),
+    sentenceNote: [...(session.sentenceNote ?? [])],
     createdAt: session.createdAt,
     ...(session.source ? { source: session.source } : {}),
   }
@@ -160,7 +160,7 @@ export function parseBackup(text: string): BackupFile {
   }
 
   if (!parsed.sessions.every(isBackupSession)) {
-    throw new BackupError('format', 'One or more sessions in this backup are incomplete.')
+    throw new BackupError('format', 'One or more sessions in this backup are invalid.')
   }
 
   return {

@@ -2,6 +2,7 @@
   import { aiErrorMessage } from '../ai/breakdown'
   import { sampleSession } from '../data/sample'
   import { createManualSession } from '../data/sessions'
+  import { MAX_LONG_TEXT_LENGTH } from '../data/sessionValidation'
   import {
     activeAiMissingProxy,
     activeAiReady,
@@ -22,7 +23,9 @@
   const model = $derived(activeModel())
   const aiReady = $derived(activeAiReady())
   const missingProxy = $derived(activeAiMissingProxy())
-  const canSend = $derived(value.trim().length > 0 && !submitting)
+  const canSend = $derived(
+    value.trim().length > 0 && value.trim().length <= MAX_LONG_TEXT_LENGTH && !submitting,
+  )
 
   function openSample(): void {
     if (submitting) return
@@ -31,7 +34,7 @@
 
   function openManualPlaceholder(): void {
     const sentence = value.trim()
-    if (!sentence) return
+    if (!sentence || sentence.length > MAX_LONG_TEXT_LENGTH) return
 
     openSession(createManualSession(sentence), 1)
     value = ''
@@ -41,7 +44,7 @@
   async function submitSentence(event: SubmitEvent): Promise<void> {
     event.preventDefault()
     const sentence = value.trim()
-    if (!sentence || submitting) return
+    if (!sentence || sentence.length > MAX_LONG_TEXT_LENGTH || submitting) return
 
     submitting = true
     aiError = ''
@@ -104,6 +107,7 @@
         class="combo-field"
         id="paste-input"
         type="text"
+        maxlength={MAX_LONG_TEXT_LENGTH}
         placeholder="Paste a Japanese sentence…"
         aria-label="Japanese sentence"
         autocomplete="off"

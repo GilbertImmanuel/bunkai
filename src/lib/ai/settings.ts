@@ -53,13 +53,15 @@ export function readAiSettings(): AiSettings {
   }
 }
 
-export function writeAiSettings(settings: AiSettings): void {
-  if (typeof localStorage === 'undefined') return
+export function writeAiSettings(settings: AiSettings): boolean {
+  if (typeof localStorage === 'undefined') return false
 
   try {
     localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(settings))
+    return true
   } catch {
     // AI settings are best-effort. The app still works in sample mode.
+    return false
   }
 }
 

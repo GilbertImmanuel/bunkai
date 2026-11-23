@@ -48,20 +48,38 @@
   async function mapNaturalColors(): Promise<void> {
     if (mapping || !session.natural) return
 
+    const targetId = session.id
+    const wasSaved = historyState.sessions.some((item) => item.id === targetId)
     mapping = true
     mapError = ''
 
     try {
       const updated = await enrichSession(session)
-      updateCurrentSession(updated)
 
-      if (historyState.sessions.some((item) => item.id === updated.id)) {
-        await updateSession(updated)
-      } else {
-        await saveSession(updated)
+      if (appState.currentSession.id !== targetId) {
+        showToast('Session changed; readings were not applied')
+        return
       }
 
-      showToast('Session colors and readings mapped')
+      if (wasSaved && !historyState.sessions.some((item) => item.id === targetId)) {
+        showToast('Session was removed; readings were not saved')
+        return
+      }
+
+      updateCurrentSession(updated)
+
+      if (wasSaved) {
+        const persisted = await updateSession(updated)
+        showToast(
+          persisted ? 'Session colors and readings mapped' : 'Session updated for this tab only',
+        )
+        return
+      }
+
+      const result = await saveSession(updated)
+      showToast(
+        result.persisted ? 'Session colors and readings mapped' : 'Session saved for this tab only',
+      )
     } catch (error) {
       mapError = aiErrorMessage(error)
     } finally {

@@ -358,6 +358,16 @@ describe('Tatoeba search', () => {
     })
   })
 
+  it('rejects an oversized response', async () => {
+    const fetchImpl = vi.fn(
+      async () => new Response('x'.repeat(300 * 1024), { status: 200 }),
+    ) as unknown as typeof fetch
+
+    await expect(searchTatoeba({ query: '共有', fetchImpl })).rejects.toMatchObject({
+      kind: 'format',
+    })
+  })
+
   it('maps unreadable JSON to a format error', async () => {
     const fetchImpl = vi.fn(
       async () => new Response('not json', { status: 200 }),

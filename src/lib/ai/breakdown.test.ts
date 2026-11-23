@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { Chunk } from '../data/types'
 import {
   AiRequestError,
+  normalizeProxyEndpoint,
   parseBreakdownResponse,
   requestBreakdown,
   requestSessionEnrichment,
@@ -251,6 +252,23 @@ describe('AI provider requests', () => {
     expect(url).toBe('http://127.0.0.1:8787/v1/chat/completions')
   })
 
+  it('rejects unsafe proxy endpoints', () => {
+    expect(() => normalizeProxyEndpoint('//evil.example/v1')).toThrowError(/HTTPS/)
+    expect(() => normalizeProxyEndpoint('http://evil.example/v1')).toThrowError(/HTTPS/)
+    expect(() => normalizeProxyEndpoint('https://user:pass@evil.example/v1')).toThrowError(
+      /username or password/,
+    )
+    expect(() => normalizeProxyEndpoint('https://proxy.example/v1?x=1')).toThrowError(
+      /query string/,
+    )
+  })
+
+  it('canonicalizes an HTTPS proxy base', () => {
+    expect(normalizeProxyEndpoint('https://proxy.example/v1/')).toBe(
+      'https://proxy.example/v1/chat/completions',
+    )
+  })
+
   it('requires a proxy for OpenCode', async () => {
     const fetchMock = vi.fn<typeof fetch>()
 
@@ -365,6 +383,23 @@ describe('AI provider requests', () => {
         fetchImpl: fetchMock,
       }),
     ).rejects.toMatchObject({ kind: 'format' })
+  })
+
+  it('rejects an oversized provider response', async () => {
+    const fetchMock = vi.fn<typeof fetch>(async () => openAiResponse('x'.repeat(300 * 1024)))
+
+    await expect(
+      requestBreakdown({
+        providerId: 'openai',
+        model: 'gpt-5.2',
+        key: 'sk-test',
+        sentence: '猫が好きです。',
+        fetchImpl: fetchMock,
+      }),
+    ).rejects.toMatchObject({
+      kind: 'format',
+      message: expect.stringContaining('too much data'),
+    })
   })
 
   it('maps auth, rate-limit, and network errors to plain-language failures', async () => {

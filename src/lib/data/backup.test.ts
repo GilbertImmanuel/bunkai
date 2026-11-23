@@ -82,7 +82,7 @@ describe('backup parsing', () => {
     }
     broken.sessions[0].chunks[0].jp = 42
 
-    expect(() => parseBackup(JSON.stringify(broken))).toThrowError(/incomplete/)
+    expect(() => parseBackup(JSON.stringify(broken))).toThrowError(/invalid/)
   })
 
   it('rejects malformed optional enrichment fields', () => {
@@ -92,7 +92,40 @@ describe('backup parsing', () => {
     }
     broken.sessions[0].chunks[1].furigana = 'not-a-list'
 
-    expect(() => parseBackup(JSON.stringify(broken))).toThrowError(/incomplete/)
+    expect(() => parseBackup(JSON.stringify(broken))).toThrowError(/invalid/)
+  })
+
+  it('rejects duplicate chunk numbers', () => {
+    const file = createBackup([sampleSession], now)
+    const broken = JSON.parse(JSON.stringify(file)) as {
+      sessions: Array<{ chunks: Array<{ n: number }> }>
+    }
+    broken.sessions[0].chunks[1].n = broken.sessions[0].chunks[0].n
+
+    expect(() => parseBackup(JSON.stringify(broken))).toThrowError(/invalid/)
+  })
+
+  it('rejects an unsafe example URL', () => {
+    const file = createBackup([sampleSession], now)
+    const broken = JSON.parse(JSON.stringify(file)) as {
+      sessions: Array<{ chunks: Array<{ examples: Array<{ url?: string }> }> }>
+    }
+    broken.sessions[0].chunks[0].examples[0].url = 'javascript:alert(1)'
+
+    expect(() => parseBackup(JSON.stringify(broken))).toThrowError(/invalid/)
+  })
+
+  it('rejects an oversized chunk list', () => {
+    const file = createBackup([sampleSession], now)
+    const broken = JSON.parse(JSON.stringify(file)) as {
+      sessions: Array<{ chunks: Array<{ n: number }> }>
+    }
+    broken.sessions[0].chunks = Array.from({ length: 201 }, (_, index) => ({
+      ...broken.sessions[0].chunks[index % broken.sessions[0].chunks.length],
+      n: index + 1,
+    }))
+
+    expect(() => parseBackup(JSON.stringify(broken))).toThrowError(/invalid/)
   })
 })
 

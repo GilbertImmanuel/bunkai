@@ -1,4 +1,5 @@
 import type { Chunk, Session } from '../data/types'
+import { MAX_CHUNKS_PER_SESSION } from './sessionValidation'
 
 export interface MapSpan {
   jp: string
@@ -148,7 +149,7 @@ function targetFor(
 }
 
 export function buildSentenceMap(session: Session): SentenceMapModel {
-  const chunks = session.chunks
+  const chunks = session.chunks.slice(0, MAX_CHUNKS_PER_SESSION)
   const predicateChunk =
     [...chunks].reverse().find((chunk) => isPredicateRole(chunk.role)) ?? chunks[chunks.length - 1]
 
@@ -249,7 +250,11 @@ export function buildSentenceMap(session: Session): SentenceMapModel {
   sortNodes(roots)
 
   const modifiers: MapModifier[] = []
+  const visited = new Set<number>()
   const visit = (node: ModifierNode, depth: number, targetLabel: string): void => {
+    if (visited.has(node.chunk.n)) return
+    visited.add(node.chunk.n)
+
     modifiers.push({
       chunk: node.chunk,
       role: node.role,

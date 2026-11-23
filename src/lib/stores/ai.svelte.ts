@@ -1,6 +1,8 @@
 import type { Session } from '../data/types'
 import {
   AiRequestError,
+  aiErrorMessage,
+  normalizeProxyEndpoint,
   requestBreakdown,
   requestSessionEnrichment,
   testProviderConnection,
@@ -77,8 +79,13 @@ export function providerReady(providerId: AiProviderId): boolean {
   return isProviderConfigured(aiState.settings, providerId)
 }
 
-function persist(): void {
-  writeAiSettings($state.snapshot(aiState.settings) as AiSettings)
+export interface SettingsWriteResult {
+  persisted: boolean
+  error: string | null
+}
+
+function persist(): boolean {
+  return writeAiSettings($state.snapshot(aiState.settings) as AiSettings)
 }
 
 export interface SaveAiPreferencesInput {
@@ -88,18 +95,29 @@ export interface SaveAiPreferencesInput {
   proxy: string
 }
 
-export function saveAiPreferences(input: SaveAiPreferencesInput): void {
-  if (!isAiProviderId(input.provider)) return
+export function saveAiPreferences(input: SaveAiPreferencesInput): SettingsWriteResult {
+  if (!isAiProviderId(input.provider)) {
+    return { persisted: false, error: 'Choose a supported AI provider.' }
+  }
 
   const provider = getAiProvider(input.provider)
+  const key = input.key.trim()
+
+  let proxy = input.proxy.trim()
+  if (provider.requiresProxy && proxy) {
+    try {
+      proxy = normalizeProxyEndpoint(proxy)
+    } catch (error) {
+      return { persisted: false, error: aiErrorMessage(error) }
+    }
+  }
+
   aiState.settings.provider = provider.id
   aiState.settings.models[provider.id] = input.model.trim() || provider.defaultModel
 
-  const key = input.key.trim()
   if (key) aiState.settings.keys[provider.id] = key
 
   if (provider.requiresProxy) {
-    const proxy = input.proxy.trim()
     if (proxy) {
       aiState.settings.proxies[provider.id] = proxy
     } else {
@@ -107,12 +125,48 @@ export function saveAiPreferences(input: SaveAiPreferencesInput): void {
     }
   }
 
-  persist()
+  if (!persist()) {
+    return {
+      persisted: false,
+      error: 'Settings could not be saved in this browser. Check site storage permissions.',
+    }
+  }
+
+  const stored = readAiSettings()
+  if (key && !hasKeyFor(stored, provider.id)) {
+    return {
+      persisted: false,
+      error: 'The API key could not be saved in this browser. Check site storage permissions.',
+    }
+  }
+  if (provider.requiresProxy && proxy && proxyFor(stored, provider.id) !== proxy) {
+    return {
+      persisted: false,
+      error: 'The proxy endpoint could not be saved in this browser.',
+    }
+  }
+
+  return { persisted: true, error: null }
 }
 
-export function removeStoredKey(providerId: AiProviderId): void {
+export function removeStoredKey(providerId: AiProviderId): SettingsWriteResult {
   delete aiState.settings.keys[providerId]
-  persist()
+
+  if (!persist()) {
+    return {
+      persisted: false,
+      error: 'The key could not be removed from this browser. Check site storage permissions.',
+    }
+  }
+
+  if (hasKeyFor(readAiSettings(), providerId)) {
+    return {
+      persisted: false,
+      error: 'The key is still stored in this browser. Check site storage permissions.',
+    }
+  }
+
+  return { persisted: true, error: null }
 }
 
 export async function generateWithAi(sentence: string): Promise<Session> {

@@ -1,11 +1,49 @@
 import { svelte } from '@sveltejs/vite-plugin-svelte'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'self' https://tatoeba.org https://*.tatoeba.org https://openrouter.ai https://api.openai.com https://api.anthropic.com http://127.0.0.1:* http://localhost:*",
+  'media-src https://tatoeba.org https://*.tatoeba.org',
+  "worker-src 'self'",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'self'",
+].join('; ')
+
+function cspPlugin(): Plugin {
+  return {
+    name: 'inject-content-security-policy',
+    apply: 'build',
+    transformIndexHtml(html) {
+      return {
+        html,
+        tags: [
+          {
+            tag: 'meta',
+            attrs: {
+              'http-equiv': 'Content-Security-Policy',
+              content: CONTENT_SECURITY_POLICY,
+            },
+            injectTo: 'head-prepend',
+          },
+        ],
+      }
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     svelte(),
+    cspPlugin(),
     VitePWA({
       registerType: 'prompt',
       injectRegister: null,

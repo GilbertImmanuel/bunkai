@@ -1,4 +1,5 @@
 import type { Example } from '../data/types'
+import { ResponseLimitError, readLimitedText } from '../utils/limitedResponse'
 import { containsLookup, normalizeQuery } from './lookup'
 import { TatoebaError } from './types'
 
@@ -11,13 +12,21 @@ export const TATOEBA_PICK_LIMIT = 3
 export const TATOEBA_TIMEOUT_MS = 12_000
 export const TATOEBA_MIN_SENTENCE_LENGTH = 5
 export const TATOEBA_MAX_SENTENCE_LENGTH = 40
+export const TATOEBA_MAX_RESPONSE_BYTES = 256 * 1024
+export const TATOEBA_MAX_RESULTS = 50
+export const TATOEBA_MAX_TEXT_LENGTH = 1000
+export const TATOEBA_MAX_CREDIT_LENGTH = 200
+const TATOEBA_MAX_TRANSLATIONS = 20
+const TATOEBA_MAX_AUDIOS = 20
 
 export function buildTatoebaSearchUrl(query: string, limit = TATOEBA_FETCH_LIMIT): string {
   const params = new URLSearchParams()
+  const requested = Number.isFinite(limit) ? limit : TATOEBA_FETCH_LIMIT
+  const safeLimit = Math.max(1, Math.min(TATOEBA_MAX_RESULTS, Math.trunc(requested)))
   params.set('lang', 'jpn')
   params.set('q', normalizeQuery(query))
   params.set('sort', 'relevance')
-  params.set('limit', String(limit))
+  params.set('limit', String(safeLimit))
   params.set('is_unapproved', 'no')
   params.set('trans:lang', 'eng')
   params.set('trans:is_unapproved', 'no')
@@ -59,12 +68,15 @@ function approvedEnglishTranslations(raw: Record<string, unknown>): ApprovedTran
 
   const translations: ApprovedTranslation[] = []
 
-  for (const item of raw.translations) {
+  for (const item of raw.translations.slice(0, TATOEBA_MAX_TRANSLATIONS)) {
     if (!isRecord(item)) continue
     if (item.lang !== 'eng') continue
     if (item.is_unapproved === true) continue
 
-    const text = typeof item.text === 'string' ? item.text.trim() : ''
+    const text =
+      typeof item.text === 'string' && item.text.length <= TATOEBA_MAX_TEXT_LENGTH
+        ? item.text.trim()
+        : ''
     if (!text) continue
 
     translations.push({ text, isDirect: item.is_direct === true })
@@ -82,18 +94,25 @@ interface TatoebaAudioChoice {
 function pickAudio(raw: Record<string, unknown>): TatoebaAudioChoice | undefined {
   if (!Array.isArray(raw.audios)) return undefined
 
-  for (const item of raw.audios) {
+  for (const item of raw.audios.slice(0, TATOEBA_MAX_AUDIOS)) {
     if (!isRecord(item)) continue
 
     const id = typeof item.id === 'number' ? item.id : Number(item.id)
     if (!Number.isInteger(id)) continue
 
-    const license = typeof item.license === 'string' ? item.license.trim() : ''
+    const license =
+      typeof item.license === 'string' && item.license.length <= TATOEBA_MAX_CREDIT_LENGTH
+        ? item.license.trim()
+        : ''
     // Tatoeba's terms: an empty audio license may not be reused outside Tatoeba.
     if (!license) continue
 
     const author =
-      typeof item.author === 'string' && item.author.trim() ? item.author.trim() : undefined
+      typeof item.author === 'string' &&
+      item.author.length <= TATOEBA_MAX_CREDIT_LENGTH &&
+      item.author.trim()
+        ? item.author.trim()
+        : undefined
 
     return { id, author, license }
   }
@@ -131,12 +150,12 @@ export function mapTatoebaResponse(payload: unknown, options: MapTatoebaOptions)
 
   const query = normalizeQuery(options.query)
   const exclude = options.exclude ? normalizeQuery(options.exclude) : ''
-  const pick = Math.max(1, options.pick ?? TATOEBA_PICK_LIMIT)
+  const pick = Math.max(1, Math.min(10, options.pick ?? TATOEBA_PICK_LIMIT))
   const examples: Example[] = []
   const seenIds = new Set<number>()
   const seenEnglish = new Set<string>()
 
-  for (const raw of payload.data) {
+  for (const raw of payload.data.slice(0, TATOEBA_MAX_RESULTS)) {
     if (!isRecord(raw)) continue
     if (raw.is_unapproved === true) continue
     if (raw.lang !== 'jpn') continue
@@ -144,7 +163,10 @@ export function mapTatoebaResponse(payload: unknown, options: MapTatoebaOptions)
     const id = typeof raw.id === 'number' ? raw.id : Number(raw.id)
     if (!Number.isInteger(id)) continue
 
-    const text = typeof raw.text === 'string' ? raw.text.trim() : ''
+    const text =
+      typeof raw.text === 'string' && raw.text.length <= TATOEBA_MAX_TEXT_LENGTH
+        ? raw.text.trim()
+        : ''
     if (!text) continue
     if (query && !containsLookup(text, query)) continue
 
@@ -165,8 +187,17 @@ export function mapTatoebaResponse(payload: unknown, options: MapTatoebaOptions)
 
     const audio = pickAudio(raw)
     const license =
-      typeof raw.license === 'string' && raw.license.trim() ? raw.license.trim() : undefined
-    const author = typeof raw.owner === 'string' && raw.owner.trim() ? raw.owner.trim() : undefined
+      typeof raw.license === 'string' &&
+      raw.license.length <= TATOEBA_MAX_CREDIT_LENGTH &&
+      raw.license.trim()
+        ? raw.license.trim()
+        : undefined
+    const author =
+      typeof raw.owner === 'string' &&
+      raw.owner.length <= TATOEBA_MAX_CREDIT_LENGTH &&
+      raw.owner.trim()
+        ? raw.owner.trim()
+        : undefined
 
     examples.push({
       jp: text,
@@ -240,9 +271,19 @@ export async function searchTatoeba(options: SearchTatoebaOptions): Promise<Exam
       throw new TatoebaError('http', 'Tatoeba is unavailable right now.', response.status)
     }
 
+    let text: string
+    try {
+      text = await readLimitedText(response, TATOEBA_MAX_RESPONSE_BYTES, controller.signal)
+    } catch (error) {
+      if (error instanceof ResponseLimitError) {
+        throw new TatoebaError('format', 'Tatoeba returned too much data.')
+      }
+      throw error
+    }
+
     let payload: unknown
     try {
-      payload = await response.json()
+      payload = JSON.parse(text)
     } catch {
       throw new TatoebaError('format', 'Tatoeba returned an unreadable response.')
     }

@@ -94,8 +94,18 @@
 
   function handleSave(event: SubmitEvent): void {
     event.preventDefault()
-    saveAiPreferences({ provider: providerId, model, key, proxy })
+    const result = saveAiPreferences({ provider: providerId, model, key, proxy })
+
+    if (!result.persisted) {
+      status = {
+        kind: 'error',
+        message: result.error ?? 'Settings could not be saved in this browser.',
+      }
+      return
+    }
+
     key = ''
+    proxy = storedProxy(providerId)
 
     if (providerReady(providerId)) {
       status = { kind: 'success', message: 'Saved in this browser. AI is ready.' }
@@ -129,12 +139,18 @@
   }
 
   function handleRemove(): void {
-    removeStoredKey(providerId)
+    const result = removeStoredKey(providerId)
     key = ''
-    status = {
-      kind: 'info',
-      message: 'Key removed. Sample mode remains available.',
-    }
+
+    status = result.persisted
+      ? {
+          kind: 'info',
+          message: 'Key removed. Sample mode remains available.',
+        }
+      : {
+          kind: 'error',
+          message: result.error ?? 'The key could not be removed from this browser.',
+        }
   }
 
   function setTab(next: SettingsTab): void {
