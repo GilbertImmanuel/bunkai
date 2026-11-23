@@ -4,7 +4,7 @@
 
 {#if notes.length > 0}
   <section class="sheet-section" data-testid="sentence-note">
-    <p class="sec-label">Sentence note</p>
+    <h2 class="sec-label">Sentence note</h2>
 
     <div class="sentence-note">
       {#each notes as note, index (index)}

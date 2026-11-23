@@ -30,7 +30,7 @@
 
 <section class="translation sheet-section">
   <div class="toggle-row">
-    <p class="sec-label">Translation</p>
+    <h2 class="sec-label">Translation</h2>
     <div class="seg-toggle" role="group" aria-label="Translation mode">
       <button
         class="seg-btn"
@@ -92,7 +92,7 @@
   .seg-toggle {
     display: inline-flex;
     padding: 2px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--control-line);
     border-radius: var(--r-btn);
     background: var(--surface-2);
   }
@@ -100,7 +100,7 @@
   .seg-btn {
     min-height: 26px;
     padding: 0 12px;
-    border-radius: 6px;
+    border-radius: calc(var(--r-btn) - 2px);
     color: var(--muted);
     font-size: 12px;
     font-weight: 500;

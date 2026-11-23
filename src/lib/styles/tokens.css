@@ -6,9 +6,10 @@
   --surface: #fbf8f1;
   --surface-2: #f3ebdd;
   --ink: #1e1c17;
-  --muted: #756f63;
+  --muted: #686155;
   --line: #d2c6b2;
   --line-strong: #c4b69f;
+  --control-line: #897b62;
   --accent: #2f5d8a;
   --accent-fg: #faf7ef;
   --accent-soft: #dce7f0;
@@ -73,6 +74,7 @@
   --muted: #c8c0b2;
   --line: #5c554b;
   --line-strong: #7a7062;
+  --control-line: #7a7062;
   --accent: #9cc5e8;
   --accent-fg: #12100e;
   --accent-soft: #26333d;

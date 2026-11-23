@@ -77,7 +77,7 @@
 
 <section class="sheet-section" data-testid="sentence-map">
   <div class="map-head">
-    <p class="sec-label">Sentence map</p>
+    <h2 class="sec-label">Sentence map</h2>
     <div class="map-toggle" role="group" aria-label="Sentence map style">
       <button
         class="map-toggle-btn"
@@ -209,7 +209,7 @@
   .map-toggle {
     display: inline-flex;
     padding: 2px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--control-line);
     border-radius: var(--r-btn);
     background: var(--surface-2);
   }
@@ -217,7 +217,7 @@
   .map-toggle-btn {
     min-height: 24px;
     padding: 0 10px;
-    border-radius: 6px;
+    border-radius: calc(var(--r-btn) - 2px);
     color: var(--muted);
     font-size: 11px;
     font-weight: 500;

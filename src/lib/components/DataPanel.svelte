@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from 'svelte'
   import type { Session } from '../data/types'
   import {
     BackupError,
@@ -78,10 +79,34 @@
     }
   }
 
-  function setMode(next: ImportMode): void {
+  async function setMode(next: ImportMode, focus = false): Promise<void> {
     mode = next
     replaceConfirmed = false
     error = ''
+
+    if (!focus) return
+    await tick()
+    document.querySelector<HTMLElement>(`[data-testid="data-mode-${next}"]`)?.focus()
+  }
+
+  function handleModeKeydown(event: KeyboardEvent): void {
+    if (
+      event.key !== 'ArrowLeft' &&
+      event.key !== 'ArrowRight' &&
+      event.key !== 'ArrowUp' &&
+      event.key !== 'ArrowDown' &&
+      event.key !== 'Home' &&
+      event.key !== 'End'
+    ) {
+      return
+    }
+
+    event.preventDefault()
+    const next =
+      event.key === 'ArrowLeft' || event.key === 'ArrowUp' || event.key === 'Home'
+        ? 'merge'
+        : 'replace'
+    void setMode(next, true)
   }
 
   function clearFile(): void {
@@ -136,7 +161,7 @@
 
 <div class="data-panel" data-testid="data-panel">
   <section class="data-section">
-    <p class="data-label">Export</p>
+    <h3 class="data-label">Export</h3>
     <p class="data-count">
       {sessionCount}
       {plural(sessionCount, 'session')} in history.
@@ -157,7 +182,7 @@
   </section>
 
   <section class="data-section">
-    <p class="data-label">Import</p>
+    <h3 class="data-label">Import</h3>
     <p class="data-help">
       Restore a backup from this app. Merge adds new sessions; Replace restores the file exactly.
     </p>
@@ -166,6 +191,8 @@
       class="file-input"
       type="file"
       accept="application/json,.json"
+      tabindex="-1"
+      aria-hidden="true"
       bind:this={fileInput}
       onchange={handleFile}
       data-testid="backup-file-input"
@@ -187,15 +214,22 @@
         {formatExportedAt(parsed.exportedAt)}
       </p>
 
-      <div class="mode" role="radiogroup" aria-label="Import mode">
+      <div
+        class="mode"
+        role="radiogroup"
+        aria-label="Import mode"
+        tabindex="-1"
+        onkeydown={handleModeKeydown}
+      >
         <button
           class="mode-btn"
           class:is-on={mode === 'merge'}
           type="button"
           role="radio"
           aria-checked={mode === 'merge'}
+          tabindex={mode === 'merge' ? 0 : -1}
           data-testid="data-mode-merge"
-          onclick={() => setMode('merge')}
+          onclick={() => void setMode('merge')}
         >
           Merge
         </button>
@@ -205,8 +239,9 @@
           type="button"
           role="radio"
           aria-checked={mode === 'replace'}
+          tabindex={mode === 'replace' ? 0 : -1}
           data-testid="data-mode-replace"
-          onclick={() => setMode('replace')}
+          onclick={() => void setMode('replace')}
         >
           Replace
         </button>
@@ -317,7 +352,7 @@
     gap: 4px;
     margin-top: 10px;
     padding: 2px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--control-line);
     border-radius: var(--r-btn);
     background: var(--surface-2);
   }
@@ -326,13 +361,13 @@
     min-height: 28px;
     flex: 1 1 0;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: calc(var(--r-btn) - 2px);
     color: var(--muted);
     font-size: 12px;
   }
 
   .mode-btn.is-on {
-    border-color: var(--line-strong);
+    border-color: var(--control-line);
     background: var(--surface);
     color: var(--ink);
   }
@@ -374,7 +409,7 @@
   }
 
   .button-secondary {
-    border-color: var(--line-strong);
+    border-color: var(--control-line);
     background: transparent;
     color: var(--ink);
   }

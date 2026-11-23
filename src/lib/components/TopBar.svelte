@@ -170,8 +170,10 @@
     <button
       class="icon-btn"
       type="button"
+      class:is-open={aiState.settingsOpen}
       aria-label="Settings"
-      aria-pressed={aiState.settingsOpen}
+      aria-haspopup="dialog"
+      aria-expanded={aiState.settingsOpen}
       title="Settings"
       data-testid="settings-toggle"
       onclick={toggleAiSettings}
@@ -262,6 +264,11 @@
     min-width: 0;
   }
 
+  .icon-btn.is-open {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
   .brand-name {
     color: var(--ink);
     font-family: var(--font-reading);
@@ -289,7 +296,7 @@
   }
 
   .btn-secondary {
-    border-color: var(--line);
+    border-color: var(--control-line);
     background: transparent;
     color: var(--ink);
   }
@@ -349,7 +356,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 8px;
-    border-radius: 6px;
+    border-radius: calc(var(--r-note) - 6px);
     color: var(--ink);
     font-size: 13px;
     text-align: left;
@@ -361,8 +368,8 @@
 
   .furi-switch-row:focus-visible {
     background: var(--surface);
-    outline: 1px solid var(--accent);
-    outline-offset: -1px;
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
   }
 
   .furi-switch-label {
@@ -377,7 +384,7 @@
     align-items: center;
     padding: 2px;
     border-radius: 999px;
-    background: var(--line-strong);
+    background: var(--control-line);
     transition: background 0.15s ease;
   }
 

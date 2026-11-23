@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount, tick } from 'svelte'
   import { aiErrorMessage } from '../ai/breakdown'
   import { AI_PROVIDERS, getAiProvider, type AiProviderId } from '../ai/providers'
   import {
@@ -32,6 +32,7 @@
   let bodyEl: HTMLElement | undefined = $state()
   let closeEl: HTMLButtonElement | undefined = $state()
   let tab = $state<SettingsTab>('ai')
+  let returnFocus: HTMLElement | null = null
 
   const provider = $derived(getAiProvider(providerId))
   const keySaved = $derived(hasStoredKey(providerId))
@@ -42,6 +43,7 @@
   )
 
   onMount(() => {
+    returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
     closeEl?.focus()
 
     function onKeydown(event: KeyboardEvent): void {
@@ -81,6 +83,10 @@
 
     document.addEventListener('keydown', onKeydown)
     return () => document.removeEventListener('keydown', onKeydown)
+  })
+
+  onDestroy(() => {
+    if (returnFocus?.isConnected) returnFocus.focus()
   })
 
   function selectProvider(event: Event): void {
@@ -153,9 +159,28 @@
         }
   }
 
-  function setTab(next: SettingsTab): void {
+  async function setTab(next: SettingsTab, focus = false): Promise<void> {
     tab = next
     if (bodyEl) bodyEl.scrollTop = 0
+    if (!focus) return
+
+    await tick()
+    document.getElementById(`settings-tab-${next}`)?.focus()
+  }
+
+  function handleTabsKeydown(event: KeyboardEvent): void {
+    if (
+      event.key !== 'ArrowLeft' &&
+      event.key !== 'ArrowRight' &&
+      event.key !== 'Home' &&
+      event.key !== 'End'
+    ) {
+      return
+    }
+
+    event.preventDefault()
+    const next = event.key === 'ArrowLeft' || event.key === 'Home' ? 'ai' : 'data'
+    void setTab(next, true)
   }
 </script>
 
@@ -204,15 +229,24 @@
       </button>
     </header>
 
-    <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+    <div
+      class="settings-tabs"
+      role="tablist"
+      aria-label="Settings sections"
+      tabindex="-1"
+      onkeydown={handleTabsKeydown}
+    >
       <button
         class="settings-tab"
         class:is-active={tab === 'ai'}
         type="button"
         role="tab"
+        id="settings-tab-ai"
         aria-selected={tab === 'ai'}
+        aria-controls="settings-panel"
+        tabindex={tab === 'ai' ? 0 : -1}
         data-testid="settings-tab-ai"
-        onclick={() => setTab('ai')}
+        onclick={() => void setTab('ai')}
       >
         AI
       </button>
@@ -221,20 +255,23 @@
         class:is-active={tab === 'data'}
         type="button"
         role="tab"
+        id="settings-tab-data"
         aria-selected={tab === 'data'}
+        aria-controls="settings-panel"
+        tabindex={tab === 'data' ? 0 : -1}
         data-testid="settings-tab-data"
-        onclick={() => setTab('data')}
+        onclick={() => void setTab('data')}
       >
         Data
       </button>
     </div>
 
-    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <div
       class="settings-body scroll-region"
-      role="region"
+      id="settings-panel"
+      role="tabpanel"
       tabindex="0"
-      aria-label="Settings"
+      aria-labelledby={`settings-tab-${tab}`}
       bind:this={bodyEl}
     >
       {#if tab === 'ai'}
@@ -421,7 +458,7 @@
   }
 
   .settings-tab.is-active {
-    border-color: var(--line-strong);
+    border-color: var(--control-line);
     background: var(--surface);
     color: var(--ink);
   }
@@ -477,7 +514,7 @@
     width: 100%;
     height: 38px;
     padding: 0 10px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--control-line);
     border-radius: var(--r-btn);
     background: var(--surface);
     color: var(--ink);
@@ -492,6 +529,7 @@
   .field input:focus,
   .field select:focus {
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
     outline: none;
   }
 
@@ -562,7 +600,7 @@
   }
 
   .button-secondary {
-    border-color: var(--line);
+    border-color: var(--control-line);
     background: transparent;
     color: var(--ink);
   }

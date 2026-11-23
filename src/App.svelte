@@ -66,13 +66,22 @@
   data-view={appState.view}
   data-history={appState.historyOpen ? 'open' : 'collapsed'}
 >
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <TopBar />
 
   <div class="shell" data-view={appState.view} data-note={appState.noteOpen ? 'open' : 'collapsed'}>
     <HistoryPanel />
 
     {#if appState.view === 'workspace'}
-      <main class="center" data-testid="workspace-view" aria-label="Reading workspace">
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+      <main
+        class="center"
+        id="main-content"
+        tabindex="-1"
+        data-testid="workspace-view"
+        aria-label="Reading workspace"
+      >
         <header class="center-head">
           <span class="center-label">Reading</span>
           <span class="center-meta">
@@ -94,7 +103,7 @@
         </div>
       </main>
     {:else}
-      <main class="center home-center" aria-label="Home">
+      <main class="center home-center" id="main-content" tabindex="-1" aria-label="Home">
         <Home />
       </main>
     {/if}
@@ -114,6 +123,31 @@
 <DesktopGuard />
 
 <style>
+  .skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 100;
+    padding: 8px 12px;
+    border: 1px solid var(--control-line);
+    border-radius: var(--r-btn);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 13px;
+    text-decoration: none;
+    transform: translateY(calc(-100% - 16px));
+    transition: transform 120ms var(--ease-out);
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
+  .center:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
   .app {
     display: flex;
     height: 100dvh;

@@ -278,7 +278,7 @@
     gap: 10px;
     margin-top: 14px;
     padding: 0 8px 0 18px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--control-line);
     border-radius: var(--r-note);
     background: var(--surface);
     transition:

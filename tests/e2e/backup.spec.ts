@@ -116,6 +116,28 @@ test('replaces history only after confirmation', async ({ page }) => {
   await expect(page.locator('[data-history-id="sample"]')).toHaveCount(0)
 })
 
+test('import mode radios support arrow keys', async ({ page }) => {
+  await openSettingsData(page)
+  await chooseBackup(page, backup())
+
+  const merge = page.getByTestId('data-mode-merge')
+  const replace = page.getByTestId('data-mode-replace')
+
+  await expect(merge).toHaveAttribute('tabindex', '0')
+  await expect(replace).toHaveAttribute('tabindex', '-1')
+
+  await merge.focus()
+  await merge.press('ArrowRight')
+  await expect(replace).toHaveAttribute('aria-checked', 'true')
+  await expect(replace).toHaveAttribute('tabindex', '0')
+  await expect(replace).toBeFocused()
+
+  await replace.press('ArrowLeft')
+  await expect(merge).toHaveAttribute('aria-checked', 'true')
+  await expect(merge).toHaveAttribute('tabindex', '0')
+  await expect(merge).toBeFocused()
+})
+
 test('rejects an invalid backup without changing history', async ({ page }) => {
   await openSettingsData(page)
 

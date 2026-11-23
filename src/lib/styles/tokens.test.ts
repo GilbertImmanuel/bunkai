@@ -22,9 +22,10 @@ const sharedColors = {
   surface: '#fbf8f1',
   'surface-2': '#f3ebdd',
   ink: '#1e1c17',
-  muted: '#756f63',
+  muted: '#686155',
   line: '#d2c6b2',
   'line-strong': '#c4b69f',
+  'control-line': '#897b62',
   accent: '#2f5d8a',
   'accent-fg': '#faf7ef',
   'accent-soft': '#dce7f0',
@@ -45,6 +46,7 @@ const darkColors = {
   muted: '#c8c0b2',
   line: '#5c554b',
   'line-strong': '#7a7062',
+  'control-line': '#7a7062',
   accent: '#9cc5e8',
   'accent-fg': '#12100e',
   'accent-soft': '#26333d',
@@ -83,6 +85,23 @@ describe('design tokens', () => {
     }
   })
 
+  it('meets the light contrast targets', () => {
+    expect(contrastRatio(lightTokens.ink, lightTokens.surface)).toBeGreaterThanOrEqual(7)
+    expect(contrastRatio(lightTokens.ink, lightTokens['surface-2'])).toBeGreaterThanOrEqual(7)
+    expect(contrastRatio(lightTokens.muted, lightTokens.surface)).toBeGreaterThanOrEqual(4.5)
+    expect(contrastRatio(lightTokens.muted, lightTokens['surface-2'])).toBeGreaterThanOrEqual(4.5)
+    expect(contrastRatio(lightTokens.muted, lightTokens.bg)).toBeGreaterThanOrEqual(4.5)
+    expect(contrastRatio(lightTokens.accent, lightTokens.surface)).toBeGreaterThanOrEqual(3)
+    expect(contrastRatio(lightTokens['control-line'], lightTokens.surface)).toBeGreaterThanOrEqual(
+      3,
+    )
+    expect(
+      contrastRatio(lightTokens['control-line'], lightTokens['surface-2']),
+    ).toBeGreaterThanOrEqual(3)
+    expect(contrastRatio(lightTokens['control-line'], lightTokens.bg)).toBeGreaterThanOrEqual(3)
+    expect(contrastRatio(lightTokens['accent-fg'], lightTokens.accent)).toBeGreaterThanOrEqual(4.5)
+  })
+
   it('meets the dark contrast targets', () => {
     expect(contrastRatio(darkTokens.ink, darkTokens.surface)).toBeGreaterThanOrEqual(7)
     expect(contrastRatio(darkTokens.ink, darkTokens['surface-2'])).toBeGreaterThanOrEqual(7)
@@ -93,6 +112,19 @@ describe('design tokens', () => {
     expect(
       contrastRatio(darkTokens['line-strong'], darkTokens['surface-2']),
     ).toBeGreaterThanOrEqual(3)
+    expect(contrastRatio(darkTokens['control-line'], darkTokens.surface)).toBeGreaterThanOrEqual(3)
+    expect(
+      contrastRatio(darkTokens['control-line'], darkTokens['surface-2']),
+    ).toBeGreaterThanOrEqual(3)
+  })
+
+  it('uses progressively lighter surfaces for dark-mode depth', () => {
+    const bg = relativeLuminance(darkTokens.bg)
+    const surface = relativeLuminance(darkTokens.surface)
+    const surface2 = relativeLuminance(darkTokens['surface-2'])
+
+    expect(surface).toBeGreaterThan(bg)
+    expect(surface2).toBeGreaterThan(surface)
   })
 
   it('keeps the specified chunk mixes and dark kana size', () => {

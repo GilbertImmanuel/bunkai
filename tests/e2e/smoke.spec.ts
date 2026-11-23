@@ -768,12 +768,15 @@ test('sidebar opens as a drawer at 1024px', async ({ page }) => {
   await page.keyboard.press('Escape')
   await expectSidebarState(page, false)
   await expect(rail).toBeVisible()
+  await expect(page.locator('[data-chunk="2"]')).toBeFocused()
 
-  await page.getByRole('button', { name: 'Expand breakdown' }).click()
+  const expand = page.getByRole('button', { name: 'Expand breakdown' })
+  await expand.click()
   await expectSidebarState(page, true)
   await scrim.click()
   await expectSidebarState(page, false)
   await expect(rail).toBeVisible()
+  await expect(expand).toBeFocused()
 
   await page.getByRole('button', { name: 'Expand breakdown' }).click()
   await expectSidebarState(page, true)
@@ -804,6 +807,11 @@ test('clicking a history item loads that session', async ({ page }) => {
   await expect(page.locator('[data-chunk="3"]')).toHaveAttribute('aria-label', '悪そう')
   await expect(page.locator('[data-chunk]')).toHaveCount(3)
   await expect(sessionB).toHaveClass(/is-active/)
+  await expect(sessionB).toHaveAttribute('aria-current', 'true')
+  await expect(page.locator('[data-history-id="sample"]')).not.toHaveAttribute(
+    'aria-current',
+    'true',
+  )
   await expect(page.getByRole('button', { name: 'Saved' })).toBeDisabled()
   await expect.poll(() => center.evaluate((element) => element.scrollTop)).toBe(0)
 
@@ -1276,6 +1284,48 @@ test('AI settings save, test, hide, and remove the key', async ({ page }) => {
   await expect(page.getByTestId('ai-status')).toContainText('Sample mode')
 
   expect(consoleErrors).toEqual([])
+})
+
+test('settings tabs support arrow keys and return focus', async ({ page }) => {
+  await page.goto('/')
+
+  const toggle = page.getByTestId('settings-toggle')
+  await expect(toggle).toHaveAttribute('aria-haspopup', 'dialog')
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+
+  await toggle.focus()
+  await toggle.press('Enter')
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+
+  const drawer = page.getByTestId('ai-settings')
+  const aiTab = page.getByTestId('settings-tab-ai')
+  const dataTab = page.getByTestId('settings-tab-data')
+
+  await aiTab.focus()
+  await aiTab.press('ArrowRight')
+  await expect(dataTab).toHaveAttribute('aria-selected', 'true')
+  await expect(dataTab).toBeFocused()
+  await expect(page.getByTestId('data-panel')).toBeVisible()
+
+  await dataTab.press('ArrowLeft')
+  await expect(aiTab).toHaveAttribute('aria-selected', 'true')
+  await expect(aiTab).toBeFocused()
+
+  await page.keyboard.press('Escape')
+  await expect(drawer).toHaveCount(0)
+  await expect(toggle).toBeFocused()
+})
+
+test('the workspace has a page heading and the skip link focuses main', async ({ page }) => {
+  await page.goto('/')
+
+  const skip = page.getByRole('link', { name: 'Skip to main content' })
+  await skip.focus()
+  await skip.press('Enter')
+  await expect(page.locator('#main-content')).toBeFocused()
+
+  await page.getByTestId('sample-card').click()
+  await expect(page.getByRole('heading', { level: 1, name: 'Reading workspace' })).toHaveCount(1)
 })
 
 test('AI settings do not alter the workspace sidebar when closed with Escape', async ({ page }) => {

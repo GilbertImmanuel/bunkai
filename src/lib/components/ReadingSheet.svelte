@@ -142,7 +142,12 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<article class="reading-sheet" data-testid="reading-sheet">
+<article
+  class="reading-sheet"
+  data-testid="reading-sheet"
+  aria-labelledby="reading-workspace-title"
+>
+  <h1 class="sr-only" id="reading-workspace-title">Reading workspace</h1>
   <span class="sheet-label" aria-hidden="true">Reading</span>
 
   <Sentence

@@ -11,6 +11,8 @@
   let isDrawer = $state(false)
   let panelEl: HTMLElement | undefined = $state()
   let bodyEl: HTMLElement | undefined = $state()
+  let returnFocus: HTMLElement | null = null
+  let drawerWasOpen = false
 
   const session = $derived(appState.currentSession)
   const selectedChunk = $derived(
@@ -41,6 +43,26 @@
     const sessionId = appState.currentSession.id
     const selected = appState.selectedChunk
     if (sessionId && selected > 0 && bodyEl) bodyEl.scrollTop = 0
+  })
+
+  $effect(() => {
+    const open = isDrawer && appState.noteOpen
+    if (open === drawerWasOpen) return
+    drawerWasOpen = open
+
+    if (open) {
+      const active = document.activeElement
+      returnFocus =
+        active instanceof HTMLElement &&
+        (active.matches('[data-chunk]') || Boolean(active.closest('[data-testid="sidebar-rail"]')))
+          ? active
+          : document.querySelector<HTMLElement>('[data-chunk][aria-pressed="true"]')
+      return
+    }
+
+    const target = returnFocus
+    returnFocus = null
+    if (target?.isConnected) target.focus()
   })
 
   $effect(() => {
@@ -124,7 +146,9 @@
     <header class="sidebar-head">
       <div class="kicker">
         <span class="swatch c{selectedChunk.color}" aria-hidden="true"></span>
-        <span class="panel-label">Chunk {pad(selectedChunk.n)}</span>
+        <h2 class="panel-label" id="chunk-breakdown-title">
+          Chunk {pad(selectedChunk.n)}
+        </h2>
         <button
           class="icon-btn close-btn"
           type="button"
@@ -171,14 +195,14 @@
 
       {#if selectedChunk.construction.length > 0}
         <section class="bd-section">
-          <p class="sec-label">Construction</p>
+          <h3 class="sec-label">Construction</h3>
           <ConstructionTrace steps={selectedChunk.construction} color={selectedChunk.color} />
         </section>
       {/if}
 
       {#if showExamples}
         <section class="bd-section">
-          <p class="sec-label">Examples</p>
+          <h3 class="sec-label">Examples</h3>
           <TatoebaExamples
             lookup={tatoebaLookup}
             fallbackExamples={aiExamples}
@@ -190,14 +214,14 @@
 
       {#if selectedChunk.note}
         <section class="bd-section">
-          <p class="sec-label">Grammar note</p>
+          <h3 class="sec-label">Grammar note</h3>
           <GrammarNote note={selectedChunk.note} />
         </section>
       {/if}
 
       {#if references.length > 0}
         <section class="bd-section" data-testid="chunk-references">
-          <p class="sec-label">Guides</p>
+          <h3 class="sec-label">Guides</h3>
           <ul class="ref-list">
             {#each references as reference (reference.source + reference.label)}
               <li class="ref-item">

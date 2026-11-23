@@ -5,7 +5,7 @@
 </script>
 
 <section class="sheet-section" data-testid="literal-key">
-  <p class="sec-label">Literal key</p>
+  <h2 class="sec-label">Literal key</h2>
 
   <div class="key-list">
     {#each chunks as chunk (chunk.n)}

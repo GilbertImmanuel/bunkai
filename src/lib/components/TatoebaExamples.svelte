@@ -128,7 +128,7 @@
 >
   {#if lookup.query}
     <div class="tatoeba-head">
-      <span class="tatoeba-label">From Tatoeba</span>
+      <h4 class="tatoeba-label">From Tatoeba</h4>
       <a
         class="tatoeba-search"
         data-testid="tatoeba-search-link"
@@ -244,7 +244,7 @@
 
   {#if showFallback}
     <div class="generated" data-testid="generated-examples">
-      <p class="tatoeba-label">Generated examples</p>
+      <h4 class="tatoeba-label">Generated examples</h4>
       <Examples examples={fallbackExamples} />
     </div>
   {/if}
@@ -365,7 +365,7 @@
     height: 26px;
     flex: 0 0 auto;
     place-items: center;
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--control-line);
     border-radius: 999px;
     color: var(--muted);
     transition:

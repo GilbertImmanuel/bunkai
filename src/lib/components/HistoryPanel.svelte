@@ -14,6 +14,9 @@
 
   const entries = $derived(buildHistoryEntries(historyState.sessions))
   const filteredGroups = $derived(groupHistoryEntries(filterHistoryEntries(entries, query)))
+  const activeSessionId = $derived(
+    appState.view === 'workspace' ? appState.currentSession.id : null,
+  )
 
   function openHistoryItem(entry: HistoryEntry): void {
     openSession(entry.session)
@@ -119,9 +122,9 @@
             {#each group.items as entry (entry.id)}
               <button
                 class="history-item"
-                class:is-active={appState.view === 'workspace' &&
-                  appState.currentSession.id === entry.sessionId}
+                class:is-active={activeSessionId === entry.sessionId}
                 type="button"
+                aria-current={activeSessionId === entry.sessionId ? 'true' : undefined}
                 data-history-id={entry.id}
                 onclick={() => openHistoryItem(entry)}
               >
@@ -206,7 +209,7 @@
     gap: 8px;
     margin-top: 10px;
     padding: 0 10px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--control-line);
     border-radius: var(--r-btn);
     background: var(--bg);
     color: var(--muted);
@@ -214,6 +217,7 @@
 
   .search:focus-within {
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
   }
 
   .search svg {
@@ -248,7 +252,7 @@
     justify-content: center;
     gap: 7px;
     margin-top: 10px;
-    border: 1px dashed var(--line);
+    border: 1px dashed var(--control-line);
     border-radius: var(--r-btn);
     background: transparent;
     color: var(--muted);
