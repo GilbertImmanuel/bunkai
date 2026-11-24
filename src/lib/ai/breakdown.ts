@@ -81,7 +81,11 @@ The JSON must have this exact shape:
       ]
     }
   ],
-  "sentenceNote": ["2–3 short paragraphs explaining topic, core, modifiers, and nuance"]
+  "sentenceNote": [
+    "Core: one-sentence meaning.",
+    "Structure: how the chunks, particles, and clause fit.",
+    "Nuance: one sentence on tone or usage."
+  ]
 }
 
 Rules:
@@ -96,6 +100,7 @@ Rules:
 - The raw gloss is literal and unpolished; the natural translation is adapted English.
 - naturalParts must concatenate exactly to natural, including spaces and punctuation. Put each space inside the part where it belongs.
 - Each naturalParts text maps to the chunk that supplies its meaning. Use chunk 0 only when no chunk matches. Use the chunk number even when the English phrase appears in a different order from the Japanese; a chunk number may appear more than once. The chunk number is the 1-based position in the chunks array, not the color value.
+- sentenceNote must contain 2–3 strings. Start each with "Core:", "Structure:", or "Nuance:". Core is one sentence of meaning. Structure explains how the chunks, particles, and clause fit. Nuance is one sentence on tone or usage. Do not repeat the translation or add generic filler; keep each to 1–2 sentences. Do not use Markdown or bold labels.
 - Do not include HTML. The sentenceNote is plain text.
 - Return valid JSON only.`
 

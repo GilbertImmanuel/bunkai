@@ -406,7 +406,8 @@ Manual checks:
 - [ ] No horizontal scroll or clipped topbar/meta.
 - [ ] No 9px labels.
 - [ ] Inset radii use outer radius minus padding; control borders use `--control-line`.
-- [ ] Flat pills; no underlines/blend.
+- [ ] Shape scale is 3/4/6/8px; no capsule controls; only map dots/spinner are full-round.
+- [ ] Flat highlights; no underlines/blend.
 - [ ] Sentence not orphaned.
 - [ ] Sidebar never covers history.
 - [ ] Fonts load locally; no Google Fonts request.

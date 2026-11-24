@@ -16,9 +16,9 @@ export const sampleSession = {
   ],
   raw: 'just | when (my) heart moved | it | with someone | came to want to share | only',
   sentenceNote: [
-    'The topic is unspoken; the whole sentence pivots on one comment — the verb 共有したくなった.',
-    '心が動いたときに is a time clause marking the moment the feeling arose; それを and 誰かと modify that verb.',
-    'だけ caps the statement and ただ reinforces it — together they frame everything as “just … only, nothing more.”',
+    'Core: I just felt like sharing it with someone when it moved me — that’s all.',
+    'Structure: 心が動いたときに is a time clause; それを and 誰かと modify 共有したくなった; だけ caps the statement.',
+    'Nuance: ただ and だけ together frame it as “just … only, nothing more.”',
   ],
   createdAt: '2026-11-02T09:00:00.000Z',
   source: 'sample',

@@ -356,7 +356,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 8px;
-    border-radius: calc(var(--r-note) - 6px);
+    border-radius: var(--r-hl);
     color: var(--ink);
     font-size: 13px;
     text-align: left;
@@ -383,7 +383,7 @@
     flex: 0 0 auto;
     align-items: center;
     padding: 2px;
-    border-radius: 999px;
+    border-radius: var(--r-hl);
     background: var(--control-line);
     transition: background 0.15s ease;
   }
@@ -391,7 +391,7 @@
   .furi-thumb {
     width: 12px;
     height: 12px;
-    border-radius: 50%;
+    border-radius: 1px;
     background: var(--surface);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     transition: transform 0.15s ease;

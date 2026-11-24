@@ -190,7 +190,7 @@
 
   .home-col {
     width: 100%;
-    max-width: 720px;
+    max-width: 1040px;
   }
 
   .home-title {
@@ -321,7 +321,7 @@
     height: 40px;
     flex: 0 0 auto;
     place-items: center;
-    border-radius: 999px;
+    border-radius: var(--r-btn);
     background: var(--accent);
     color: var(--accent-fg);
     transition:

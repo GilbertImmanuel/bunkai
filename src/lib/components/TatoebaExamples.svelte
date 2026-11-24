@@ -366,7 +366,7 @@
     flex: 0 0 auto;
     place-items: center;
     border: 1px solid var(--control-line);
-    border-radius: 999px;
+    border-radius: var(--r-btn);
     color: var(--muted);
     transition:
       color 0.15s ease,

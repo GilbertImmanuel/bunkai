@@ -147,7 +147,8 @@ Highlight recipe:
 - Dark: `background: color-mix(in srgb, var(--cc) 18%, var(--surface))`, selected `26%`, border `1px solid color-mix(in srgb, var(--cc) 45%, transparent)`.
 - 3px radius, `box-decoration-break: clone`.
 - No underlines. No `::before` brush edges. No `mix-blend-mode`. No overlap/negative margins.
-- The same hue appears in the sentence, literal key, map dot, sidebar swatch, and history strip.
+- The same hue appears in the sentence, literal key chip, map dot, sidebar swatch, and
+  history strip.
 
 Dark mode must not use green/olive for large surfaces. The two green-ish chunk hues are accents, not a wash.
 
@@ -157,19 +158,20 @@ Dark mode must not use green/olive for large surfaces. The two green-ish chunk h
 
 ### Radius
 
-| Token       | Value | Use                                  |
-| ----------- | ----- | ------------------------------------ |
-| `--r-hl`    | 3px   | Inline chunk highlights, tags        |
-| `--r-btn`   | 8px   | Buttons, inputs, small controls      |
-| `--r-note`  | 12px  | Sidebar cards, key cells, examples   |
-| `--r-sheet` | 16px  | Reading sheet, drawers, bottom sheet |
-| full        | 999px | Icon buttons, circled numbers only   |
+| Token       | Value | Use                                                              |
+| ----------- | ----- | ---------------------------------------------------------------- |
+| `--r-hl`    | 3px   | Inline chunk highlights, active History row                      |
+| `--r-btn`   | 4px   | Buttons, inputs, segments, icon buttons, send/audio/rail numbers |
+| `--r-note`  | 6px   | Sidebar cards, menus, examples, settings notes                   |
+| `--r-sheet` | 8px   | Reading sheet, sample card, drawer edge                          |
+| full        | 50%   | Sentence-map dots and spinner only                               |
 
 Nested rounding rule: an inset rounded child should use the outer radius minus its padding,
-e.g. a 6px control inside an 8px container with 2px padding. Use `calc()` with the radius
+e.g. a 2px segment inside a 4px control group with 2px padding. Use `calc()` with the radius
 token (`calc(var(--r-btn) - 2px)`) so the curves stay parallel.
 
-Do not use pills for primary buttons. Do not round every element.
+No capsule-shaped controls. Full-round is reserved for data dots and the spinner. The furigana
+switch is a 3px track with a 1px thumb. Do not round every element.
 
 ### Surfaces
 
@@ -194,7 +196,7 @@ No paper texture, grain, noise, glass, blobs, or multiple background colors.
 │ Top bar 52px — fixed                                         │
 ├──────────────┬───────────────────────────────┬───────────────┤
 │ History      │ Reading page                  │ Breakdown     │
-│ 240 / 56px   │ max 720px sheet               │ 300 / 320 / 44│
+│ 240 / 56px   │ max 1040px sheet               │ 300 / 320 / 44│
 │ scroll       │ scroll                        │ scroll        │
 └──────────────┴───────────────────────────────┴───────────────┘
 ```
@@ -202,7 +204,7 @@ No paper texture, grain, noise, glass, blobs, or multiple background colors.
 - `height: 100dvh`, no page scroll.
 - Topbar: 52px.
 - History: 240px column; 56px rail.
-- Center: `minmax(0, 1fr)`; reading sheet max 720px.
+- Center: `minmax(0, 1fr)`; reading sheet and Home column max 1040px.
 - Sidebar: 300px column; 320px at ≥1440; 44px rail when collapsed.
 - Gaps/padding: 20–24px.
 - The center is the only place the sentence lives. The sidebar is the chunk breakdown.
@@ -217,7 +219,7 @@ No paper texture, grain, noise, glass, blobs, or multiple background colors.
 
 ### Reading page order
 
-1. Sentence with chunk pills and optional furigana
+1. Sentence with chunk highlights and optional furigana
 2. Kana reading
 3. Older-session enrichment row (conditional)
 4. Translation toggle + text (Natural/Raw)
@@ -264,7 +266,7 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - Header: "History", `+` new breakdown, search.
 - Groups: Today / Yesterday / Earlier.
 - Item: two-line Japanese preview, time, chunk count, 3-color strip.
-- Active: warm/soft tint; no left accent rule.
+- Active: warm/soft tint, 3px radius, no left accent rule.
 - Rail: expand chevron + vertical "HISTORY" label.
 - No login/account UI.
 
@@ -273,21 +275,22 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - Title: "Read a sentence, see its pieces." (or the reference's current copy).
 - Subline: one sentence.
 - Sample card: clickable, shows the sample sentence with non-interactive highlight spans.
-- Combo input: one rounded field with input + circular send arrow; focus ring; Enter sends; send disabled until text.
+- Combo input: one rounded field with input + square send button; focus ring; Enter sends; send disabled until text.
 - On send, the arrow becomes a spinner. Manual mode shows “Preparing workspace…”; AI mode shows the active provider while the request runs.
 - No separate "Break down" text button.
 
 ### Reading sheet
 
-- `--surface`, 16px radius, 1px `--line-strong`, soft shadow.
-- 32px padding; max 720px.
+- `--surface`, 8px radius, 1px `--line-strong`, soft shadow.
+- Max 1040px. Padding is 40px top/bottom; left/right is 40/32 below 1440 and 56/40 at
+  ≥1440. The extra left inset keeps content off the reading rule at wide sizes.
 - Left margin rule at 22px, 1px `--line-strong`; vertical "READING" label.
 - At ≤600px: hide the vertical label/rule, reduce padding. (Phone is not supported; this is a fallback only if the guard is bypassed.)
 
 ### Sentence and chunks
 
 - Shippori Mincho 22px / 1.8.
-- Inline pills, 3px radius, tight padding, no underline.
+- Inline highlights, 3px radius, tight padding, no underline.
 - Hover: tint +9%; selected: stronger tint + 1px border.
 - `1–6` selects; click selects; Enter opens the sidebar if collapsed.
 
@@ -302,7 +305,7 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - Two independent switches in the topbar panel: **Name** for proper nouns and **Furigana** for ordinary kanji vocabulary.
 - Both switches default on. Any combination is valid: both off, Name only, Furigana only, or both on.
 - The settings persist as `{ name, word }` in `bunkai.furigana`; legacy four-mode values migrate automatically.
-- When any furigana is visible, every chunk in the sentence reserves the same top padding. Pills stay the same height even when some chunks have no reading.
+- When any furigana is visible, every chunk in the sentence reserves the same top padding. Highlights stay the same height even when some chunks have no reading.
 - Sessions missing colors or readings show a **Missing details → Add colors & readings** row in the reading sheet. It asks the active provider to add the missing mappings and furigana without regenerating the breakdown.
 
 ### Translation toggle
@@ -321,6 +324,7 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - Tree view: topic frame, A-car → B-engine spine, then a nested modifier hierarchy with target arrows.
 - Both views mark explicit or ghost `(zeroは)` / `(zeroが)` and use Cure Dolly roles such as A-car, B-engine, reason clause, and limiter.
 - Use the six chunk hues for dots and labels, not full chips or colored left borders.
+- Dots sit in front of the connecting line with a 2px surface ring.
 - Stack the row vertically at ≤900px.
 - A subject embedded in a predicate chunk (`内容が乏しくなった`) is split in the map without changing the underlying chunk.
 
@@ -334,15 +338,22 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 ### Literal key
 
 - Quiet 2-column list at >900px; 1 column at ≤900px.
-- Row: color swatch, number, Japanese, gloss, role.
+- Row: a 96px meta column with a small color chip inline with the number, the role below,
+  then Japanese and gloss in the content column.
+- The chip is 8px, 2px radius, and sits on the number line; it is never centered across the
+  row.
 - Hairline bottom borders; no card background/border.
 - 11–12px role labels, not 9px.
 
 ### Sentence note
 
-- 2–3 short paragraphs or bullets explaining topic/comment, core, modifier chain, and nuance.
+- 2–3 labeled blocks: **Core** (meaning), **Structure** (how the chunks, particles, and
+  clause fit), **Nuance** (tone or usage).
+- Two-column rows: a 128px label column, 24px gap, then a fluid prose column that runs to
+  the same right edge as the literal key. No prose max-width.
+- Labels: 11px uppercase data type, muted. Prose: Vollkorn 15px / 1.65. Row gap 18px.
 - No left accent rule or card; the section hairline and typography carry it.
-- Vollkorn 15px / 1.65.
+- Unlabeled older notes fall back to full-width prose with 14px paragraph spacing.
 
 ### Breakdown sidebar
 
@@ -363,7 +374,7 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - Heading: “From Tatoeba” with a “Search Tatoeba” link to the public search page.
 - Shows 2–3 real sentences. Each row: number, Japanese (16px Shippori), English (14px
   Vollkorn, muted), source link, contributor, sentence license, and optional audio.
-- Audio: 26px circular icon button using a `--line-strong` border and a `--muted` icon;
+- Audio: 26px square icon button using a `--line-strong` border and a `--muted` icon;
   hover uses `--accent` / `--ink`. Label it “Play audio for Tatoeba sentence <id>”.
   Render audio only when the recording has a non-empty license.
 - Attribution: `Audio: <author> · <license>` per recording; footer line
@@ -467,7 +478,7 @@ At 900–1099, the sidebar is a drawer: selecting a chunk opens it over the cent
 | **901–1099**  | 56 rail    | 44 rail; opens as drawer | 801–999px | 2-col/horizontal |
 | **1100–1279** | 56 rail    | 300 column               | 744–923px | 2-col/horizontal |
 | **1280–1439** | 240 column | 300 column               | 740–899px | 2-col/horizontal |
-| **≥1440**     | 240 column | 320 column               | 880px+    | 2-col/horizontal |
+| **≥1440**     | 240 column | 320 column               | 1040px+   | 2-col/horizontal |
 
 Rules:
 
@@ -546,7 +557,7 @@ Rules:
 
 - Keep the sentence largest and calmest.
 - Use warm neutral layers, hairlines, and soft shadows.
-- Use flat tinted pills for chunks.
+- Use flat tinted highlights for chunks.
 - Keep the sidebar as the full breakdown.
 - Use real content and real states.
 - Use the six hues consistently.
@@ -559,7 +570,7 @@ Rules:
 **Don't**
 
 - Don't add paper texture, grain, noise, glass, blobs, or multiple background colors.
-- Don't fake a highlighter brushstroke; the flat pill is the honest choice.
+- Don't fake a highlighter brushstroke; the flat highlight is the honest choice.
 - Don't underline chunks.
 - Don't add Reader/Breakdown tabs or a separate breakdown page.
 - Don't add chat bubbles or a chat thread.
@@ -592,6 +603,6 @@ The local reference is a visual prototype. The implementation should:
 - Add scrim/focus trap to the 900–1099 sidebar drawer.
 - Add the desktop guard below 900.
 - Keep the 1280/1100/900 breakpoint logic; do not regress to the old 1200/899 behavior.
-- Keep the flat highlight pills; do not reintroduce the failed brushstroke.
+- Keep the flat highlight blocks; do not reintroduce the failed brushstroke.
 - Keep the warm neutral dark mode; do not reintroduce olive surfaces.
 - Add tests for 900, 1024, 1100, 1200, 1280, 1440.

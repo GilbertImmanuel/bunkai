@@ -134,4 +134,11 @@ describe('design tokens', () => {
     expect(darkTokens['sel-pct']).toBe('26%')
     expect(darkTokens['fs-kana']).toBe('15px')
   })
+
+  it('uses the printed shape scale', () => {
+    expect(lightTokens['r-hl']).toBe('3px')
+    expect(lightTokens['r-btn']).toBe('4px')
+    expect(lightTokens['r-note']).toBe('6px')
+    expect(lightTokens['r-sheet']).toBe('8px')
+  })
 })

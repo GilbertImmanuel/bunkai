@@ -470,7 +470,10 @@ test('reading page shows the sentence map, literal key, and sentence note', asyn
   await expect(page.getByTestId('map-core')).toBeVisible()
   await expect(page.getByTestId('map-tree-core')).toHaveCount(0)
   await expect(page.getByTestId('literal-key').locator('.key-row')).toHaveCount(6)
-  await expect(page.getByTestId('sentence-note').locator('.sentence-note p')).toHaveCount(3)
+  const note = page.getByTestId('sentence-note')
+  await expect(note.locator('.note-row')).toHaveCount(3)
+  await expect(note.locator('.note-label')).toHaveText(['Core', 'Structure', 'Nuance'])
+  await expect(note).toContainText('I just felt like sharing it')
 
   const underlineCount = await page
     .locator('[data-chunk]')
@@ -505,6 +508,60 @@ test('reading page shows the sentence map, literal key, and sentence note', asyn
   await page.screenshot({ path: 'test-results/reader-details-1280x800.png' })
 
   expect(consoleErrors).toEqual([])
+})
+
+test('controls use the printed shape scale, not capsule chrome', async ({ page }) => {
+  await page.goto('/')
+
+  const homeShape = await page.evaluate(() => {
+    const corner = (selector: string): string => {
+      const element = document.querySelector<HTMLElement>(selector)
+      if (!element) throw new Error(`Missing ${selector}`)
+      return getComputedStyle(element).borderTopLeftRadius
+    }
+
+    return {
+      icon: corner('.topbar .icon-btn'),
+      search: corner('.search'),
+      send: corner('.combo-send'),
+      sample: corner('[data-testid="sample-card"]'),
+    }
+  })
+
+  expect(homeShape).toEqual({ icon: '4px', search: '4px', send: '4px', sample: '8px' })
+
+  await page.getByTestId('sample-card').click()
+  await expect(page.getByTestId('reading-sheet')).toBeVisible()
+
+  const readerShape = await page.evaluate(() => {
+    const corner = (selector: string): string => {
+      const element = document.querySelector<HTMLElement>(selector)
+      if (!element) throw new Error(`Missing ${selector}`)
+      return getComputedStyle(element).borderTopLeftRadius
+    }
+
+    return {
+      activeHistory: corner('.history-item.is-active'),
+      sheet: corner('[data-testid="reading-sheet"]'),
+      chunk: corner('[data-chunk="1"]'),
+      trace: corner('[data-testid="construction-trace"] .trace-step'),
+    }
+  })
+
+  expect(readerShape).toEqual({ activeHistory: '3px', sheet: '8px', chunk: '3px', trace: '6px' })
+
+  await page.getByRole('button', { name: /Furigana: Name/ }).click()
+  const switchShape = await page.getByTestId('furigana-menu').evaluate((menu) => {
+    const track = menu.querySelector<HTMLElement>('.furi-track')
+    const thumb = menu.querySelector<HTMLElement>('.furi-thumb')
+
+    return {
+      track: track ? getComputedStyle(track).borderTopLeftRadius : null,
+      thumb: thumb ? getComputedStyle(thumb).borderTopLeftRadius : null,
+    }
+  })
+
+  expect(switchShape).toEqual({ track: '3px', thumb: '1px' })
 })
 
 test('chunk details cite Cure Dolly and Tae Kim only when relevant', async ({ page }) => {
@@ -908,7 +965,7 @@ test('translation mode and sidebar layout persist after reload', async ({ page }
 test('desktop breakpoints render without clipping', async ({ page }) => {
   test.setTimeout(60_000)
   const consoleErrors = collectPageErrors(page)
-  const widths = [900, 1024, 1099, 1100, 1200, 1279, 1280, 1440]
+  const widths = [900, 1024, 1099, 1100, 1200, 1279, 1280, 1440, 1536, 1600, 1920]
 
   await page.goto('/')
 

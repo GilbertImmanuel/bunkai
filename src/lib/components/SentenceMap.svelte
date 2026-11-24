@@ -244,6 +244,8 @@
   }
 
   .map-dot {
+    position: relative;
+    z-index: 1;
     width: 9px;
     height: 9px;
     flex: 0 0 auto;

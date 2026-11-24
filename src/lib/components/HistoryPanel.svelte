@@ -298,7 +298,7 @@
     margin-bottom: 6px;
     padding: 10px 12px;
     border: 1px solid transparent;
-    border-radius: var(--r-note);
+    border-radius: var(--r-hl);
     text-align: left;
     transition: background 0.15s ease;
   }
@@ -367,7 +367,7 @@
     margin: 4px 4px 10px;
     padding: 8px 10px;
     border: 1px solid var(--line);
-    border-radius: var(--r-btn);
+    border-radius: var(--r-note);
     background: var(--surface);
     color: var(--muted);
     font-size: 12px;

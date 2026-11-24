@@ -49,7 +49,7 @@
     gap: 8px 14px;
     padding: 10px 16px;
     border: 1px solid var(--line-strong);
-    border-radius: var(--r-btn);
+    border-radius: var(--r-note);
     background: var(--surface-2);
     box-shadow: var(--shadow-panel);
     color: var(--ink);

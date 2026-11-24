@@ -520,7 +520,7 @@
     height: 26px;
     place-items: center;
     border: 1px solid var(--cc);
-    border-radius: 999px;
+    border-radius: var(--r-btn);
     background: color-mix(in srgb, var(--cc) var(--tint-pct), transparent);
     color: var(--ink);
     font-family: var(--font-data);

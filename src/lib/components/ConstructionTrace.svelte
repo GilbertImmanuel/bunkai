@@ -27,7 +27,7 @@
     grid-template-columns: 22px minmax(0, 1fr);
     padding: 12px 14px;
     border: 1px solid var(--line);
-    border-radius: var(--r-btn);
+    border-radius: var(--r-note);
     background: var(--surface-2);
     column-gap: 12px;
     row-gap: 3px;

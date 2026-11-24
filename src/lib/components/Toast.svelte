@@ -21,7 +21,7 @@
     align-items: center;
     gap: 14px;
     padding: 10px 16px;
-    border-radius: var(--r-btn);
+    border-radius: var(--r-note);
     background: var(--ink);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
     color: var(--surface);

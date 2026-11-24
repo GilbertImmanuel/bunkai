@@ -212,7 +212,7 @@ svg {
   height: 34px;
   place-items: center;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--r-btn);
   color: var(--muted);
   transition:
     background 0.15s ease,
@@ -318,7 +318,7 @@ svg {
 }
 
 .scroll-region::-webkit-scrollbar-thumb {
-  border-radius: 8px;
+  border-radius: var(--r-btn);
   background: transparent;
 }
 

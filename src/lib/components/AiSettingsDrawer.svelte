@@ -628,7 +628,7 @@
     margin-top: 12px;
     padding: 9px 11px;
     border: 1px solid var(--line);
-    border-radius: var(--r-btn);
+    border-radius: var(--r-note);
     background: var(--surface);
     color: var(--ink);
     font-size: 12px;

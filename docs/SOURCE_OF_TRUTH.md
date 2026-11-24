@@ -1,6 +1,6 @@
 # Bunkai — Source of Truth
 
-**Status:** Canonical. Last updated: 2026-11-23.
+**Status:** Canonical. Last updated: 2026-11-24.
 
 **Rule:** If any document, prototype, comment, or task conflicts with this file, this file wins. Update this file first, then update the dependent docs.
 
@@ -46,7 +46,7 @@ The first usable version includes:
 - AI/API integration before Phase 7.
 - PWA/installability before Phase 8.
 - A hosted deployment, public demo, or share link. Distribution is local-only.
-- Fake highlighter brushstrokes. Flat tinted pills are the chosen style.
+- Fake highlighter brushstrokes. Flat tinted highlights are the chosen style.
 - Paper textures, grain, glassmorphism, color blobs, or multiple background colors.
 - Fake editorial metadata ("FIELDWORK 04", "ENTRY 06").
 
@@ -55,7 +55,7 @@ The first usable version includes:
 ## 4. Core flow
 
 1. **Home:** the user sees a sample sentence card and a paste input. The sample opens a workspace; the input accepts a sentence.
-2. **Workspace:** the sentence is the hero. Chunks are highlight pills. The reading page shows kana, translation, sentence map, literal key, and sentence note.
+2. **Workspace:** the sentence is the hero. Chunks are highlight blocks. The reading page shows kana, translation, sentence map, literal key, and sentence note.
 3. **Select a chunk:** clicking a chunk (or pressing `1–6`) opens/updates the right sidebar with that chunk's breakdown.
 4. **Reclick the selected chunk:** collapses the sidebar. `Esc` also collapses it. The chunk stays selected.
 5. **Translation:** the Natural/Raw toggle switches between the adapted English and the literal chunk-order gloss.
@@ -93,7 +93,7 @@ The first usable version includes:
 - **Original reference:** `design/02-11-2026/bunkaiver2.html` is kept locally only; it is
   not committed.
 - It is a **single-file HTML/CSS/JS prototype**, not production code.
-- It defined the visual target: warm paper, flat highlight pills, the reading sheet, the
+- It defined the visual target: warm paper, flat highlight blocks, the reading sheet, the
   right breakdown sidebar, the history rail, light/dark mode, and the desktop breakpoints.
 - The implementation componentizes it and replaces its prototype shortcuts:
   - Google Fonts CDN → self-hosted Fontsource.
@@ -135,7 +135,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D006 | Persistence: `localStorage` for preferences; `idb-keyval`/IndexedDB for sessions.                                                                                                                                                                                                         | Accepted |
 | D007 | History is a list of **breakdown sessions**, not chat threads.                                                                                                                                                                                                                            | Accepted |
 | D008 | One workspace. The right sidebar is the breakdown. No separate Breakdown page and no mode tabs.                                                                                                                                                                                           | Accepted |
-| D009 | Flat tinted highlight pills. No fake brushstroke, no overlap/blend effect.                                                                                                                                                                                                                | Accepted |
+| D009 | Flat tinted highlight blocks. No fake brushstroke, no overlap/blend effect.                                                                                                                                                                                                               | Accepted |
 | D010 | Warm neutral light/dark. Dark mode must not have an olive/green cast. Tokens are in `DESIGN.md`.                                                                                                                                                                                          | Accepted |
 | D011 | The visual reference is the local-only `design/02-11-2026/bunkaiver2.html` (not committed); no marketing site in this phase. `DESIGN.md` is the implementation authority.                                                                                                                 | Accepted |
 | D012 | Sample/manual content first. API key is a later enhancement, BYO key, no backend.                                                                                                                                                                                                         | Accepted |
@@ -156,6 +156,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D027 | The project is **MIT licensed**, copyright 2026 Gilbert Immanuel Hasiholan. The repository stays private until the owner chooses to publish it.                                                                                                                                           | Accepted |
 | D028 | Local security posture: production build injects a restrictive meta CSP; imports are strictly bounded and validated; AI/Tatoeba responses are byte- and field-capped; API keys remain in browser storage and are sent only to the selected provider/proxy.                                | Accepted |
 | D029 | v0.1.0 is the first local desktop release. It is source-only; no installer, hosted deployment, or share link. Phase 9 accessibility and visual QA are complete.                                                                                                                           | Accepted |
+| D030 | Shape language is a printed study sheet: 3px marks, 4px controls, 6px cards, 8px sheets. No capsule controls; 4px square icon/action buttons; active History row 3px; switch track 3px with a 1px thumb. Full-round is reserved for sentence-map dots and the spinner.                    | Accepted |
 
 ---
 
@@ -174,7 +175,9 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
   remote; MIT license in the repository. Current release: v0.1.0.
 - **Visual cleanup:** colored left-border accents were removed from the sentence note, AI
   warning/error blocks, active history rows, and sentence-map tree boxes. Neutral panel
-  edges and the reading-sheet rule remain.
+  edges and the reading-sheet rule remain. The shape language is now 3px marks, 4px
+  controls, 6px cards, and 8px sheets; the active History row is 3px, icon/action buttons
+  are 4px squares, and only map dots and the spinner stay full-round.
 - **Reference:** the local-only `design/02-11-2026/bunkaiver2.html` exists and is the visual
   target; it is not committed.
 - **Environment:** Node 24.21.0, Bun 1.3.14, npm 9.7.1 (not used), Chrome 156, Edge 156.

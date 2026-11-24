@@ -203,11 +203,11 @@
     position: relative;
     display: flex;
     width: 100%;
-    max-width: 720px;
+    max-width: 1040px;
     min-height: calc(100dvh - 172px);
     flex-direction: column;
     margin: 0 auto;
-    padding: 32px;
+    padding: 40px 32px 40px 40px;
     border: 1px solid var(--line-strong);
     border-radius: var(--r-sheet);
     background: var(--surface);
@@ -216,8 +216,8 @@
 
   .reading-sheet::before {
     position: absolute;
-    top: 32px;
-    bottom: 32px;
+    top: 40px;
+    bottom: 40px;
     left: 22px;
     width: 1px;
     background: var(--line-strong);
@@ -227,7 +227,7 @@
 
   .sheet-label {
     position: absolute;
-    top: 34px;
+    top: 42px;
     left: 9px;
     color: var(--muted);
     font-family: var(--font-data);
@@ -238,6 +238,19 @@
     text-orientation: mixed;
     text-transform: uppercase;
     writing-mode: vertical-rl;
+  }
+
+  @media (min-width: 1280px) {
+    .reading-sheet {
+      padding-left: 40px;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .reading-sheet {
+      padding-right: 40px;
+      padding-left: 56px;
+    }
   }
 
   .sheet-placeholder {
@@ -254,7 +267,7 @@
     margin-top: 10px;
     padding: 8px 10px;
     border: 1px solid var(--line);
-    border-radius: var(--r-btn);
+    border-radius: var(--r-note);
     background: var(--surface-2);
   }
 

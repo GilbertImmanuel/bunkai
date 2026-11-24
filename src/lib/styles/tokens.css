@@ -46,11 +46,11 @@
   --fs-data: 11px;
   --lh-data: 1.2;
 
-  /* Radius */
+  /* Radius — printed study sheet: marks, controls, cards, sheets */
   --r-hl: 3px;
-  --r-btn: 8px;
-  --r-note: 12px;
-  --r-sheet: 16px;
+  --r-btn: 4px;
+  --r-note: 6px;
+  --r-sheet: 8px;
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
