@@ -8,19 +8,19 @@
 
 ## Current status
 
-| Field           | Value                                                                      |
-| --------------- | -------------------------------------------------------------------------- |
-| Current phase   | **Phase 9 — Polish and release (complete)**                                |
-| Phase status    | **v0.1.0 + post-release polish**; local-only; 8C off                       |
-| Last updated    | 2026-11-24                                                                 |
-| App root        | Repository root                                                            |
-| Package manager | Bun 1.3.14                                                                 |
-| Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                              |
-| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private               |
-| Source          | `main`; tree fix `fa67942`, history menu `3265932`, validation latest      |
-| Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance         |
-| License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                             |
-| Next action     | Fix the next reported issue, then decide on the v0.1.0 tag/reviewer access |
+| Field           | Value                                                              |
+| --------------- | ------------------------------------------------------------------ |
+| Current phase   | **Phase 9 — Polish and release (complete)**                        |
+| Phase status    | **v0.1.0 tagged 2026-11-24**; local-only; 8C off                   |
+| Last updated    | 2026-11-24                                                         |
+| App root        | Repository root                                                    |
+| Package manager | Bun 1.3.14                                                         |
+| Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                      |
+| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private       |
+| Source          | `main`; `v0.1.0` tag on the release-notes commit                   |
+| Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance |
+| License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                     |
+| Next action     | Decide on reviewer access; 7.5C and native wrapper remain separate |
 
 **Summary:** Phase 8A makes the app installable and usable offline. A generated web
 manifest, 文-mark icons, and a Workbox service worker precache the app shell, JS/CSS, and
@@ -154,7 +154,8 @@ is still unapproved.
 - **History cleanup:** the layout and shape iterations are squashed into `8ff71b0`
   (`style: refine reading layout`), with the e2e worker change re-created as `e8a6166`
   (`test: cap e2e at four workers`). The tree redesign, tree/key fix, history menu, and
-  validation are separate focused commits; no history was rewritten. No tag was created.
+  validation are separate focused commits; no history was rewritten. The `v0.1.0` tag is on
+  the release-notes commit.
 - **Verification:** `bun run check`, `bun run lint` pass; `bun run test` **133**;
   `bun run test:e2e` **56** with 4 workers; `bun run test:pwa` **2**; `bun run build` passes.
   Breakpoint coverage now includes 1536, 1600, and 1920 in addition to 900–1440.
@@ -168,8 +169,18 @@ is still unapproved.
 - **Known limitations:** desktop-only below 900px; no installer, hosted deployment, or share
   URL; plaintext backups; no multi-tab sync. Query delete is per-session with Undo, not a bulk
   history wipe. Validation is deterministic, not semantic.
-- **Next:** fix the next issue the user reports, then decide whether to tag `v0.1.0` and/or
-  share the private repository. 7.5C and a native desktop wrapper remain separate decisions.
+- **Next:** decide on reviewer access or local use. 7.5C and a native desktop wrapper remain
+  separate decisions.
+
+## Release checkpoint — 2026-11-24 (v0.1.0)
+
+- **Tag:** annotated `v0.1.0` on the release-notes commit.
+- **Release:** source-only local desktop app; `package.json` stays `0.1.0`; no hosted
+  deployment, installer, or share URL.
+- **Includes:** the post-release Tree/key fixes, history query delete with Undo, and
+  deterministic Japanese input/AI validation.
+- **Verification:** 133 unit tests, 56 e2e tests, 2 PWA tests, and the production build pass.
+- **Next:** reviewer access or local use; 7.5C and a native desktop wrapper remain separate.
 
 ---
 

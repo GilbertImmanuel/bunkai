@@ -155,7 +155,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D026 | Distribution is **local-only**. No hosted deployment, public demo, or share URL. Users run the static build on their own device; keys and history stay origin-scoped. 8C is not planned.                                                                                                  | Accepted |
 | D027 | The project is **MIT licensed**, copyright 2026 Gilbert Immanuel Hasiholan. The repository stays private until the owner chooses to publish it.                                                                                                                                           | Accepted |
 | D028 | Local security posture: production build injects a restrictive meta CSP; imports are strictly bounded and validated; AI/Tatoeba responses are byte- and field-capped; API keys remain in browser storage and are sent only to the selected provider/proxy.                                | Accepted |
-| D029 | v0.1.0 is the first local desktop release. It is source-only; no installer, hosted deployment, or share link. Phase 9 accessibility and visual QA are complete.                                                                                                                           | Accepted |
+| D029 | v0.1.0 is the first local desktop release, tagged 2026-11-24. It is source-only; no installer, hosted deployment, or share link. Phase 9 accessibility and visual QA are complete.                                                                                                        | Accepted |
 | D030 | Shape language is a printed study sheet: 3px marks, 4px controls, 6px cards, 8px sheets. No capsule controls; 4px square icon/action buttons; active History row 3px; switch track 3px with a 1px thumb. Full-round is reserved for sentence-map dots and the spinner.                    | Accepted |
 | D031 | Sentence-map Tree is a Cure Dolly train plus branch rail: a topic rail, one A-car/B-engine train joined by `が`, and modifiers grouped under their target with one header and nested hairline rails. The Row view remains the default.                                                    | Accepted |
 | D032 | UI copy uses plain punctuation; the middle dot (`·`) is not used as a separator. Tree connector lines meet the colored dots at center.                                                                                                                                                    | Accepted |
@@ -177,7 +177,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
   local-only; 8C (share URL) is not planned and there is no hosted deployment.
 - **Repository:** app at the root; `docs/` and `research/tatoeba/` are subfolders. Local
   design references, prototypes, and third-party research are ignored. Private GitHub
-  remote; MIT license in the repository. Current release: v0.1.0.
+  remote; MIT license in the repository. Current release: v0.1.0, tagged 2026-11-24.
 - **Visual cleanup:** colored left-border accents were removed from the sentence note, AI
   warning/error blocks, active history rows, and sentence-map tree boxes. Neutral panel
   edges and the reading-sheet rule remain. The shape language is now 3px marks, 4px

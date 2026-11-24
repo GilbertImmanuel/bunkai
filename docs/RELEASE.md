@@ -2,7 +2,7 @@
 
 ## v0.1.0 — Local desktop release
 
-**Released:** 2026-11-23
+**Released:** 2026-11-24
 
 The first release-ready build. It is a local-only desktop web app: no hosted instance, no
 account, no telemetry, and no server that receives keys or history.
@@ -12,10 +12,15 @@ account, no telemetry, and no server that receives keys or history.
 - Paste a Japanese sentence and read it as colored chunks.
 - Chunk breakdown sidebar with role, construction, literal gloss, grammar note, and guides.
 - Natural and raw translations; name and vocabulary furigana; row/tree sentence map.
+- Cure Dolly Tree view with a coupled A-car/B-engine train, nested embedded questions,
+  and wrapped long literal-key roles.
 - Real, attributed Tatoeba examples with licensed audio where available; generated
   examples remain the fallback.
 - Optional BYO-key AI breakdowns through OpenRouter, OpenAI, Claude, or an OpenCode proxy.
+- Deterministic Japanese validation for new input and AI breakdowns: script, kana, roles,
+  and sentence reconstruction; failures show a toast and are not saved.
 - Local history, save/undo, search, and IndexedDB persistence.
+- Per-query delete from the history color strip, with Undo and persistence.
 - Versioned JSON backup export and import with merge or replace.
 - Installable PWA with an offline app shell and prompt-based updates.
 - Light and dark themes; keyboard selection; reduced-motion handling.
@@ -56,6 +61,8 @@ and the security model.
 - AI and Tatoeba features need network access. Sample and manual modes work offline.
 - Backups are unencrypted. There is no multi-tab sync or bulk history wipe; individual queries
   can be deleted with Undo.
+- Japanese validation is deterministic language/structure checking, not a semantic judgement
+  of fluent Japanese.
 - Full WCAG reflow at very high zoom is not supported because of the 900px minimum.
 
 ### Verification
