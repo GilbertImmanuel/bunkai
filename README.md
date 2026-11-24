@@ -22,7 +22,7 @@
 
 <p align="center">
   <img src="./.github/readme/hero.png" width="100%"
-       alt="Bunkai reading workspace with a chunked Japanese sentence and a breakdown sidebar" />
+       alt="Bunkai reading workspace with a chunked Japanese sentence, sentence map, literal key, and breakdown sidebar" />
 </p>
 
 Bunkai is a desktop-first, local-first Japanese sentence breakdown app. Paste a sentence,
@@ -45,13 +45,16 @@ course.
 - **Natural and raw translations.** Read the adapted English or the literal chunk-order
   gloss. Natural highlights follow meaning, not English word order.
 - **Furigana and sentence maps.** Name and vocabulary readings are independent switches;
-  the Cure Dolly-style map shows topic, A-car, B-engine, modifiers, and limiters.
+  the Cure Dolly-style Row and Tree maps show topic, A-car, B-engine, modifiers, and limiters.
 - **Real examples from Tatoeba.** 2–3 attributed corpus sentences with approved English
   translations, source links, and licensed audio where available. Cached locally.
-- **Local history.** Sessions live in IndexedDB. Search, reopen, save, and undo without an
-  account or a server.
+- **Local history.** Sessions live in IndexedDB. Search, reopen, save, and delete individual
+  queries with Undo — no account or server.
 - **Bring your own AI key (optional).** OpenRouter, OpenCode via your proxy, OpenAI, or
   Claude. With no key, the sample and manual modes work fully.
+- **Japanese quality checks.** New input and AI breakdowns are checked for Japanese script,
+  kana readings, roles, and chunks that rebuild the sentence. Failures show a toast and are
+  not saved.
 - **Local-first.** No hosted instance, backend, login, cloud sync, or analytics. AI keys
   and sessions stay in your browser on your machine.
 - **Installable and offline.** Install from desktop Chrome/Edge; the app shell and fonts
