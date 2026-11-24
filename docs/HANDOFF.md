@@ -8,19 +8,19 @@
 
 ## Current status
 
-| Field           | Value                                                                       |
-| --------------- | --------------------------------------------------------------------------- |
-| Current phase   | **Phase 9 — Polish and release (complete)**                                 |
-| Phase status    | **v0.1.0 local desktop release**; local-only, no deployment; 8C not planned |
-| Last updated    | 2026-11-23                                                                  |
-| App root        | Repository root                                                             |
-| Package manager | Bun 1.3.14                                                                  |
-| Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                               |
-| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private                |
-| Source          | `main`; release code `f063bf8`; docs checkpoint follows                     |
-| Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance          |
-| License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                              |
-| Next action     | Review v0.1.0; tag/release and reviewer access are optional next steps      |
+| Field           | Value                                                                      |
+| --------------- | -------------------------------------------------------------------------- |
+| Current phase   | **Phase 9 — Polish and release (complete)**                                |
+| Phase status    | **v0.1.0 + post-release layout/shape polish**; local-only; 8C off          |
+| Last updated    | 2026-11-24                                                                 |
+| App root        | Repository root                                                            |
+| Package manager | Bun 1.3.14                                                                 |
+| Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                              |
+| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private               |
+| Source          | `main`; layout/shape `8ff71b0`, test worker `e8a6166`; docs checkpoint     |
+| Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance         |
+| License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                             |
+| Next action     | Fix the next reported issue, then decide on the v0.1.0 tag/reviewer access |
 
 **Summary:** Phase 8A makes the app installable and usable offline. A generated web
 manifest, 文-mark icons, and a Workbox service worker precache the app shell, JS/CSS, and
@@ -34,7 +34,14 @@ Tatoeba responses. Phase 9 completes the accessibility and visual polish pass: s
 heading hierarchy, tab/radiogroup keyboard support, focus return, light/dark contrast tokens,
 concentric radii, and control-border tokens. Distribution is **local-only**: there is no
 hosted instance and no share URL. The repository is private, MIT licensed, and v0.1.0 is the
-first local desktop release. Phase 7.5A/B (Tatoeba examples) remains complete and 7.5C is
+first local desktop release. Post-release layout polish widened the reading sheet and Home
+column to 1040px, restored the literal-key color chip inline with the number, lifted map
+dots above the connecting line, and replaced the sentence-note wall with labeled
+Core/Structure/Nuance rows. A final shape pass moved the UI to a printed-study-sheet
+language: 3px marks, 4px controls, 6px cards, 8px sheets; 4px square icon/action buttons;
+a 3px active History row; and a squared 3px/1px furigana switch. The layout and shape
+iterations were squashed into one style commit (`8ff71b0`) with the four-worker e2e change
+kept separate (`e8a6166`). Phase 7.5A/B (Tatoeba examples) remains complete and 7.5C is
 still unapproved.
 
 ## Session checkpoint — 2026-11-23 (security + hardening)
@@ -89,6 +96,45 @@ still unapproved.
   history delete.
 - **Next:** review v0.1.0 and decide whether to tag `v0.1.0` and/or share the private repo.
   Phase 7.5C and a native desktop wrapper remain separate future decisions.
+
+## Session checkpoint — 2026-11-24 (reading layout, note, and shape)
+
+- **Phase:** v0.1.0 plus post-release layout/note/shape polish. No version bump.
+- **Source:** `main`; layout/shape style commit `8ff71b0`, test-worker commit `e8a6166`;
+  docs checkpoint follows. Worktree was clean before this docs update.
+- **Layout decisions:**
+  - Reading sheet and Home column max **1040px**. Padding is 40/32 below 1440 and 56/40 at
+    1440+; desktop column breakpoints are unchanged.
+  - Literal key: **96px meta column** with an 8px color chip inline with the number and the
+    role below. No standalone floating square.
+  - Sentence-map dots use `position: relative; z-index: 1` so they sit above the line.
+  - Sentence note: **2B** layout — 128px label column, 24px gap, fluid prose to the right
+    edge, 18px row gap. Labels are `Core`, `Structure`, `Nuance`; old unlabeled sessions
+    fall back to full-width prose.
+  - AI prompt and sample notes now use the labeled format. Parser lives in
+    `src/lib/utils/note.ts` with unit tests.
+- **Shape decisions:**
+  - Radius scale is **3/4/6/8px**: marks, controls, cards, sheets. No capsule controls.
+  - Topbar icons, send, audio, and collapsed-rail numbers are **4px squares**; the brand mark
+    uses the same control radius.
+  - The active History row is **3px**, not a 6px card; history hover uses the same radius.
+  - The furigana switch is a **3px track with a 1px thumb**; only sentence-map dots and the
+    spinner remain full-round.
+  - Docs use “highlight”/“block” rather than “pill”; `tokens.test.ts` and the e2e shape guard
+    lock the scale.
+- **History cleanup:** the layout and shape iterations are squashed into `8ff71b0`
+  (`style: refine reading layout`), with the e2e worker change re-created as `e8a6166`
+  (`test: cap e2e at four workers`). The private `main` was force-pushed; no tag was created.
+- **Verification:** `bun run check`, `bun run lint` pass; `bun run test` **123**;
+  `bun run test:e2e` **50** with 4 workers; `bun run test:pwa` **2**; `bun run build` passes.
+  Breakpoint coverage now includes 1536, 1600, and 1920 in addition to 900–1440.
+- **Screenshots:** `test-results/reader-1280x800.png` (new shape),
+  `test-results/reader-details-1280x800.png` (2B note),
+  `test-results/responsive-1920x800.png`, `test-results/home-1280x800.png`.
+- **Known limitations:** desktop-only below 900px; no installer, hosted deployment, or share
+  URL; plaintext backups; no multi-tab sync or history delete.
+- **Next:** fix the next issue the user reports, then decide whether to tag `v0.1.0` and/or
+  share the private repository. 7.5C and a native desktop wrapper remain separate decisions.
 
 ---
 
@@ -822,6 +868,14 @@ still unapproved.
   - Applied concentric inner radii with `calc()` and audited control borders, icon stroke
     weight, `100dvh`, and dark surface depth.
   - Removed no components/assets because none were unused; confirmed no `100vh` remains.
+  - Post-release visual cleanup: the literal key uses a 96px meta column with the color chip
+    inline on the number line; the reading sheet and Home column max at 1040px; sentence-map
+    dots sit above the line; the sheet uses a 40–56px left inset so content clears the
+    reading rule. The sentence note is now a 128px label column plus a fluid prose column,
+    with labeled Core/Structure/Nuance blocks, no prose max-width, and a plain-prose fallback
+    for older sessions. Sample notes and the AI prompt use the labeled format. The shape pass
+    uses 3px marks, 4px controls, 6px cards, and 8px sheets; icon/action buttons are 4px
+    squares, the active History row is 3px, and only map dots and the spinner stay full-round.
   - Updated README, DESIGN, manifest, PLAN, SOURCE_OF_TRUTH, HANDOFF, and added
     `docs/RELEASE.md`; bumped `package.json` to 0.1.0.
 - **Files touched:**
@@ -830,20 +884,23 @@ still unapproved.
     `LiteralKey.svelte`, `SentenceMap.svelte`, `SentenceNote.svelte`,
     `TranslationToggle.svelte`, `Home.svelte`
   - `src/lib/styles/tokens.css`, `base.css`, `tokens.test.ts`
+  - `src/lib/utils/note.ts`, `note.test.ts`
   - `tests/e2e/smoke.spec.ts`, `tests/e2e/backup.spec.ts`
+  - `playwright.config.ts`
   - `README.md`, `docs/DESIGN.md`, `docs/PLAN.md`, `docs/SOURCE_OF_TRUTH.md`,
     `docs/manifest.md`, `docs/HANDOFF.md`, `docs/README.md`, `docs/RELEASE.md`,
     `package.json`
 - **Tests:**
   - `bun run check` — pass.
   - `bun run lint` — pass.
-  - `bun run test` — 117 pass.
-  - `bun run test:e2e` — 49 pass.
+  - `bun run test` — 122 pass.
+  - `bun run test:e2e` — 49 pass, 4 workers.
   - `bun run test:pwa` — 2 pass.
   - `bun run build` — pass; CSP, no-referrer, manifest, service worker, 19-entry precache.
 - **Screenshots/checks:**
-  - Existing e2e screenshots cover 900/1024/1099/1100/1200/1279/1280/1440, light/dark
-    reader, drawer, settings, backup import, toast, and Tatoeba.
+  - Existing e2e screenshots cover 900/1024/1099/1100/1200/1279/1280/1440/1536/1600/1920,
+    light/dark reader, drawer, settings, backup import, toast, and Tatoeba.
+  - `test-results/reader-details-1280x800.png` shows the 2B sentence-note rows.
   - Keyboard checks: settings tabs, import mode, drawer/settings focus return, history
     `aria-current`, skip link, workspace heading.
 - **Blockers:** None.
@@ -890,7 +947,7 @@ still unapproved.
 - localStorage + IndexedDB (`idb-keyval`).
 - History = breakdown sessions, not chat threads.
 - One workspace; right sidebar is the full breakdown; no separate Breakdown page.
-- Flat highlight pills; no fake brushstroke.
+- Flat highlight blocks; no fake brushstroke; no capsule controls.
 - Warm neutral light/dark; no olive/green cast in dark mode.
 - Fonts self-hosted via Fontsource.
 - Only history, center, and sidebar scroll.
