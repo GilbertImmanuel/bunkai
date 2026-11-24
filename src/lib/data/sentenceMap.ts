@@ -107,7 +107,7 @@ function isSubjectRole(role: string): boolean {
 }
 
 function isClauseRole(role: string): boolean {
-  return /\b(clause|conditional|condition|reason|cause|time|concession|purpose|degree|result)\b/.test(
+  return /\b(clause|conditional|condition|reason|cause|time|concession|purpose|degree|result|question)\b/.test(
     normalized(role),
   )
 }

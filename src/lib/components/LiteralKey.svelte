@@ -99,9 +99,11 @@
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.05em;
-    line-height: 1.2;
+    line-height: 1.25;
+    text-wrap: balance;
     text-transform: uppercase;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 
   @media (max-width: 900px) {

@@ -83,6 +83,74 @@ const nestedSession = {
   source: 'ai',
 }
 
+const overlapSession = {
+  id: 'tree-overlap',
+  sentence: 'どのテレビを買おうかと迷ったあげく、何も買わずに帰ってしまった。',
+  reading: '',
+  natural: '',
+  raw: '',
+  chunks: [
+    {
+      n: 1,
+      jp: 'どのテレビを',
+      kana: '',
+      gloss: 'which TV (object)',
+      role: 'object',
+      color: 1,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+    {
+      n: 2,
+      jp: '買おうかと',
+      kana: '',
+      gloss: 'whether to buy',
+      role: 'embedded question',
+      color: 2,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+    {
+      n: 3,
+      jp: '迷ったあげく、',
+      kana: '',
+      gloss: 'after agonizing,',
+      role: 'time clause',
+      color: 3,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+    {
+      n: 4,
+      jp: '何も買わずに',
+      kana: '',
+      gloss: 'without buying anything',
+      role: 'manner',
+      color: 4,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+    {
+      n: 5,
+      jp: '帰ってしまった。',
+      kana: '',
+      gloss: 'ended up returning home.',
+      role: 'main verb',
+      color: 5,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+  ],
+  sentenceNote: [],
+  createdAt: '2026-11-24T13:00:00.000Z',
+  source: 'ai',
+}
+
 function backup(sessions = [importedSession]) {
   return {
     version: 1,
@@ -246,4 +314,55 @@ test('renders imported nested modifiers as a branch tree', async ({ page }) => {
   await expect(page.locator('.tree-hint')).not.toContainText('·')
 
   await page.screenshot({ path: 'test-results/sentence-map-tree-nested-1280x800.png' })
+})
+
+test('nests embedded questions and wraps long literal-key roles', async ({ page }) => {
+  await openSettingsData(page)
+  await chooseBackup(page, backup([overlapSession]))
+  await page.getByTestId('data-import-submit').click()
+
+  await expect(page.getByTestId('toast')).toContainText('Imported 1 session')
+  await page.locator('[data-history-id="tree-overlap"]').click()
+  await page.getByRole('button', { name: 'Tree' }).click()
+
+  const modifiers = page.getByTestId('map-modifiers')
+  await expect(modifiers.locator('.map-modifier')).toHaveCount(4)
+  await expect(modifiers.locator('.tree-list > .map-modifier')).toHaveCount(2)
+  await expect(modifiers.locator('.tree-children .map-modifier')).toHaveCount(2)
+
+  const nesting = await page.evaluate(() => {
+    const embedded = [...document.querySelectorAll('.map-modifier')].find((element) =>
+      element.textContent?.includes('Embedded question'),
+    )
+    const object = [...document.querySelectorAll('.map-modifier')].find((element) =>
+      element.textContent?.includes('Object'),
+    )
+
+    return {
+      embedded: Boolean(embedded),
+      object: Boolean(object),
+      objectInsideEmbedded: Boolean(embedded && object && embedded.contains(object)),
+    }
+  })
+  expect(nesting).toEqual({ embedded: true, object: true, objectInsideEmbedded: true })
+  await expect(page.locator('[data-testid="literal-key"]')).toContainText(/embedded question/i)
+
+  const overflowingRoles = await page.locator('.key-role').evaluateAll((roles) =>
+    roles
+      .map((role) => ({
+        text: role.textContent?.trim() ?? '',
+        scrollWidth: role.scrollWidth,
+        clientWidth: role.clientWidth,
+      }))
+      .filter((role) => role.scrollWidth > role.clientWidth + 1),
+  )
+  expect(overflowingRoles).toEqual([])
+
+  await expect(page.getByTestId('toast')).toHaveCount(0, { timeout: 5_000 })
+  await page.getByTestId('map-modifiers').screenshot({
+    path: 'test-results/sentence-map-tree-overlap-1280x800.png',
+  })
+  await page.getByTestId('literal-key').screenshot({
+    path: 'test-results/literal-key-overlap-1280x800.png',
+  })
 })

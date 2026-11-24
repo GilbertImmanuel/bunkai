@@ -153,4 +153,24 @@ describe('Cure Dolly sentence map', () => {
     expect(tree[0].children[0].modifier.role).toBe('Location')
     expect(tree[0].children[0].modifier.target).toBe(3)
   })
+
+  it('nests an object under the embedded question that owns it', () => {
+    const map = buildSentenceMap(
+      session([
+        chunk(1, 'どのテレビを', 'object'),
+        chunk(2, '買おうかと', 'embedded question'),
+        chunk(3, '迷ったあげく、', 'time clause'),
+        chunk(4, '何も買わずに', 'manner'),
+        chunk(5, '帰ってしまった。', 'main verb'),
+      ]),
+    )
+
+    expect(map.predicate.jp).toBe('帰ってしまった。')
+    expect(map.modifiers.map((item) => [item.chunk.jp, item.depth, item.targetLabel])).toEqual([
+      ['迷ったあげく、', 0, 'B-engine'],
+      ['買おうかと', 1, 'Time clause'],
+      ['どのテレビを', 2, 'Embedded question'],
+      ['何も買わずに', 0, 'B-engine'],
+    ])
+  })
 })

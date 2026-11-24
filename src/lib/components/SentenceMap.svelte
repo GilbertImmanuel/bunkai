@@ -479,7 +479,7 @@
     min-width: 0;
     grid-template-columns: 9px 156px minmax(0, 1fr);
     align-items: baseline;
-    gap: 10px;
+    gap: 0 10px;
   }
 
   .tree-node .map-dot::before {
@@ -515,8 +515,8 @@
     display: flex;
     grid-column: 1 / -1;
     flex-direction: column;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 10px;
+    margin-top: 10px;
     margin-left: 4px;
     padding-left: 16px;
     border-left: 1px solid var(--line);
