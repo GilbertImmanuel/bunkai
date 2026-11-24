@@ -1,7 +1,8 @@
 <script lang="ts">
   import { tick } from 'svelte'
   import { appState, goHome, openSession, toggleHistory } from '../stores/app.svelte'
-  import { historyState } from '../stores/history.svelte'
+  import { deleteSession, historyState, undoDeletedSession } from '../stores/history.svelte'
+  import { showToast } from '../stores/toast.svelte'
   import {
     buildHistoryEntries,
     filterHistoryEntries,
@@ -11,6 +12,10 @@
   import { clearLastSessionId } from '../utils/persistence'
 
   let query = $state('')
+  let menuSessionId = $state<string | null>(null)
+  let menuButton: HTMLButtonElement | undefined = $state()
+  let menuPanel: HTMLElement | undefined = $state()
+  let menuPosition = $state({ top: 0, left: 0 })
 
   const entries = $derived(buildHistoryEntries(historyState.sessions))
   const filteredGroups = $derived(groupHistoryEntries(filterHistoryEntries(entries, query)))
@@ -19,17 +24,101 @@
   )
 
   function openHistoryItem(entry: HistoryEntry): void {
+    closeMenu()
     openSession(entry.session)
   }
 
   async function startNewBreakdown(): Promise<void> {
+    closeMenu()
     query = ''
     clearLastSessionId()
     goHome()
     await tick()
     document.getElementById('paste-input')?.focus()
   }
+
+  function closeMenu(focus = false): void {
+    if (!menuSessionId) return
+    menuSessionId = null
+
+    if (focus) {
+      void tick().then(() => menuButton?.focus())
+    }
+  }
+
+  function positionMenu(): void {
+    if (!menuButton) return
+
+    const rect = menuButton.getBoundingClientRect()
+    const menuWidth = menuPanel?.offsetWidth ?? 156
+    const menuHeight = menuPanel?.offsetHeight ?? 38
+    const margin = 8
+    const gap = 6
+
+    const left = Math.min(
+      Math.max(margin, rect.right - menuWidth),
+      window.innerWidth - menuWidth - margin,
+    )
+    let top = rect.bottom + gap
+    if (top + menuHeight > window.innerHeight - margin) {
+      top = rect.top - menuHeight - gap
+    }
+
+    menuPosition = { top, left }
+  }
+
+  async function toggleMenu(event: MouseEvent, entry: HistoryEntry): Promise<void> {
+    if (menuSessionId === entry.id) {
+      closeMenu(true)
+      return
+    }
+
+    menuSessionId = entry.id
+    menuButton = event.currentTarget as HTMLButtonElement
+    await tick()
+    positionMenu()
+    menuPanel?.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
+  }
+
+  async function deleteMenuSession(): Promise<void> {
+    const sessionId = menuSessionId
+    if (!sessionId) return
+
+    menuSessionId = null
+    menuButton = undefined
+    const result = await deleteSession(sessionId)
+    await tick()
+    document.querySelector<HTMLElement>('[data-testid="history-list"]')?.focus()
+    showToast(
+      result.persisted ? 'Query deleted' : 'Query deleted for this tab only',
+      'Undo',
+      undoDeletedSession,
+    )
+  }
+
+  function handleWindowPointerDown(event: PointerEvent): void {
+    if (!menuSessionId) return
+    const target = event.target as Node
+    if (menuButton?.contains(target) || menuPanel?.contains(target)) return
+    closeMenu()
+  }
+
+  function handleWindowKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Escape' || !menuSessionId) return
+    event.preventDefault()
+    closeMenu(true)
+  }
+
+  $effect(() => {
+    if (!appState.historyOpen && menuSessionId) menuSessionId = null
+  })
 </script>
+
+<svelte:window
+  onpointerdown={handleWindowPointerDown}
+  onkeydown={handleWindowKeydown}
+  onresize={() => closeMenu()}
+/>
 
 <aside class="history" id="history-panel" data-testid="history-panel" aria-label="History">
   {#if appState.historyOpen}
@@ -75,6 +164,7 @@
             placeholder="Search sessions…"
             aria-label="Search sessions"
             bind:value={query}
+            oninput={() => closeMenu()}
           />
         </div>
 
@@ -105,6 +195,7 @@
         tabindex="0"
         aria-label="History sessions"
         data-testid="history-list"
+        onscroll={() => closeMenu()}
       >
         {#if historyState.storageWarning}
           <p class="history-warning" role="status">{historyState.storageWarning}</p>
@@ -120,27 +211,41 @@
           {#each filteredGroups as group (group.group)}
             <p class="history-group">{group.group}</p>
             {#each group.items as entry (entry.id)}
-              <button
-                class="history-item"
-                class:is-active={activeSessionId === entry.sessionId}
-                type="button"
-                aria-current={activeSessionId === entry.sessionId ? 'true' : undefined}
-                data-history-id={entry.id}
-                onclick={() => openHistoryItem(entry)}
-              >
-                <span class="history-preview" lang="ja">{entry.preview}</span>
-                <span class="history-meta">
-                  <span class="history-time">{entry.time}</span>
-                  <span class="history-count"
-                    >{entry.count} {entry.count === 1 ? 'chunk' : 'chunks'}</span
-                  >
+              <div class="history-item" class:is-active={activeSessionId === entry.sessionId}>
+                <button
+                  class="history-open"
+                  class:is-active={activeSessionId === entry.sessionId}
+                  type="button"
+                  aria-current={activeSessionId === entry.sessionId ? 'true' : undefined}
+                  data-history-id={entry.id}
+                  onclick={() => openHistoryItem(entry)}
+                >
+                  <span class="history-preview" lang="ja">{entry.preview}</span>
+                  <span class="history-meta">
+                    <span class="history-time">{entry.time}</span>
+                    <span class="history-count"
+                      >{entry.count} {entry.count === 1 ? 'chunk' : 'chunks'}</span
+                    >
+                  </span>
+                </button>
+
+                <button
+                  class="history-menu-trigger"
+                  type="button"
+                  aria-label={`Query options for ${entry.preview}`}
+                  aria-haspopup="menu"
+                  aria-expanded={menuSessionId === entry.id}
+                  title="Query options"
+                  data-history-menu={entry.id}
+                  onclick={(event) => void toggleMenu(event, entry)}
+                >
                   <span class="history-strip" aria-hidden="true">
                     {#each entry.colors as color, index (index)}
                       <i class="c{color}"></i>
                     {/each}
                   </span>
-                </span>
-              </button>
+                </button>
+              </div>
             {/each}
           {/each}
         {/if}
@@ -171,6 +276,33 @@
     </div>
   {/if}
 </aside>
+
+{#if appState.historyOpen && menuSessionId}
+  <div
+    class="history-menu"
+    role="menu"
+    aria-label="Query options"
+    data-testid="history-menu"
+    bind:this={menuPanel}
+    style:top={`${menuPosition.top}px`}
+    style:left={`${menuPosition.left}px`}
+  >
+    <button class="history-menu-item" type="button" role="menuitem" onclick={deleteMenuSession}>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13M10 11v6M14 11v6" />
+      </svg>
+      Delete query
+    </button>
+  </div>
+{/if}
 
 <style>
   .history {
@@ -291,15 +423,11 @@
   }
 
   .history-item {
-    display: flex;
+    position: relative;
     width: 100%;
-    flex-direction: column;
-    gap: 8px;
     margin-bottom: 6px;
-    padding: 10px 12px;
     border: 1px solid transparent;
     border-radius: var(--r-hl);
-    text-align: left;
     transition: background 0.15s ease;
   }
 
@@ -313,6 +441,26 @@
 
   .history-item.is-active {
     background: var(--accent-soft);
+  }
+
+  .history-open {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 42px 10px 12px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .history-open:focus-visible {
+    border-radius: var(--r-hl);
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
   }
 
   .history-preview {
@@ -343,10 +491,43 @@
     line-height: var(--lh-data);
   }
 
+  .history-menu-trigger {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    display: inline-flex;
+    width: 30px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--r-btn);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .history-menu-trigger:hover {
+    border-color: var(--line);
+    background: var(--surface);
+  }
+
+  .history-menu-trigger[aria-expanded='true'] {
+    border-color: var(--line-strong);
+    background: var(--surface);
+  }
+
+  .history-menu-trigger:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
   .history-strip {
     display: flex;
     gap: 2px;
-    margin-left: auto;
   }
 
   .history-strip i {
@@ -354,6 +535,50 @@
     height: 6px;
     border-radius: 2px;
     background: var(--cc);
+  }
+
+  .history-menu {
+    position: fixed;
+    z-index: 80;
+    width: 156px;
+    padding: 4px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-note);
+    background: var(--surface-2);
+    box-shadow: 0 12px 30px rgba(60, 45, 25, 0.18);
+  }
+
+  :global(:root[data-theme='dark']) .history-menu {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .history-menu-item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--r-btn);
+    color: var(--ink);
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .history-menu-item:hover {
+    background: var(--surface);
+  }
+
+  .history-menu-item:focus-visible {
+    background: var(--surface);
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .history-menu-item svg {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+    color: var(--muted);
   }
 
   .history-empty {

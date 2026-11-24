@@ -247,3 +247,64 @@ export async function undoLastSave(): Promise<void> {
       'History is available for this tab only. IndexedDB could not be written.'
   }
 }
+
+export interface DeleteSessionResult {
+  deleted: boolean
+  persisted: boolean
+}
+
+let deletedSession: Session | null = null
+let deletedSessionWasLast = false
+
+export async function deleteSession(sessionId: string): Promise<DeleteSessionResult> {
+  const session = historyState.sessions.find((item) => item.id === sessionId)
+  if (!session) return { deleted: false, persisted: true }
+
+  deletedSession = $state.snapshot(session) as Session
+  deletedSessionWasLast = readLastSessionId() === sessionId
+  undoSessionId = null
+  previousLastSessionId = null
+
+  historyState.sessions = historyState.sessions.filter((item) => item.id !== sessionId)
+
+  if (deletedSessionWasLast) clearLastSessionId()
+
+  let persisted = true
+  try {
+    await writeSessions(snapshotSessions(historyState.sessions))
+    historyState.storageWarning = null
+  } catch {
+    persisted = false
+    historyState.storageWarning =
+      'History is available for this tab only. IndexedDB could not be written.'
+  }
+
+  return { deleted: true, persisted }
+}
+
+export async function undoDeletedSession(): Promise<boolean> {
+  const session = deletedSession
+  if (!session) return false
+
+  deletedSession = null
+  if (!historyState.sessions.some((item) => item.id === session.id)) {
+    historyState.sessions = sortSessions([session, ...historyState.sessions])
+  }
+
+  if (deletedSessionWasLast) {
+    writeLastSessionId(session.id)
+    deletedSessionWasLast = false
+  }
+
+  let persisted = true
+  try {
+    await writeSessions(snapshotSessions(historyState.sessions))
+    historyState.storageWarning = null
+  } catch {
+    persisted = false
+    historyState.storageWarning =
+      'History is available for this tab only. IndexedDB could not be written.'
+  }
+
+  return persisted
+}
