@@ -86,7 +86,7 @@
           <span class="center-label">Reading</span>
           <span class="center-meta">
             {appState.currentSession.chunks.length}
-            {appState.currentSession.chunks.length === 1 ? 'chunk' : 'chunks'} ·
+            {appState.currentSession.chunks.length === 1 ? 'chunk' : 'chunks'},
             {String(appState.selectedChunk).padStart(2, '0')} selected
           </span>
         </header>

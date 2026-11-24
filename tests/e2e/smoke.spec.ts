@@ -463,7 +463,10 @@ test('reading page shows the sentence map, literal key, and sentence note', asyn
   await expect(page.getByTestId('map-modifiers')).toContainText('Companion')
   await expect(page.getByTestId('map-modifiers')).toContainText('Limiter')
   await expect(page.getByTestId('map-modifiers')).toContainText('だけ')
-  await expect(page.getByTestId('map-modifiers')).toContainText('→ B-engine')
+  await expect(page.getByTestId('map-modifiers')).toContainText('Modifiers of B-engine')
+  await expect(page.getByTestId('map-modifiers').locator('.tree-list')).toBeVisible()
+  await expect(page.locator('.tree-hint')).toContainText('Each branch modifies the node above it')
+  await expect(page.locator('.tree-hint')).not.toContainText('·')
   await page.screenshot({ path: 'test-results/sentence-map-tree-1280x800.png' })
 
   await page.getByRole('button', { name: 'Row' }).click()
@@ -572,8 +575,8 @@ test('chunk details cite Cure Dolly and Tae Kim only when relevant', async ({ pa
 
   const references = page.getByTestId('chunk-references')
   await references.scrollIntoViewIfNeeded()
-  await expect(references).toContainText('Tae Kim · §4.7')
-  await expect(references).toContainText('Tae Kim · §4.10')
+  await expect(references).toContainText('Tae Kim, §4.7')
+  await expect(references).toContainText('Tae Kim, §4.10')
   await expect(references.locator('.ref-item')).toHaveCount(2)
   await expect(references.locator('a')).toHaveCount(0)
   await expect(
@@ -581,15 +584,15 @@ test('chunk details cite Cure Dolly and Tae Kim only when relevant', async ({ pa
   ).toHaveCount(0)
 
   await page.locator('[data-chunk="3"]').click()
-  await expect(references).toContainText('Cure Dolly · Lesson 47')
-  await expect(references).toContainText('Tae Kim · §3.8')
+  await expect(references).toContainText('Cure Dolly, Lesson 47')
+  await expect(references).toContainText('Tae Kim, §3.8')
   await expect(references.locator('.ref-item')).toHaveCount(2)
   await expect(references.locator('a')).toHaveCount(2)
-  await expect(references.getByRole('link', { name: /^Cure Dolly · Lesson 47/ })).toHaveAttribute(
+  await expect(references.getByRole('link', { name: /^Cure Dolly, Lesson 47/ })).toHaveAttribute(
     'href',
     /youtube\.com/,
   )
-  await expect(references.getByRole('link', { name: /^Cure Dolly · Lesson 47/ })).toHaveAttribute(
+  await expect(references.getByRole('link', { name: /^Cure Dolly, Lesson 47/ })).toHaveAttribute(
     'target',
     '_blank',
   )

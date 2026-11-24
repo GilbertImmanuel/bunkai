@@ -61,8 +61,8 @@ and the security model.
 
 - `bun run check` — pass
 - `bun run lint` — pass
-- `bun run test` — 123 tests
-- `bun run test:e2e` — 50 tests
+- `bun run test` — 124 tests
+- `bun run test:e2e` — 51 tests
 - `bun run test:pwa` — 2 tests
 - `bun run build` — pass; CSP, no-referrer, manifest, service worker, and 19-entry precache
 

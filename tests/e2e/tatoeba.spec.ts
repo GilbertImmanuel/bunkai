@@ -91,7 +91,7 @@ test('the audio button appears only for licensed audio', async ({ page }) => {
     'aria-label',
     'Play audio for Tatoeba sentence 10386401',
   )
-  await expect(section).toContainText('Audio: CK · CC BY-NC-ND 3.0')
+  await expect(section).toContainText('Audio: CK, CC BY-NC-ND 3.0')
   await expect(section).not.toContainText('someone')
 })
 

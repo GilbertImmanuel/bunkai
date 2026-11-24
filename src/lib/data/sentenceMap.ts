@@ -14,6 +14,12 @@ export interface MapModifier {
   particle: string
   depth: number
   targetLabel: string
+  target: 'predicate' | number
+}
+
+export interface ModifierBranch {
+  modifier: MapModifier
+  children: ModifierBranch[]
 }
 
 export interface SentenceMapModel {
@@ -261,6 +267,7 @@ export function buildSentenceMap(session: Session): SentenceMapModel {
       particle: node.particle,
       depth,
       targetLabel,
+      target: node.target,
     })
     sortNodes(node.children)
     for (const child of node.children) visit(child, depth + 1, node.role)
@@ -269,4 +276,27 @@ export function buildSentenceMap(session: Session): SentenceMapModel {
   for (const root of roots) visit(root, 0, 'B-engine')
 
   return { topic, subject, predicate, modifiers }
+}
+
+/** Groups the flat modifier list into the branch tree used by the Tree view. */
+export function buildModifierTree(modifiers: MapModifier[]): ModifierBranch[] {
+  const branches = new Map<number, ModifierBranch>()
+  for (const modifier of modifiers) {
+    branches.set(modifier.chunk.n, { modifier, children: [] })
+  }
+
+  const roots: ModifierBranch[] = []
+  for (const modifier of modifiers) {
+    const branch = branches.get(modifier.chunk.n)
+    if (!branch) continue
+
+    const parent = typeof modifier.target === 'number' ? branches.get(modifier.target) : undefined
+    if (parent && parent !== branch) {
+      parent.children.push(branch)
+    } else {
+      roots.push(branch)
+    }
+  }
+
+  return roots
 }

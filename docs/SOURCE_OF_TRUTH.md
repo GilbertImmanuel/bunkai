@@ -157,6 +157,8 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D028 | Local security posture: production build injects a restrictive meta CSP; imports are strictly bounded and validated; AI/Tatoeba responses are byte- and field-capped; API keys remain in browser storage and are sent only to the selected provider/proxy.                                | Accepted |
 | D029 | v0.1.0 is the first local desktop release. It is source-only; no installer, hosted deployment, or share link. Phase 9 accessibility and visual QA are complete.                                                                                                                           | Accepted |
 | D030 | Shape language is a printed study sheet: 3px marks, 4px controls, 6px cards, 8px sheets. No capsule controls; 4px square icon/action buttons; active History row 3px; switch track 3px with a 1px thumb. Full-round is reserved for sentence-map dots and the spinner.                    | Accepted |
+| D031 | Sentence-map Tree is a Cure Dolly train plus branch rail: a topic rail, one A-car/B-engine train joined by `が`, and modifiers grouped under their target with one header and nested hairline rails. The Row view remains the default.                                                    | Accepted |
+| D032 | UI copy uses plain punctuation; the middle dot (`·`) is not used as a separator. Tree connector lines meet the colored dots at center.                                                                                                                                                    | Accepted |
 
 ---
 
@@ -177,7 +179,9 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
   warning/error blocks, active history rows, and sentence-map tree boxes. Neutral panel
   edges and the reading-sheet rule remain. The shape language is now 3px marks, 4px
   controls, 6px cards, and 8px sheets; the active History row is 3px, icon/action buttons
-  are 4px squares, and only map dots and the spinner stay full-round.
+  are 4px squares, and only map dots and the spinner stay full-round. The sentence-map Tree is
+  a Cure Dolly train plus branch rail: one coupled A-car/B-engine, with nested modifiers under
+  the node they modify and the target named once per branch.
 - **Reference:** the local-only `design/02-11-2026/bunkaiver2.html` exists and is the visual
   target; it is not committed.
 - **Environment:** Node 24.21.0, Bun 1.3.14, npm 9.7.1 (not used), Chrome 156, Edge 156.

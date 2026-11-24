@@ -11,13 +11,13 @@
 | Field           | Value                                                                      |
 | --------------- | -------------------------------------------------------------------------- |
 | Current phase   | **Phase 9 — Polish and release (complete)**                                |
-| Phase status    | **v0.1.0 + post-release layout/shape polish**; local-only; 8C off          |
+| Phase status    | **v0.1.0 + post-release layout/shape/tree polish**; local-only; 8C off     |
 | Last updated    | 2026-11-24                                                                 |
 | App root        | Repository root                                                            |
 | Package manager | Bun 1.3.14                                                                 |
 | Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                              |
 | Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private               |
-| Source          | `main`; layout/shape `8ff71b0`, test worker `e8a6166`; docs checkpoint     |
+| Source          | `main`; tree redesign on top of style `8ff71b0` / test `e8a6166`           |
 | Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance         |
 | License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                             |
 | Next action     | Fix the next reported issue, then decide on the v0.1.0 tag/reviewer access |
@@ -41,8 +41,10 @@ Core/Structure/Nuance rows. A final shape pass moved the UI to a printed-study-s
 language: 3px marks, 4px controls, 6px cards, 8px sheets; 4px square icon/action buttons;
 a 3px active History row; and a squared 3px/1px furigana switch. The layout and shape
 iterations were squashed into one style commit (`8ff71b0`) with the four-worker e2e change
-kept separate (`e8a6166`). Phase 7.5A/B (Tatoeba examples) remains complete and 7.5C is
-still unapproved.
+kept separate (`e8a6166`). The sentence-map Tree now uses a Cure Dolly train plus branch
+rail: one coupled A-car/B-engine, a target named once per branch, and nested modifiers on
+hairline rails. Phase 7.5A/B (Tatoeba examples) remains complete and 7.5C is still
+unapproved.
 
 ## Session checkpoint — 2026-11-23 (security + hardening)
 
@@ -97,11 +99,11 @@ still unapproved.
 - **Next:** review v0.1.0 and decide whether to tag `v0.1.0` and/or share the private repo.
   Phase 7.5C and a native desktop wrapper remain separate future decisions.
 
-## Session checkpoint — 2026-11-24 (reading layout, note, and shape)
+## Session checkpoint — 2026-11-24 (reading layout, note, shape, and tree)
 
-- **Phase:** v0.1.0 plus post-release layout/note/shape polish. No version bump.
-- **Source:** `main`; layout/shape style commit `8ff71b0`, test-worker commit `e8a6166`;
-  docs checkpoint follows. Worktree was clean before this docs update.
+- **Phase:** v0.1.0 plus post-release layout/note/shape/tree polish. No version bump.
+- **Source:** `main`; tree redesign is the latest focused feat commit, on top of layout/shape
+  `8ff71b0` and test-worker `e8a6166`. Worktree was clean before this docs update.
 - **Layout decisions:**
   - Reading sheet and Home column max **1040px**. Padding is 40/32 below 1440 and 56/40 at
     1440+; desktop column breakpoints are unchanged.
@@ -122,14 +124,29 @@ still unapproved.
     spinner remain full-round.
   - Docs use “highlight”/“block” rather than “pill”; `tokens.test.ts` and the e2e shape guard
     lock the scale.
+- **Tree decisions:**
+  - Tree is one Cure Dolly train: topic rail above, A-car and B-engine coupled by `が`, with
+    the B-engine carrying the tint and weight.
+  - Modifiers group under the node they modify. The target is named once at the branch
+    header; nested modifiers use a second hairline rail. No repeated target arrows.
+  - Rows read role + particle, then Japanese. A one-line legend defines A-car/B-engine and
+    the branch direction.
+  - Connector lines are drawn from the dot center, not the row top, so every horizontal line
+    meets its circle at the middle.
+  - All user-facing middle-dot separators were replaced with commas, periods, or semicolons.
+  - `MapModifier` now exposes `target`; `buildModifierTree` groups the flat modifier list.
+    The e2e suite imports a nested reason/location session to guard the real recursion.
 - **History cleanup:** the layout and shape iterations are squashed into `8ff71b0`
   (`style: refine reading layout`), with the e2e worker change re-created as `e8a6166`
-  (`test: cap e2e at four workers`). The private `main` was force-pushed; no tag was created.
-- **Verification:** `bun run check`, `bun run lint` pass; `bun run test` **123**;
-  `bun run test:e2e` **50** with 4 workers; `bun run test:pwa` **2**; `bun run build` passes.
+  (`test: cap e2e at four workers`). The tree redesign is a new focused commit; no history
+  was rewritten for it. No tag was created.
+- **Verification:** `bun run check`, `bun run lint` pass; `bun run test` **124**;
+  `bun run test:e2e` **51** with 4 workers; `bun run test:pwa` **2**; `bun run build` passes.
   Breakpoint coverage now includes 1536, 1600, and 1920 in addition to 900–1440.
 - **Screenshots:** `test-results/reader-1280x800.png` (new shape),
   `test-results/reader-details-1280x800.png` (2B note),
+  `test-results/sentence-map-tree-1280x800.png`,
+  `test-results/sentence-map-tree-nested-1280x800.png`,
   `test-results/responsive-1920x800.png`, `test-results/home-1280x800.png`.
 - **Known limitations:** desktop-only below 900px; no installer, hosted deployment, or share
   URL; plaintext backups; no multi-tab sync or history delete.

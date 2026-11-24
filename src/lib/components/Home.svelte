@@ -160,17 +160,17 @@
       </p>
     {:else if aiReady}
       <p class="ai-meta" data-testid="ai-status">
-        AI breakdown via {provider.label} · <span class="ai-model">{model}</span>
+        AI breakdown via {provider.label}, <span class="ai-model">{model}</span>
         <button class="text-link" type="button" onclick={openAiSettings}>Settings</button>
       </p>
     {:else if missingProxy}
       <p class="ai-meta" data-testid="ai-status">
-        OpenCode proxy required for AI ·
+        OpenCode proxy required for AI.
         <button class="text-link" type="button" onclick={openAiSettings}>AI settings</button>
       </p>
     {:else}
       <p class="ai-meta" data-testid="ai-status">
-        Sample mode ·
+        Sample mode.
         <button class="text-link" type="button" onclick={openAiSettings}>Add an AI key</button>
       </p>
     {/if}

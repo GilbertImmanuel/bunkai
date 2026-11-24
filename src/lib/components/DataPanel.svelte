@@ -210,7 +210,7 @@
     {#if parsed}
       <p class="data-preview" data-testid="data-import-preview">
         {parsed.sessions.length}
-        {plural(parsed.sessions.length, 'session')} · exported
+        {plural(parsed.sessions.length, 'session')}, exported
         {formatExportedAt(parsed.exportedAt)}
       </p>
 

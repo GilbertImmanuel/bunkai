@@ -321,10 +321,12 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 
 - Cure Dolly structure, with a **Row / Tree** toggle in the section header. **Row** is the default.
 - Row view: topic frame for a zero topic, then all chunks in sentence order as a horizontal grid. Each chunk shows its refined role, particle relationship, and a colored dot; the B-engine is emphasized. A relation line below summarizes the A-car and modifier targets.
-- Tree view: topic frame, A-car → B-engine spine, then a nested modifier hierarchy with target arrows.
+- Tree view: one Cure Dolly train. The topic rail sits above; A-car and B-engine are coupled on one bar by a `が` coupling, with the B-engine carrying the tint and weight. Modifiers hang below in a branch rail and nest under the node they modify. The target is named once at the branch header, never repeated per row. Rows read role + particle, then Japanese; a one-line legend defines A-car/B-engine and the branch direction.
 - Both views mark explicit or ghost `(zeroは)` / `(zeroが)` and use Cure Dolly roles such as A-car, B-engine, reason clause, and limiter.
 - Use the six chunk hues for dots and labels, not full chips or colored left borders.
 - Dots sit in front of the connecting line with a 2px surface ring.
+- Tree connector lines meet the colored dots at center; never draw them from the row top.
+- UI copy uses plain punctuation, not the middle dot, as a separator.
 - Stack the row vertically at ≤900px.
 - A subject embedded in a predicate chunk (`内容が乏しくなった`) is split in the map without changing the underlying chunk.
 

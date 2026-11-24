@@ -214,12 +214,12 @@
                 {/if}
 
                 <span class="tatoeba-credit-inline">
-                  {example.author ?? 'Tatoeba'} · {example.license ?? 'license not stated'}
+                  {example.author ?? 'Tatoeba'}, {example.license ?? 'license not stated'}
                 </span>
 
                 {#if example.audioUrl}
                   <span class="tatoeba-audio-credit">
-                    Audio: {example.audioAuthor ?? 'unknown'} · {example.audioLicense ??
+                    Audio: {example.audioAuthor ?? 'unknown'}, {example.audioLicense ??
                       'license not stated'}
                   </span>
                 {/if}
@@ -232,11 +232,10 @@
 
     <p class="tatoeba-attribution" data-testid="tatoeba-attribution">
       {#if tatoebaState.fromCache && isCurrent && (status === 'ready' || status === 'empty')}
-        <span class="tatoeba-cached" data-testid="tatoeba-cached">Cached</span> ·
+        <span class="tatoeba-cached" data-testid="tatoeba-cached">Cached</span>.
       {/if}
       Sentences from
-      <a href="https://tatoeba.org" target="_blank" rel="noreferrer">Tatoeba</a>
-      ·
+      <a href="https://tatoeba.org" target="_blank" rel="noreferrer">Tatoeba</a>.
       <a href={TATOEBA_LICENSE_URL} target="_blank" rel="noreferrer">CC BY 2.0 FR</a>. Audio is
       credited per recording.
     </p>

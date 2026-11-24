@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { buildSentenceMap } from '../data/sentenceMap'
+  import { buildModifierTree, buildSentenceMap, type ModifierBranch } from '../data/sentenceMap'
   import type { Chunk, Session } from '../data/types'
 
   let { session }: { session: Session } = $props()
 
   let mode = $state<'row' | 'tree'>('row')
   const map = $derived(buildSentenceMap(session))
+  const modifierTree = $derived(buildModifierTree(map.modifiers))
 
   function fallbackRole(role: string): string {
     const value = role.trim().toLowerCase()
@@ -60,7 +61,7 @@
     )
 
     if (roots.length > 0) {
-      parts.push(`${roots.map((modifier) => modifier.role.toLowerCase()).join(' · ')} → B-engine`)
+      parts.push(`${roots.map((modifier) => modifier.role.toLowerCase()).join(', ')} → B-engine`)
     }
 
     for (const modifier of map.modifiers.filter((item) => item.depth > 0)) {
@@ -71,9 +72,29 @@
       parts.push(`${modifier.chunk.jp} limits`)
     }
 
-    return parts.join(' · ')
+    return parts.join('; ')
   })
 </script>
+
+{#snippet treeNode(node: ModifierBranch)}
+  <li class="map-modifier tree-node c{node.modifier.chunk.color}">
+    <span class="map-dot" aria-hidden="true"></span>
+    <span class="tree-role">
+      {node.modifier.role}
+      {#if node.modifier.particle && node.modifier.particle !== node.modifier.chunk.jp.trim()}
+        <em>{node.modifier.particle}</em>
+      {/if}
+    </span>
+    <span class="map-jp" lang="ja">{node.modifier.chunk.jp}</span>
+    {#if node.children.length > 0}
+      <ul class="tree-children">
+        {#each node.children as child (child.modifier.chunk.n)}
+          {@render treeNode(child)}
+        {/each}
+      </ul>
+    {/if}
+  </li>
+{/snippet}
 
 <section class="sheet-section" data-testid="sentence-map">
   <div class="map-head">
@@ -135,60 +156,57 @@
         <span
           class={`map-dot ${map.topic.chunk ? `c${map.topic.chunk.color}` : ''}`}
           class:is-zero={map.topic.zero}
+          aria-hidden="true"
         ></span>
         <span class="map-tag">Topic</span>
         <span class="map-jp" lang="ja" class:is-zero={map.topic.zero}>{map.topic.jp}</span>
-        {#if !map.topic.zero && map.topic.particle}
-          <span class="map-particle">{map.topic.particle}</span>
-        {/if}
       </div>
 
       <div class="map-tree-core" data-testid="map-tree-core">
-        <div class={`map-car ${map.subject.chunk ? `c${map.subject.chunk.color}` : ''}`}>
-          <span
-            class={`map-dot ${map.subject.chunk ? `c${map.subject.chunk.color}` : ''}`}
-            class:is-zero={map.subject.zero}
-          ></span>
-          <span class="map-tag">A-car</span>
+        <div class={`tree-car ${map.subject.chunk ? `c${map.subject.chunk.color}` : ''}`}>
+          <div class="tree-node-head">
+            <span
+              class={`map-dot ${map.subject.chunk ? `c${map.subject.chunk.color}` : ''}`}
+              class:is-zero={map.subject.zero}
+              aria-hidden="true"
+            ></span>
+            <span class="map-tag">A-car</span>
+          </div>
           <span class="map-jp" lang="ja" class:is-zero={map.subject.zero}>{map.subject.jp}</span>
-          {#if !map.subject.zero && map.subject.particle}
-            <span class="map-particle">{map.subject.particle}</span>
-          {/if}
         </div>
 
-        <span class="map-coupling" aria-hidden="true">→</span>
+        <div class="tree-coupling" aria-hidden="true"><span>が</span></div>
 
-        <div class={`map-engine ${map.predicate.chunk ? `c${map.predicate.chunk.color}` : ''}`}>
-          <span class={`map-dot ${map.predicate.chunk ? `c${map.predicate.chunk.color}` : ''}`}
-          ></span>
-          <span class="map-tag">B-engine</span>
+        <div class={`tree-engine ${map.predicate.chunk ? `c${map.predicate.chunk.color}` : ''}`}>
+          <div class="tree-node-head">
+            <span
+              class={`map-dot ${map.predicate.chunk ? `c${map.predicate.chunk.color}` : ''}`}
+              class:is-zero={map.predicate.zero}
+              aria-hidden="true"
+            ></span>
+            <span class="map-tag">B-engine</span>
+          </div>
           <span class="map-jp" lang="ja">{map.predicate.jp}</span>
         </div>
       </div>
 
-      {#if map.modifiers.length > 0}
-        <div class="map-modifiers" data-testid="map-modifiers">
-          {#each map.modifiers as modifier (modifier.chunk.n)}
-            <div
-              class="map-modifier c{modifier.chunk.color}"
-              data-depth={modifier.depth}
-              style="--depth:{modifier.depth}"
-            >
-              <span class="map-dot" aria-hidden="true"></span>
-              <div class="map-mod-body">
-                <div class="map-mod-head">
-                  <span class="map-mod-role">{modifier.role}</span>
-                  {#if modifier.particle && modifier.particle !== modifier.chunk.jp.trim()}
-                    <span class="map-particle">{modifier.particle}</span>
-                  {/if}
-                </div>
-                <span class="map-jp" lang="ja">{modifier.chunk.jp}</span>
-                <span class="map-target">→ {modifier.targetLabel}</span>
-              </div>
-            </div>
-          {/each}
+      {#if modifierTree.length > 0}
+        <div class="tree-branches" data-testid="map-modifiers">
+          <div class="tree-branch-head">
+            <span class="tree-branch-mark" aria-hidden="true">↳</span>
+            <span class="map-tag">Modifiers of B-engine</span>
+          </div>
+          <ul class="tree-list" aria-label="Modifiers of B-engine">
+            {#each modifierTree as root (root.modifier.chunk.n)}
+              {@render treeNode(root)}
+            {/each}
+          </ul>
         </div>
       {/if}
+
+      <p class="tree-hint">
+        A-car is the subject. B-engine is the predicate. Each branch modifies the node above it.
+      </p>
     {/if}
   </div>
 </section>
@@ -262,9 +280,6 @@
 
   .map-tag,
   .map-role,
-  .map-mod-role,
-  .map-particle,
-  .map-target,
   .map-sub {
     color: var(--muted);
     font-family: var(--font-data);
@@ -273,10 +288,6 @@
     letter-spacing: 0.04em;
     line-height: 1.25;
     text-transform: uppercase;
-  }
-
-  .map-particle {
-    color: var(--accent);
   }
 
   .map-jp {
@@ -355,68 +366,170 @@
 
   .map-tree-core {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr);
-    align-items: center;
-    gap: 10px;
+    grid-template-columns: minmax(0, 0.9fr) 34px minmax(0, 1.1fr);
+    align-items: stretch;
+    min-height: 64px;
   }
 
-  .map-car,
-  .map-engine {
+  .tree-car,
+  .tree-engine {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 6px;
     min-width: 0;
-    padding: 8px 10px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px 12px;
     border: 1px solid var(--line);
-    border-radius: var(--r-note);
     background: var(--surface-2);
   }
 
-  .map-coupling {
-    color: var(--accent);
-    font-family: var(--font-data);
-    font-size: 16px;
+  .tree-car {
+    border-right: 0;
+    border-radius: var(--r-note) 0 0 var(--r-note);
   }
 
-  .map-modifiers {
+  .tree-engine {
+    border-left: 0;
+    border-radius: 0 var(--r-note) var(--r-note) 0;
+    background: color-mix(in srgb, var(--cc, var(--surface-2)) 10%, var(--surface-2));
+  }
+
+  .tree-node-head {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .tree-car .map-jp {
+    font-size: 14px;
+  }
+
+  .tree-engine .map-jp {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .tree-coupling {
+    position: relative;
+    display: grid;
+    place-items: center;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tree-coupling::before {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: var(--line-strong);
+    content: '';
+  }
+
+  .tree-coupling span {
+    position: relative;
+    z-index: 1;
+    padding: 0 4px;
+    background: var(--surface);
+    color: var(--accent);
+    font-family: var(--font-data);
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .tree-branches {
     padding-top: 12px;
     border-top: 1px dashed var(--line);
   }
 
-  .map-modifier {
-    display: flex;
-    gap: 8px;
-    margin-left: calc(var(--depth) * 18px);
-  }
-
-  .map-mod-body {
-    display: grid;
-    min-width: 0;
-    flex: 1 1 auto;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 2px 10px;
-  }
-
-  .map-mod-head {
+  .tree-branch-head {
     display: flex;
     align-items: baseline;
-    gap: 5px;
+    gap: 6px;
+    margin-bottom: 10px;
   }
 
-  .map-mod-body .map-jp {
-    grid-column: 1;
+  .tree-branch-mark {
+    color: var(--accent);
+    font-family: var(--font-data);
+    font-size: 14px;
+    line-height: 1;
   }
 
-  .map-target {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    align-self: center;
-    text-align: right;
-    white-space: nowrap;
+  .tree-list,
+  .tree-children {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .tree-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-left: 4px;
+    padding-left: 16px;
+    border-left: 1px solid var(--line);
+  }
+
+  .tree-node {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    grid-template-columns: 9px 156px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .tree-node .map-dot::before {
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 16px;
+    height: 1px;
+    background: var(--line);
+    content: '';
+  }
+
+  .tree-role {
+    color: var(--muted);
+    font-family: var(--font-data);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  .tree-role em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .tree-node .map-jp {
+    font-size: 15px;
+  }
+
+  .tree-children {
+    display: flex;
+    grid-column: 1 / -1;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    margin-left: 4px;
+    padding-left: 16px;
+    border-left: 1px solid var(--line);
+  }
+
+  .tree-hint {
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+    color: var(--muted);
+    font-family: var(--font-data);
+    font-size: 11px;
+    line-height: 1.4;
+    text-wrap: pretty;
   }
 
   @media (max-width: 900px) {
@@ -439,24 +552,6 @@
 
     .map-node .map-dot {
       box-shadow: none;
-    }
-
-    .map-tree-core {
-      grid-template-columns: 1fr;
-      gap: 6px;
-    }
-
-    .map-coupling {
-      justify-self: start;
-      transform: rotate(90deg);
-    }
-
-    .map-target {
-      grid-column: 1;
-      grid-row: auto;
-      justify-self: start;
-      text-align: left;
-      white-space: normal;
     }
   }
 </style>

@@ -227,10 +227,10 @@
               <li class="ref-item">
                 {#if reference.url}
                   <a class="ref-link" href={reference.url} target="_blank" rel="noreferrer">
-                    {reference.source} · {reference.label}
+                    {reference.source}, {reference.label}
                   </a>
                 {:else}
-                  <span class="ref-link">{reference.source} · {reference.label}</span>
+                  <span class="ref-link">{reference.source}, {reference.label}</span>
                 {/if}
                 <span class="ref-detail">{reference.detail}</span>
               </li>

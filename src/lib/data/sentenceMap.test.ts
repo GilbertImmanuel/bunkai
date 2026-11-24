@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { sampleSession } from './sample'
-import { buildSentenceMap } from './sentenceMap'
+import { buildModifierTree, buildSentenceMap } from './sentenceMap'
 import type { Chunk, ChunkColor, Session } from './types'
 
 function chunk(n: number, jp: string, role: string, color = n): Chunk {
@@ -51,6 +51,7 @@ describe('Cure Dolly sentence map', () => {
         particle: 'から',
         depth: 0,
         targetLabel: 'B-engine',
+        target: 'predicate',
       },
       {
         chunk: expect.objectContaining({ jp: '一番大事なところで' }),
@@ -58,6 +59,7 @@ describe('Cure Dolly sentence map', () => {
         particle: 'で',
         depth: 1,
         targetLabel: 'Reason clause',
+        target: 3,
       },
     ])
   })
@@ -131,5 +133,24 @@ describe('Cure Dolly sentence map', () => {
       ['誰かと', 'Companion'],
       ['だけ', 'Limiter'],
     ])
+    expect(map.modifiers.every((item) => item.target === 'predicate')).toBe(true)
+  })
+
+  it('groups nested modifiers under the clause they modify', () => {
+    const map = buildSentenceMap(
+      session([
+        chunk(1, '利男は', 'topic'),
+        chunk(2, '一番大事なところで', 'location'),
+        chunk(3, 'よく勉強しなかったから', 'reason clause'),
+        chunk(4, '何も分からなくなってしまった。', 'main predicate'),
+      ]),
+    )
+    const tree = buildModifierTree(map.modifiers)
+
+    expect(tree).toHaveLength(1)
+    expect(tree[0].modifier.role).toBe('Reason clause')
+    expect(tree[0].children).toHaveLength(1)
+    expect(tree[0].children[0].modifier.role).toBe('Location')
+    expect(tree[0].children[0].modifier.target).toBe(3)
   })
 })

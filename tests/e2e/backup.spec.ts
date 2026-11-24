@@ -26,6 +26,63 @@ const importedSession = {
   source: 'manual',
 }
 
+const nestedSession = {
+  id: 'tree-nested',
+  sentence: '利男は一番大事なところでよく勉強しなかったから何も分からなくなってしまった。',
+  reading: '',
+  natural: '',
+  raw: '',
+  chunks: [
+    {
+      n: 1,
+      jp: '利男は',
+      kana: '',
+      gloss: '',
+      role: 'topic',
+      color: 3,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+    {
+      n: 2,
+      jp: '一番大事なところで',
+      kana: '',
+      gloss: '',
+      role: 'location',
+      color: 4,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+    {
+      n: 3,
+      jp: 'よく勉強しなかったから',
+      kana: '',
+      gloss: '',
+      role: 'reason clause',
+      color: 2,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+    {
+      n: 4,
+      jp: '何も分からなくなってしまった。',
+      kana: '',
+      gloss: '',
+      role: 'main predicate',
+      color: 1,
+      note: '',
+      construction: [],
+      examples: [],
+    },
+  ],
+  sentenceNote: [],
+  createdAt: '2026-11-24T12:00:00.000Z',
+  source: 'ai',
+}
+
 function backup(sessions = [importedSession]) {
   return {
     version: 1,
@@ -168,4 +225,25 @@ test('skips duplicate session ids when merging', async ({ page }) => {
 
   await expect(page.getByTestId('toast')).toContainText('No new sessions imported')
   await expect(page.locator('[data-history-id="sample"]')).toHaveCount(1)
+})
+
+test('renders imported nested modifiers as a branch tree', async ({ page }) => {
+  await openSettingsData(page)
+  await chooseBackup(page, backup([nestedSession]))
+  await page.getByTestId('data-import-submit').click()
+
+  await expect(page.getByTestId('toast')).toContainText('Imported 1 session')
+  await page.locator('[data-history-id="tree-nested"]').click()
+  await page.getByRole('button', { name: 'Tree' }).click()
+
+  const modifiers = page.getByTestId('map-modifiers')
+  await expect(modifiers).toContainText('Modifiers of B-engine')
+  await expect(modifiers.locator('.map-modifier')).toHaveCount(2)
+  await expect(modifiers.locator('.tree-children .map-modifier')).toHaveCount(1)
+  await expect(modifiers.locator('.tree-children .map-modifier')).toContainText('Location')
+  await expect(modifiers).not.toContainText('→ B-engine')
+  await expect(page.locator('.tree-hint')).toContainText('Each branch modifies the node above it')
+  await expect(page.locator('.tree-hint')).not.toContainText('·')
+
+  await page.screenshot({ path: 'test-results/sentence-map-tree-nested-1280x800.png' })
 })
