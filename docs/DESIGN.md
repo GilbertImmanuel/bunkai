@@ -266,6 +266,8 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - Header: "History", `+` new breakdown, search.
 - Groups: Today / Yesterday / Earlier.
 - Item: two-line Japanese preview, time, chunk count, 3-color strip.
+- The 3-color strip is the bottom-right query-options trigger. It opens a menu with
+  **Delete query**; deletion persists, shows an Undo toast, and leaves the active workspace open.
 - Active: warm/soft tint, 3px radius, no left accent rule.
 - Rail: expand chevron + vertical "HISTORY" label.
 - No login/account UI.
@@ -277,6 +279,9 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - Sample card: clickable, shows the sample sentence with non-interactive highlight spans.
 - Combo input: one rounded field with input + square send button; focus ring; Enter sends; send disabled until text.
 - On send, the arrow becomes a spinner. Manual mode shows “Preparing workspace…”; AI mode shows the active provider while the request runs.
+- Input must contain Japanese. Non-Japanese, mostly-English, punctuation-only, or repeated-noise input shows a toast and remains in the field.
+- AI output is checked before save: chunks must contain Japanese, kana readings must be kana-only, roles must be present, and chunks must rebuild the sentence. Failures show a toast and are not saved.
+- These are deterministic language/structure checks, not a semantic judgement of fluent Japanese.
 - No separate "Break down" text button.
 
 ### Reading sheet
@@ -321,7 +326,7 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 
 - Cure Dolly structure, with a **Row / Tree** toggle in the section header. **Row** is the default.
 - Row view: topic frame for a zero topic, then all chunks in sentence order as a horizontal grid. Each chunk shows its refined role, particle relationship, and a colored dot; the B-engine is emphasized. A relation line below summarizes the A-car and modifier targets.
-- Tree view: one Cure Dolly train. The topic rail sits above; A-car and B-engine are coupled on one bar by a `が` coupling, with the B-engine carrying the tint and weight. Modifiers hang below in a branch rail and nest under the node they modify. The target is named once at the branch header, never repeated per row. Rows read role + particle, then Japanese; a one-line legend defines A-car/B-engine and the branch direction.
+- Tree view: one Cure Dolly train. The topic rail sits above; A-car and B-engine are coupled on one bar by a `が` coupling, with the B-engine carrying the tint and weight. Modifiers hang below in a branch rail and nest under the node they modify; an embedded question is a clause target, so its object nests beneath it. The target is named once at the branch header, never repeated per row. Rows read role + particle, then Japanese; a one-line legend defines A-car/B-engine and the branch direction. All tree levels share a 10px vertical rhythm; a child block does not add a second gap.
 - Both views mark explicit or ghost `(zeroは)` / `(zeroが)` and use Cure Dolly roles such as A-car, B-engine, reason clause, and limiter.
 - Use the six chunk hues for dots and labels, not full chips or colored left borders.
 - Dots sit in front of the connecting line with a 2px surface ring.
@@ -345,7 +350,8 @@ Everything else is fixed: topbar, history header/search, sidebar header, sidebar
 - The chip is 8px, 2px radius, and sits on the number line; it is never centered across the
   row.
 - Hairline bottom borders; no card background/border.
-- 11–12px role labels, not 9px.
+- 11–12px role labels, not 9px. Long role labels wrap inside the 96px meta column; never
+  use `white-space: nowrap` here.
 
 ### Sentence note
 

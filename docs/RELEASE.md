@@ -54,15 +54,16 @@ and the security model.
 - No hosted deployment, public demo, or share link. Sharing is via backup JSON.
 - No native installer yet. The installed PWA is the closest one-click experience.
 - AI and Tatoeba features need network access. Sample and manual modes work offline.
-- Backups are unencrypted. There is no multi-tab sync or history delete control.
+- Backups are unencrypted. There is no multi-tab sync or bulk history wipe; individual queries
+  can be deleted with Undo.
 - Full WCAG reflow at very high zoom is not supported because of the 900px minimum.
 
 ### Verification
 
 - `bun run check` — pass
 - `bun run lint` — pass
-- `bun run test` — 124 tests
-- `bun run test:e2e` — 51 tests
+- `bun run test` — 133 tests
+- `bun run test:e2e` — 56 tests
 - `bun run test:pwa` — 2 tests
 - `bun run build` — pass; CSP, no-referrer, manifest, service worker, and 19-entry precache
 

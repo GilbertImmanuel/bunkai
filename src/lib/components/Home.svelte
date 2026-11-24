@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { aiErrorMessage } from '../ai/breakdown'
+  import { AiRequestError, aiErrorMessage } from '../ai/breakdown'
   import { sampleSession } from '../data/sample'
   import { createManualSession } from '../data/sessions'
   import { MAX_LONG_TEXT_LENGTH } from '../data/sessionValidation'
+  import { validateJapaneseSentence } from '../utils/japanese'
   import {
     activeAiMissingProxy,
     activeAiReady,
@@ -32,9 +33,21 @@
     openSession(sampleSession, 5)
   }
 
+  function showInputError(message: string): void {
+    aiError = ''
+    showToast(message, '', null, 5000)
+    document.getElementById('paste-input')?.focus()
+  }
+
   function openManualPlaceholder(): void {
     const sentence = value.trim()
     if (!sentence || sentence.length > MAX_LONG_TEXT_LENGTH) return
+
+    const check = validateJapaneseSentence(sentence)
+    if (!check.ok) {
+      showInputError(check.message)
+      return
+    }
 
     openSession(createManualSession(sentence), 1)
     value = ''
@@ -45,6 +58,12 @@
     event.preventDefault()
     const sentence = value.trim()
     if (!sentence || sentence.length > MAX_LONG_TEXT_LENGTH || submitting) return
+
+    const check = validateJapaneseSentence(sentence)
+    if (!check.ok) {
+      showInputError(check.message)
+      return
+    }
 
     submitting = true
     aiError = ''
@@ -72,7 +91,11 @@
         )
       }
     } catch (error) {
-      aiError = aiErrorMessage(error)
+      const message = aiErrorMessage(error)
+      aiError = message
+      if (error instanceof AiRequestError && error.kind === 'content') {
+        showToast(message, '', null, 5000)
+      }
     } finally {
       submitting = false
     }

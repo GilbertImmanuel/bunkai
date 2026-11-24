@@ -277,6 +277,24 @@ test('home shell renders at 1280x800', async ({ page }) => {
   expect(consoleErrors).toEqual([])
 })
 
+test('rejects non-Japanese input with a toast', async ({ page }) => {
+  await page.goto('/')
+
+  const input = page.getByRole('textbox', { name: 'Japanese sentence' })
+  await input.fill('Hello world.')
+  await input.press('Enter')
+
+  await expect(page.getByTestId('toast')).toContainText('does not look like Japanese')
+  await expect(page.getByTestId('home-view')).toBeVisible()
+  await expect(page.getByTestId('workspace-view')).toHaveCount(0)
+  await expect(input).toHaveValue('Hello world.')
+  await page.screenshot({ path: 'test-results/validation-toast-1280x800.png' })
+
+  await input.fill('これはペンです。')
+  await input.press('Enter')
+  await expect(page.getByTestId('workspace-view')).toBeVisible()
+})
+
 test('clicking the sample opens the six-chunk workspace', async ({ page }) => {
   const consoleErrors = collectPageErrors(page)
 
@@ -1463,6 +1481,37 @@ test('AI breakdown shows loading then opens a generated session', async ({ page 
   await page.screenshot({ path: 'test-results/ai-breakdown-1280x800.png' })
 
   expect(consoleErrors).toEqual([])
+})
+
+test('rejects an AI breakdown with non-Japanese chunks', async ({ page }) => {
+  const badBreakdown = {
+    ...AI_BREAKDOWN,
+    chunks: [{ ...AI_BREAKDOWN.chunks[0], jp: 'cats', kana: '' }, AI_BREAKDOWN.chunks[1]],
+  }
+  const completion = {
+    choices: [
+      {
+        message: {
+          role: 'assistant',
+          content: JSON.stringify(badBreakdown),
+        },
+      },
+    ],
+  }
+
+  await primeAiSettings(page, OPENROUTER_SETTINGS)
+  await mockOpenRouter(page, { body: completion })
+  await page.goto('/')
+
+  const input = page.getByRole('textbox', { name: 'Japanese sentence' })
+  await input.fill('猫が好きです。')
+  await input.press('Enter')
+
+  await expect(page.getByTestId('toast')).toContainText('not Japanese')
+  await expect(page.getByTestId('ai-error')).toContainText('not Japanese')
+  await expect(page.getByTestId('workspace-view')).toHaveCount(0)
+  await expect(page.locator('[data-history-id]')).toHaveCount(3)
+  await expect(input).toHaveValue('猫が好きです。')
 })
 
 test('an older AI session can add colors and furigana without regenerating', async ({ page }) => {

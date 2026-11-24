@@ -159,6 +159,9 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D030 | Shape language is a printed study sheet: 3px marks, 4px controls, 6px cards, 8px sheets. No capsule controls; 4px square icon/action buttons; active History row 3px; switch track 3px with a 1px thumb. Full-round is reserved for sentence-map dots and the spinner.                    | Accepted |
 | D031 | Sentence-map Tree is a Cure Dolly train plus branch rail: a topic rail, one A-car/B-engine train joined by `が`, and modifiers grouped under their target with one header and nested hairline rails. The Row view remains the default.                                                    | Accepted |
 | D032 | UI copy uses plain punctuation; the middle dot (`·`) is not used as a separator. Tree connector lines meet the colored dots at center.                                                                                                                                                    | Accepted |
+| D033 | Tree modifiers use a consistent 10px vertical rhythm at every level; embedded questions are clause targets, so their objects nest beneath them. Long literal-key roles wrap inside the 96px meta column.                                                                                  | Accepted |
+| D034 | The history 3-color strip is the query-options trigger at the bottom right. Its menu deletes a query with an Undo toast; the active workspace stays open and becomes saveable again.                                                                                                      | Accepted |
+| D035 | New Japanese input and AI breakdowns are validated deterministically before save: Japanese script, kana-only readings, present roles, and chunks that rebuild the sentence. Failures show a toast and are not saved. This is not a semantic fluency check.                                | Accepted |
 
 ---
 
@@ -181,7 +184,11 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
   controls, 6px cards, and 8px sheets; the active History row is 3px, icon/action buttons
   are 4px squares, and only map dots and the spinner stay full-round. The sentence-map Tree is
   a Cure Dolly train plus branch rail: one coupled A-car/B-engine, with nested modifiers under
-  the node they modify and the target named once per branch.
+  the node they modify and the target named once per branch. Tree levels share a 10px vertical
+  rhythm, embedded questions own their objects, and long literal-key roles wrap instead of
+  overflowing. The history color strip opens a query menu with delete and undo. New Japanese
+  input and AI breakdowns are checked for script, kana, roles, and chunk reconstruction; errors
+  show a toast and are not saved.
 - **Reference:** the local-only `design/02-11-2026/bunkaiver2.html` exists and is the visual
   target; it is not committed.
 - **Environment:** Node 24.21.0, Bun 1.3.14, npm 9.7.1 (not used), Chrome 156, Edge 156.

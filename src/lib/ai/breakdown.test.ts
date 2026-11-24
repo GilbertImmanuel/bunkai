@@ -195,6 +195,54 @@ describe('AI breakdown parsing', () => {
       /no usable chunks/,
     )
   })
+
+  it('rejects non-Japanese chunks, invalid kana, and missing roles', () => {
+    expect(() =>
+      parseBreakdownResponse(
+        JSON.stringify({
+          ...breakdown,
+          chunks: [{ ...breakdown.chunks[0], jp: 'cats', kana: '' }, breakdown.chunks[1]],
+        }),
+        '猫が好きです。',
+      ),
+    ).toThrowError(/not Japanese/)
+
+    expect(() =>
+      parseBreakdownResponse(
+        JSON.stringify({
+          ...breakdown,
+          chunks: [{ ...breakdown.chunks[0], kana: '猫が' }, breakdown.chunks[1]],
+        }),
+        '猫が好きです。',
+      ),
+    ).toThrowError(/kana reading/)
+
+    expect(() =>
+      parseBreakdownResponse(
+        JSON.stringify({
+          ...breakdown,
+          chunks: [{ ...breakdown.chunks[0], role: '' }, breakdown.chunks[1]],
+        }),
+        '猫が好きです。',
+      ),
+    ).toThrowError(/grammatical role/)
+  })
+
+  it('rejects chunks that do not rebuild the sentence or a non-Japanese input', () => {
+    expect(() =>
+      parseBreakdownResponse(
+        JSON.stringify({
+          ...breakdown,
+          chunks: [breakdown.chunks[0], { ...breakdown.chunks[1], jp: '好き' }],
+        }),
+        '猫が好きです。',
+      ),
+    ).toThrowError(/do not rebuild the sentence/)
+
+    expect(() => parseBreakdownResponse(JSON.stringify(breakdown), 'Hello world.')).toThrowError(
+      /not look like Japanese|mostly English/,
+    )
+  })
 })
 
 describe('AI provider requests', () => {

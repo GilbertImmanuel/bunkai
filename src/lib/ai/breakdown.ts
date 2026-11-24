@@ -8,6 +8,12 @@ import type {
   TranslationPart,
 } from '../data/types'
 import { getAiProvider, type AiProvider, type AiProviderId } from './providers'
+import {
+  chunksRebuildSentence,
+  isKanaText,
+  isMostlyJapanese,
+  validateJapaneseSentence,
+} from '../utils/japanese'
 import { ResponseLimitError, readLimitedText } from '../utils/limitedResponse'
 
 const MAX_AI_RESPONSE_BYTES = 256 * 1024
@@ -32,6 +38,7 @@ export type AiErrorKind =
   | 'network'
   | 'provider'
   | 'format'
+  | 'content'
   | 'timeout'
   | 'unknown'
 
@@ -48,6 +55,10 @@ export class AiRequestError extends Error {
 export function aiErrorMessage(error: unknown): string {
   if (error instanceof AiRequestError) return error.message
   return 'The breakdown request failed. Try again or use the sample.'
+}
+
+function contentError(message: string): AiRequestError {
+  return new AiRequestError('content', message)
 }
 
 const SYSTEM_PROMPT = `You are Bunkai, a Japanese reading assistant. Analyze one Japanese sentence and return ONLY a JSON object. Do not use markdown fences, comments, or prose outside the JSON.
@@ -597,6 +608,10 @@ export function parseBreakdownResponse(
   sentence: string,
   now: Date = new Date(),
 ): Session {
+  const input = sentence.trim()
+  const inputCheck = validateJapaneseSentence(input)
+  if (!inputCheck.ok) throw contentError(inputCheck.message)
+
   const start = text.indexOf('{')
   const end = text.lastIndexOf('}')
   if (start < 0 || end <= start) {
@@ -632,15 +647,29 @@ export function parseBreakdownResponse(
     const chunk = value as Record<string, unknown>
     const jp = stringValue(chunk.jp, MAX_AI_TEXT)
     if (!jp) continue
+    if (!isMostlyJapanese(jp)) {
+      throw contentError('The model returned a chunk that is not Japanese. Try again.')
+    }
+
+    const kana = stringValue(chunk.kana, MAX_AI_SHORT_TEXT)
+    if (kana && !isKanaText(kana)) {
+      throw contentError('The model returned an invalid kana reading. Try again.')
+    }
+
+    const role = stringValue(chunk.role, MAX_AI_SHORT_TEXT)
+    if (!role) {
+      throw contentError('The model returned a chunk without a grammatical role. Try again.')
+    }
+
     const furigana = furiganaSegments(chunk.furigana, jp)
     const lookup = stringValue(chunk.lookup, 100)
 
     chunks.push({
       n: chunks.length + 1,
       jp,
-      kana: stringValue(chunk.kana, MAX_AI_SHORT_TEXT),
+      kana,
       gloss: stringValue(chunk.gloss, MAX_AI_SHORT_TEXT),
-      role: stringValue(chunk.role, MAX_AI_SHORT_TEXT) || 'chunk',
+      role,
       color: colorValue(chunk.color, index),
       note: stringValue(chunk.note),
       construction: constructionSteps(chunk.construction),
@@ -659,7 +688,6 @@ export function parseBreakdownResponse(
     )
   }
 
-  const input = sentence.trim()
   const joined = chunks.map((chunk) => chunk.jp).join('')
   if (joined !== input && input.startsWith(joined)) {
     const remainder = input.slice(joined.length)
@@ -682,6 +710,20 @@ export function parseBreakdownResponse(
     }
   }
 
+  if (
+    !chunksRebuildSentence(
+      chunks.map((chunk) => chunk.jp),
+      input,
+    )
+  ) {
+    throw contentError("The model's chunks do not rebuild the sentence. Try again.")
+  }
+
+  const reading = stringValue(raw.reading, MAX_AI_LONG_TEXT)
+  if (reading && !isKanaText(reading)) {
+    throw contentError('The model returned an invalid sentence reading. Try again.')
+  }
+
   const note = stringArray(raw.sentenceNote)
   const natural = stringValue(raw.natural, MAX_AI_LONG_TEXT)
   const parts = naturalParts(raw.naturalParts, natural, chunks)
@@ -696,7 +738,7 @@ export function parseBreakdownResponse(
   return {
     id: `ai-${now.getTime()}`,
     sentence: input,
-    reading: stringValue(raw.reading, MAX_AI_LONG_TEXT),
+    reading,
     natural,
     ...(parts ? { naturalParts: parts } : {}),
     raw: rawGloss,
