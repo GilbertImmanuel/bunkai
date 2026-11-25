@@ -24,7 +24,7 @@ wins over every other document.
 - Phase 9 (polish and release) is complete. v0.1.0 is the first local desktop release.
 - Distribution is local-only: no hosted deployment and no 8C share link. Users run the
   static build on their own device.
-- MIT licensed. The repository is private for now.
+- MIT licensed. The repository is public.
 
 ## Local-only material
 

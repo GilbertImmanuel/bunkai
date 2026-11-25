@@ -1,6 +1,6 @@
 # Bunkai — Project Manifest
 
-**Status:** Implementation inventory and contract. Last updated: 2026-11-23.
+**Status:** Implementation inventory and contract. Last updated: 2026-11-25.
 
 This is the **project manifest**, not the PWA manifest. The generated PWA
 `manifest.webmanifest` is a separate build artifact.
@@ -16,7 +16,7 @@ This is the **project manifest**, not the PWA manifest. The generated PWA
 | Project         | Bunkai                                                                     |
 | Version         | **0.1.0** (first local desktop release)                                    |
 | Product         | Desktop-first Japanese sentence breakdown app                              |
-| Repo root       | `C:\Users\Gilbert\Documents\Projects\bunkai-sentence-expansion`            |
+| Repo root       | Repository root                                                            |
 | App root        | Repository root                                                            |
 | Package manager | **Bun 1.3.14**                                                             |
 | Runtime         | Node 24.21.0                                                               |
@@ -450,15 +450,15 @@ Backup checks:
 
 ## 13. Environment
 
-| Tool                | Version       | Note                                   |
-| ------------------- | ------------- | -------------------------------------- |
-| Node                | 24.21.0       | `>=22`                                 |
-| Bun                 | 1.3.14        | Package manager                        |
-| npm                 | 9.7.1         | Not used                               |
-| Chrome              | 156.0.8078.74 | Manual/Playwright channel              |
-| Edge                | 156.0.4314.58 | Manual/Playwright channel              |
-| Playwright browsers | Not installed | Install Chromium or use channel        |
-| Git                 | 2.44.0        | Repository initialized; private remote |
+| Tool                | Version       | Note                                         |
+| ------------------- | ------------- | -------------------------------------------- |
+| Node                | 24.21.0       | `>=22`                                       |
+| Bun                 | 1.3.14        | Package manager                              |
+| npm                 | 9.7.1         | Not used                                     |
+| Chrome              | 156.0.8078.74 | Manual/Playwright channel                    |
+| Edge                | 156.0.4314.58 | Manual/Playwright channel                    |
+| Playwright browsers | Not installed | Install Chromium or use channel              |
+| Git                 | 2.44.0        | Repository initialized; public GitHub remote |
 
 ---
 

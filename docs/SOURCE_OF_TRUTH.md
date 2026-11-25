@@ -1,6 +1,6 @@
 # Bunkai — Source of Truth
 
-**Status:** Canonical. Last updated: 2026-11-24.
+**Status:** Canonical. Last updated: 2026-11-25.
 
 **Rule:** If any document, prototype, comment, or task conflicts with this file, this file wins. Update this file first, then update the dependent docs.
 
@@ -153,7 +153,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
 | D024 | Phase 8A PWA: installable standalone app, offline app shell and fonts, prompt-based updates. The service worker caches only the app shell, never AI or Tatoeba API responses.                                                                                                             | Accepted |
 | D025 | Phase 8B backup: versioned local JSON export/import of sessions. Merge or replace; backups never include AI keys, app preferences, or the Tatoeba cache.                                                                                                                                  | Accepted |
 | D026 | Distribution is **local-only**. No hosted deployment, public demo, or share URL. Users run the static build on their own device; keys and history stay origin-scoped. 8C is not planned.                                                                                                  | Accepted |
-| D027 | The project is **MIT licensed**, copyright 2026 Gilbert Immanuel Hasiholan. The repository stays private until the owner chooses to publish it.                                                                                                                                           | Accepted |
+| D027 | The project is **MIT licensed**, copyright 2026 Gilbert Immanuel Hasiholan. The repository is public.                                                                                                                                                                                     | Accepted |
 | D028 | Local security posture: production build injects a restrictive meta CSP; imports are strictly bounded and validated; AI/Tatoeba responses are byte- and field-capped; API keys remain in browser storage and are sent only to the selected provider/proxy.                                | Accepted |
 | D029 | v0.1.0 is the first local desktop release, tagged 2026-11-24. It is source-only; no installer, hosted deployment, or share link. Phase 9 accessibility and visual QA are complete.                                                                                                        | Accepted |
 | D030 | Shape language is a printed study sheet: 3px marks, 4px controls, 6px cards, 8px sheets. No capsule controls; 4px square icon/action buttons; active History row 3px; switch track 3px with a 1px thumb. Full-round is reserved for sentence-map dots and the spinner.                    | Accepted |
@@ -176,7 +176,7 @@ If a phase discovers a conflict, stop and update `SOURCE_OF_TRUTH.md` first. The
   release) is complete; v0.1.0 is the first local desktop release. Distribution is
   local-only; 8C (share URL) is not planned and there is no hosted deployment.
 - **Repository:** app at the root; `docs/` and `research/tatoeba/` are subfolders. Local
-  design references, prototypes, and third-party research are ignored. Private GitHub
+  design references, prototypes, and third-party research are ignored. Public GitHub
   remote; MIT license in the repository. Current release: v0.1.0, tagged 2026-11-24.
 - **Visual cleanup:** colored left-border accents were removed from the sentence note, AI
   warning/error blocks, active history rows, and sentence-map tree boxes. Neutral panel

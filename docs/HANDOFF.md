@@ -12,15 +12,15 @@
 | --------------- | ------------------------------------------------------------------ |
 | Current phase   | **Phase 9 — Polish and release (complete)**                        |
 | Phase status    | **v0.1.0 tagged 2026-11-24**; local-only; 8C off                   |
-| Last updated    | 2026-11-24                                                         |
+| Last updated    | 2026-11-25                                                         |
 | App root        | Repository root                                                    |
 | Package manager | Bun 1.3.14                                                         |
 | Stack           | Vite 8.3.5 + Svelte 5.57.3 + TypeScript 6.0.3                      |
-| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); private       |
+| Git             | [GitHub](https://github.com/GilbertImmanuel/bunkai); public        |
 | Source          | `main`; `v0.1.0` tag on the release-notes commit                   |
 | Distribution    | Local-only: `bun run build && bun run preview`; no hosted instance |
 | License         | MIT, copyright 2026 Gilbert Immanuel Hasiholan                     |
-| Next action     | Decide on reviewer access; 7.5C and native wrapper remain separate |
+| Next action     | Use locally; optional GitHub Release; 7.5C/native wrapper separate |
 
 **Summary:** Phase 8A makes the app installable and usable offline. A generated web
 manifest, 文-mark icons, and a Workbox service worker precache the app shell, JS/CSS, and
@@ -33,7 +33,7 @@ verified key removal, stale-enrichment guards, and decoded-byte/deadline limits 
 Tatoeba responses. Phase 9 completes the accessibility and visual polish pass: skip link,
 heading hierarchy, tab/radiogroup keyboard support, focus return, light/dark contrast tokens,
 concentric radii, and control-border tokens. Distribution is **local-only**: there is no
-hosted instance and no share URL. The repository is private, MIT licensed, and v0.1.0 is the
+hosted instance and no share URL. The repository is public, MIT licensed, and v0.1.0 is the
 first local desktop release. Post-release layout polish widened the reading sheet and Home
 column to 1040px, restored the literal-key color chip inline with the number, lifted map
 dots above the connecting line, and replaced the sentence-note wall with labeled
@@ -180,7 +180,21 @@ is still unapproved.
 - **Includes:** the post-release Tree/key fixes, history query delete with Undo, and
   deterministic Japanese input/AI validation.
 - **Verification:** 133 unit tests, 56 e2e tests, 2 PWA tests, and the production build pass.
-- **Next:** reviewer access or local use; 7.5C and a native desktop wrapper remain separate.
+- **Next:** local use; optional GitHub Release. 7.5C and a native desktop wrapper remain
+  separate.
+
+## Public release preparation — 2026-11-25
+
+- **Visibility:** repository content and docs are prepared for public visibility. Flip the
+  repository visibility in GitHub settings to finish.
+- **Privacy:** local machine paths were removed from tracked docs. Commit author email history
+  was intentionally left unchanged.
+- **Tag:** `v0.1.0` remains at `f40a6da`; the README and public-release docs are post-tag
+  commits on `main`.
+- **Note:** older dated checkpoints may still say the repository is private; they predate
+  publication.
+- **Next:** enable secret scanning, push protection, and branch protection after the visibility
+  flip.
 
 ---
 
@@ -957,15 +971,15 @@ is still unapproved.
 
 ## Environment
 
-| Tool                | Version       | Note                                          |
-| ------------------- | ------------- | --------------------------------------------- |
-| Node                | 24.21.0       | Compatible with Vite 8 / Svelte 5             |
-| Bun                 | 1.3.14        | Confirmed package manager                     |
-| npm                 | 9.7.1         | Not used                                      |
-| Chrome              | 156.0.8078.74 | Manual/Playwright channel                     |
-| Edge                | 156.0.4314.58 | Manual/Playwright channel                     |
-| Playwright browsers | Not installed | Uses system Chrome via `channel: "chrome"`    |
-| Git                 | 2.44.0        | Repository initialized; private GitHub remote |
+| Tool                | Version       | Note                                         |
+| ------------------- | ------------- | -------------------------------------------- |
+| Node                | 24.21.0       | Compatible with Vite 8 / Svelte 5            |
+| Bun                 | 1.3.14        | Confirmed package manager                    |
+| npm                 | 9.7.1         | Not used                                     |
+| Chrome              | 156.0.8078.74 | Manual/Playwright channel                    |
+| Edge                | 156.0.4314.58 | Manual/Playwright channel                    |
+| Playwright browsers | Not installed | Uses system Chrome via `channel: "chrome"`   |
+| Git                 | 2.44.0        | Repository initialized; public GitHub remote |
 
 **Dependency status (v0.1.0):**
 
@@ -1009,7 +1023,7 @@ is still unapproved.
 - Phase 8B exports sessions as plain JSON and imports with merge/replace; backups exclude
   API keys, preferences, and the Tatoeba cache.
 - Distribution is local-only; there is no hosted deployment or 8C share URL.
-- The repository is private and MIT licensed (copyright 2026 Gilbert Immanuel Hasiholan).
+- The repository is public and MIT licensed (copyright 2026 Gilbert Immanuel Hasiholan).
 - The production build injects a meta CSP; imports and AI/Tatoeba responses are bounded.
 - Phase 9 is complete; v0.1.0 is the first local desktop release.
 - Interactive controls use `--control-line`; decorative hairlines stay quieter.
@@ -1020,8 +1034,7 @@ is still unapproved.
 
 ## Open questions
 
-- Tag `v0.1.0` and publish a private release note, or keep the version untagged for now?
-- Share the private repository with reviewers now?
+- Optional: create a GitHub Release from `v0.1.0`.
 - Approve Phase 7.5C (Home “Find a sentence” picker)?
 - A native desktop wrapper (Tauri/Electron) is not planned; revisit only if a double-click
   install becomes necessary.

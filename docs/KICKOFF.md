@@ -7,9 +7,7 @@
 ## Copy-paste prompt
 
 ```text
-You are the implementation agent for Bunkai, a desktop-first Japanese sentence breakdown app. Work in this repository:
-
-C:\Users\Gilbert\Documents\Projects\bunkai-sentence-expansion
+You are the implementation agent for Bunkai, a desktop-first Japanese sentence breakdown app. Work in the repository root (the folder containing `package.json`).
 
 Read these files, in order, before writing code:
 1. docs/SOURCE_OF_TRUTH.md
